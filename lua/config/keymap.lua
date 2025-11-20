@@ -1,0 +1,75 @@
+-- ==== Clear Highlights ======================================================
+--
+vim.keymap.set("n", "<space><esc>", function()
+    vim.cmd "nohl"
+end, { silent = true, desc = "Clear Highlight", noremap = true })
+
+-- ==== Buffers ===============================================================
+--
+vim.keymap.set("n", "<leader>c", function()
+    -- check if snacks plugin is installed
+    if pcall(require, "snacks") then
+        require("snacks").bufdelete()
+    else
+        vim.cmd "bdelete"
+    end
+end, { desc = "Close Buffer" })
+
+vim.keymap.set("n", "<leader>C", function()
+    -- TODO: Create shorcut to close all buffers.
+    if pcall(require, "snacks") then
+        require("snacks").bufdelete()
+    else
+        vim.cmd "bdelete"
+    end
+end, { desc = "Close All Buffer" })
+
+-- ==== Diagnostics ===========================================================
+--
+vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Show diagnostic" })
+
+vim.keymap.set("n", "[d", function()
+    vim.diagnostic.jump { count = -1, float = true }
+end, { desc = "Previous diagnostic" })
+
+vim.keymap.set("n", "]d", function()
+    vim.diagnostic.jump { count = 1, float = true }
+end, { desc = "Next diagnostic" })
+
+-- ==== Window Navigation and Resizing ========================================
+--
+vim.keymap.set("t", "<C-w>h", "<C-\\><C-n><C-w>h", { noremap = true, silent = true })
+vim.keymap.set("t", "<C-w>j", "<C-\\><C-n><C-w>j", { noremap = true, silent = true })
+vim.keymap.set("t", "<C-w>k", "<C-\\><C-n><C-w>k", { noremap = true, silent = true })
+vim.keymap.set("t", "<C-w>l", "<C-\\><C-n><C-w>l", { noremap = true, silent = true })
+
+vim.keymap.set("t", "<C-Up>", "<C-\\><C-n>:resize +2<CR>", { noremap = true, silent = true })
+vim.keymap.set("t", "<C-Down>", "<C-\\><C-n>:resize -2<CR>", { noremap = true, silent = true })
+vim.keymap.set("t", "<C-Left>", "<C-\\><C-n>:vertical resize -2<CR>", { noremap = true, silent = true })
+vim.keymap.set("t", "<C-Right>", "<C-\\><C-n>:vertical resize +2<CR>", { noremap = true, silent = true })
+
+vim.keymap.set("n", "<C-Up>", ":resize +2<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-Down>", ":resize -2<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", { noremap = true, silent = true })
+
+-- ==== Plugin Keymaps ========================================================
+--
+-- Update plugins
+vim.keymap.set({ "n" }, "<leader>:xu", vim.pack.update, { desc = "Update Plugins" })
+
+-- ==== Editor Keymaps ========================================================
+--
+-- Restart neovim.
+vim.keymap.set("n", "<leader>:r", function()
+    vim.cmd "restart"
+end, { desc = "Restart" })
+
+-- Remove buffers.
+vim.keymap.set("n", "<leader>:bd", function()
+    vim.cmd "bdelete"
+end, { desc = "Buffer Delete" })
+
+vim.keymap.set("n", "<leader>:bw", function()
+    vim.cmd "bwipeout"
+end, { desc = "Buffer Wipeout" })
