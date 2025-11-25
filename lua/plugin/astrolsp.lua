@@ -433,10 +433,39 @@ astrolsp.setup {
             return false
         end
 
+        local open_diagnostic_float = function()
+            local current_cursor = vim.api.nvim_win_get_cursor(0)
+            local last_popup_cursor = vim.w.lsp_diagnostics_last_cursor or { nil, nil }
+
+            -- Show the popup diagnostics window, only once for the current cursor location
+            if not (current_cursor[1] == last_popup_cursor[1] and current_cursor[2] == last_popup_cursor[2]) then
+                vim.w.lsp_diagnostics_last_cursor = current_cursor
+                vim.diagnostic.open_float { scope = "cursor", focusable = false }
+            end
+        end
+
         -- Set up custom LSP keybindings.
         vim.keymap.set({ "n" }, "K", function()
-            vim.lsp.buf.hover { border = "rounded" }
-        end, { noremap = true, buffer = bufnr, desc = "LSP - Hover" })
+            local current_cursor = vim.api.nvim_win_get_cursor(0)
+            local line = current_cursor[1]
+            local col = current_cursor[2]
+            local diagnostics = vim.diagnostic.get(0, { lnum = line })
+
+            local has_diagnostic = false
+
+            for _, d in ipairs(diagnostics) do
+                if col >= d.col and col < d.end_col then
+                    has_diagnostic = true
+                    break
+                end
+            end
+
+            if has_diagnostic then
+                open_diagnostic_float()
+            else
+                vim.lsp.buf.hover { border = "rounded" }
+            end
+        end, { noremap = true, buffer = bufnr, desc = "LSP - Hover & Diagnostics" })
 
         vim.keymap.set("n", "gd", function()
             snacks.picker.lsp_definitions()
@@ -457,6 +486,14 @@ astrolsp.setup {
         vim.keymap.set("n", "gr", function()
             snacks.picker.lsp_references()
         end, { noremap = true, buffer = bufnr, desc = "LSP - Go to References" })
+
+        vim.keymap.set("n", "gR", function()
+            vim.lsp.buf.rename()
+        end, { noremap = true, buffer = bufnr, desc = "LSP - Rename" })
+
+        vim.keymap.set("n", "ga", function()
+            vim.lsp.buf.code_action()
+        end, { noremap = true, buffer = bufnr, desc = "LSP - Code Action" })
 
         -- Add symbol picker keybindings if supported by the LSP server.
         if is_supported_method("documentSymbol", client) then
