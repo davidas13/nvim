@@ -27,6 +27,7 @@ require "plugin.marker-groups"
 require "plugin.markview"
 require "plugin.diffview"
 require "plugin.quicker"
+require "plugin.neoconf"
 require "plugin.leetcode"
 
 -- NOTE: The plugins below should be initialized at the end.
