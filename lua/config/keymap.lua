@@ -26,8 +26,6 @@ end, { desc = "Close All Buffer" })
 
 -- ==== Diagnostics ===========================================================
 --
-vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Show diagnostic" })
-
 vim.keymap.set("n", "[d", function()
     vim.diagnostic.jump { count = -1, float = true }
 end, { desc = "Previous diagnostic" })
