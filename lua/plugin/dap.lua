@@ -18,16 +18,6 @@ local dap_mason = require "mason-nvim-dap"
 local dap = require "dap"
 local dap_ui = require "dapui"
 local dap_virtual_text = require "nvim-dap-virtual-text"
-local mason_registry = require "mason-registry"
-
-local function find_codelldb()
-    local codelldb_pkg = mason_registry.get_package "codelldb"
-    local install_path = codelldb_pkg:get_install_path()
-
-    local adapter = install_path .. "/extension/adapter/codelldb"
-
-    return adapter
-end
 
 dap_mason.setup {
     ensure_installed = { "codelldb", "bash", "python" },
@@ -125,4 +115,8 @@ end, { desc = "Step Out" })
 
 vim.keymap.set("n", "<leader>dO", function()
     dap.step_over()
+end, { desc = "Step Over" })
+
+vim.keymap.set("n", "<leader>dv", function()
+    vim.cmd [[DapViewOpen]]
 end, { desc = "Step Over" })
