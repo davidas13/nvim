@@ -10,6 +10,7 @@ require "plugin.snacks"
 require "plugin.gitsigns"
 require "plugin.grugfar"
 require "plugin.mason"
+require "plugin.dap"
 require "plugin.treesitter"
 require "plugin.supermaven"
 -- NOTE: Disable until I subscribe again.
