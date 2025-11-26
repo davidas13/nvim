@@ -434,11 +434,8 @@ astrolsp.setup {
         end
 
         -- Set up custom LSP keybindings.
-        vim.keymap.set({ "n" }, "J", function()
-            vim.diagnostic.open_float { focusable = false, { border = "rounded" } }
-        end, { noremap = true, buffer = bufnr, desc = "LSP - Diagnostics" })
-
         vim.keymap.set({ "n" }, "K", function()
+            vim.diagnostic.open_float { focusable = false, { border = "rounded" } }
             vim.lsp.buf.hover { border = "rounded" }
         end, { noremap = true, buffer = bufnr, desc = "LSP - Hover" })
 
