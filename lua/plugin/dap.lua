@@ -127,9 +127,28 @@ vim.keymap.set("n", "<leader>dc", function()
     dap.continue()
 end, { desc = "Run/Continue" })
 
+vim.keymap.set("n", "<leader>da", function()
+    dap.continue {
+        before = function(config)
+            local args = type(config.args) == "function" and (config.args() or {}) or config.args or {}
+            config = vim.deepcopy(config)
+            ---@cast args string[]
+            config.args = function()
+                local new_args = vim.fn.input("Run with args: ", table.concat(args, " "))
+                return vim.split(vim.fn.expand(new_args), " ")
+            end
+            return config
+        end,
+    }
+end, { desc = "Run/Continue with Args" })
+
 vim.keymap.set("n", "<leader>dC", function()
     dap.run_to_cursor()
 end, { desc = "Run to Cursor" })
+
+vim.keymap.set("n", "<leader>dg", function()
+    dap.goto_()
+end, { desc = "Go to line (No execute)" })
 
 vim.keymap.set("n", "<leader>dT", function()
     dap.terminate()
@@ -146,6 +165,26 @@ end, { desc = "Step Out" })
 vim.keymap.set("n", "<leader>dO", function()
     dap.step_over()
 end, { desc = "Step Over" })
+
+vim.keymap.set("n", "<leader>dl", function()
+    dap.run_last()
+end, { desc = "Run Last" })
+
+vim.keymap.set("n", "<leader>dp", function()
+    dap.pause()
+end, { desc = "Pause" })
+
+vim.keymap.set("n", "<leader>dr", function()
+    dap.repl.toggle()
+end, { desc = "Toggle REPL" })
+
+vim.keymap.set("n", "<leader>ds", function()
+    dap.session()
+end, { desc = "Session" })
+
+vim.keymap.set("n", "<leader>dx", function()
+    dap.disconnect()
+end, { desc = "Session" })
 
 vim.keymap.set("n", "<leader>dv", function()
     vim.cmd [[DapViewOpen]]
