@@ -70,7 +70,7 @@ vim.opt.signcolumn = "yes"
 vim.opt.numberwidth = 4
 
 vim.diagnostic.config {
-    virtual_text = true, -- show inline messages
+    virtual_text = false, -- show inline messages
     signs = true, -- show signs in the gutter
     underline = true, -- underline problematic text
     update_in_insert = false, -- don't update diagnostics while typing
