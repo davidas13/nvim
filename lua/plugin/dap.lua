@@ -149,4 +149,4 @@ end, { desc = "Step Over" })
 
 vim.keymap.set("n", "<leader>dv", function()
     vim.cmd [[DapViewOpen]]
-end, { desc = "Step Over" })
+end, { desc = "Open DAP View" })
