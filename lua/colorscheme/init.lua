@@ -1,2 +1,3 @@
 -- require "colorscheme.gruvbox-material"
-require "colorscheme.catppuccin"
+-- require "colorscheme.catppuccin"
+require "colorscheme.kanagawa"
