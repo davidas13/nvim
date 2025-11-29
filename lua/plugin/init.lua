@@ -30,6 +30,7 @@ require "plugin.diffview"
 require "plugin.quicker"
 require "plugin.neoconf"
 require "plugin.leetcode"
+require "plugin.triforce"
 
 -- NOTE: The plugins below should be initialized at the end.
 require "plugin.noice"
