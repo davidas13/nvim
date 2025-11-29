@@ -1,11 +1,17 @@
 -- ==== Intallation ===========================================================
 --
 vim.pack.add {
+    { src = "https://github.com/nvzone/volt" },
+    { src = "https://github.com/gisketch/triforce.nvim" },
+
+    -- Main plugin
     { src = "https://github.com/nvim-lualine/lualine.nvim" },
 }
 
 -- ==== Setup =================================================================
 --
+local triforce = require("triforce.lualine").components()
+
 require("lualine").setup {
     options = {
         section_separators = { left = "", right = "" },
@@ -17,6 +23,10 @@ require("lualine").setup {
         -- lualine_c = { { "filename", path = 1 }, "lsp_progress" },
         lualine_c = { { "filename", path = 1 } },
         lualine_x = {
+            triforce.level,
+            triforce.achievements,
+            triforce.streak,
+            triforce.session_time,
             function()
                 local statusline = require("arrow.statusline").text_for_statusline_with_icons()
 
