@@ -1,3 +1,6 @@
 -- require "colorscheme.gruvbox-material"
 -- require "colorscheme.catppuccin"
 require "colorscheme.kanagawa"
+-- require "colorscheme.xeno"
+-- require "colorscheme.vague"
+-- require "colorscheme.monoglow"
