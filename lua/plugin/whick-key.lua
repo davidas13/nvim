@@ -11,6 +11,7 @@ require("which-key").setup {
     preset = "helix",
     defaults = {},
     spec = {
+        { "<leader>d", group = "Debug" },
         { "<leader>g", group = "Git" },
         { "<leader>gh", group = "Git Hunks" },
         { "[", group = "Previous" },
