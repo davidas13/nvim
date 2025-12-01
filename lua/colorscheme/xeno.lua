@@ -11,15 +11,15 @@ local xeno = require "xeno"
 
 xeno.config {
     -- Appearance adjustments
-    contrast = -0.4, -- Adjust contrast (-1 to 1, 0 is default)
+    contrast = 0.0, -- Adjust contrast (-1 to 1, 0 is default)
     variation = 0.0, -- Adjust color variation strength (-1 to 1, 0 is default)
-    transparent = false, -- Enable transparent background
+    transparent = true, -- enable transparent background
 }
 
-xeno.new_theme("xeno", {
+xeno.new_theme("xeno-kangawa", {
     base = "#1F1F28",
-    accent = "#5c554c",
+    accent = "#54546D",
     contrast = -0.1,
 })
 
-vim.cmd [[colorscheme xeno]]
+vim.cmd [[colorscheme xeno-kanagawa]]
