@@ -9,6 +9,7 @@ vim.pack.add {
 
 -- ==== Setup =================================================================
 --
+-- NOTE: If error occurs during installation this plugin, run this snippet `git submodule update --init --recursive` in nvim-data to fixing.
 require("yode-nvim").setup()
 
 -- ==== Setup Keybindings =====================================================
