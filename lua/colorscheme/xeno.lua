@@ -16,7 +16,7 @@ xeno.config {
     transparent = true, -- enable transparent background
 }
 
-xeno.new_theme("xeno-kangawa", {
+xeno.new_theme("xeno-kanagawa", {
     base = "#1F1F28",
     accent = "#54546D",
     contrast = -0.1,
