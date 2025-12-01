@@ -1,4 +1,4 @@
--- require "colorscheme.gruvbox-material"
+-- require "colorscheme.gruvbox"
 -- require "colorscheme.catppuccin"
 require "colorscheme.kanagawa"
 -- require "colorscheme.xeno"
