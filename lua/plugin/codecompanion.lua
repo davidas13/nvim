@@ -1,6 +1,7 @@
 -- ==== Intallation ===========================================================
 --
 vim.pack.add {
+    { src = "https://github.com/folke/which-key.nvim" },
     { src = "https://github.com/nvim-lua/plenary.nvim" },
     { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
     { src = "https://github.com/ravitemer/mcphub.nvim" },
@@ -190,6 +191,11 @@ require("codecompanion").setup {
 }
 
 -- ==== Setup Keybindings =====================================================
+--
+require("which-key").add {
+    { "<leader>a", mode = "n", group = "CodeCompanion" },
+}
+
 vim.keymap.set("n", "<leader>ah", function()
     vim.cmd.CodeCompanionHistory()
 end, { noremap = true, silent = true, desc = "Code Companion History" })
