@@ -32,6 +32,7 @@ require "plugin.neoconf"
 require "plugin.leetcode"
 require "plugin.triforce"
 require "plugin.yode"
+require "plugin.yazi"
 
 -- NOTE: The plugins below should be initialized at the end.
 require "plugin.noice"
