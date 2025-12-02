@@ -91,3 +91,9 @@ vim.o.autoread = true
 vim.opt.updatetime = 300
 vim.opt.wrap = true
 vim.opt.linebreak = true
+
+-- Check if ripgrep is installed.
+if vim.fn.executable('rg') then
+  vim.opt.grepprg = 'rg --vimgrep --no-heading --smart-case'
+  vim.opt.grepformat = '%f:%l:%c:%m,%f:%l:%m'
+end
