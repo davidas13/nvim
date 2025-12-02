@@ -1,6 +1,7 @@
 -- ==== Intallation ===========================================================
 --
 vim.pack.add {
+    { src = "https://github.com/folke/which-key.nvim" },
     { src = "https://github.com/nvzone/volt" },
 
     -- Main plugin.
@@ -15,6 +16,10 @@ triforce.setup()
 
 -- ==== Setup Keybindings =====================================================
 --
+require("which-key").add {
+    { "<leader>\"", mode = "n", group = "Triforce" },
+}
+
 vim.keymap.set(
     "n",
     "<leader>\"p",
