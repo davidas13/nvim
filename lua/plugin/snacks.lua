@@ -35,7 +35,6 @@ snacks.setup {
                     border = "none",
                     title = " {title} {live} {flags}",
                     title_pos = "left",
-                    position = "bottom",
                     {
                         box = "horizontal",
                         { win = "list", border = "rounded" },
