@@ -33,7 +33,6 @@ require "plugin.leetcode"
 require "plugin.triforce"
 require "plugin.yode"
 require "plugin.yazi"
-require "plugin.ctrlsf"
 
 -- NOTE: The plugins below should be initialized at the end.
 require "plugin.noice"
