@@ -33,6 +33,7 @@ require "plugin.leetcode"
 require "plugin.triforce"
 require "plugin.yode"
 require "plugin.yazi"
+require "plugin.overseer"
 
 -- NOTE: The plugins below should be initialized at the end.
 require "plugin.noice"
