@@ -34,6 +34,7 @@ require "plugin.triforce"
 require "plugin.yode"
 require "plugin.yazi"
 require "plugin.overseer"
+require "plugin.auto-session"
 
 -- NOTE: The plugins below should be initialized at the end.
 require "plugin.noice"
