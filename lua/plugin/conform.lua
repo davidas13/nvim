@@ -31,6 +31,8 @@ require("conform").setup {
         hpp = { "clang_format" },
         cmake = { "cmake-format" },
         toml = { "taplo" },
+        json = { "prettier" },
+        svelte = { "svelte" },
     },
     formatters = {
         ["cmake-format"] = {

@@ -212,6 +212,7 @@ astrolsp.setup {
 
         -- Json
         "jsonls",
+        "biome",
 
         -- Toml
         "taplo",
@@ -233,6 +234,7 @@ astrolsp.setup {
 
         -- Typescript/JavaScript
         "ts_ls",
+        "svelte",
 
         -- Rust
         "rust_analyzer",
