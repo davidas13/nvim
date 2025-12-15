@@ -12,8 +12,10 @@ vim.pack.add {
     },
 }
 -- ==== Setup =================================================================
-vim.g.gruvbox_material_enable_italic = true
+vim.g.gruvbox_material_enable_italic = false
 vim.g.gruvbox_material_background = "medium"
 vim.cmd [[colorscheme gruvbox-material]]
+vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#32302F" })
+vim.api.nvim_set_hl(0, "FloatBorder", { bg = "#32302F", fg = "#918374" })
 
 -- vim.cmd [[colorscheme gruvbox]]
