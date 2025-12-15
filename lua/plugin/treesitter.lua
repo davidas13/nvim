@@ -8,6 +8,8 @@ vim.pack.add {
 --
 require "nvim-treesitter.query_predicates"
 
+require("nvim-treesitter.install").compilers = {"clang", "gcc", "zig"}
+
 require("nvim-treesitter.configs").setup {
     auto_install = true,
     highlight = {
