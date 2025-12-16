@@ -9,6 +9,15 @@ vim.pack.add {
 -- ==== Setup =================================================================
 --
 require("noice").setup {
+    messages = {
+        enabled = true,
+    },
+    routes = {
+        {
+            view = "notify", -- Forces message output into the snacks/notify window
+            filter = { event = "msg_show" },
+        },
+    },
     cmdline = {
         view = "cmdline",
     },
