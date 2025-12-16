@@ -20,6 +20,7 @@ snacks.setup {
     },
     bufdelete = { enabled = true },
     indent = {
+        enabled = false,
         animate = { animate = false },
     },
     picker = {

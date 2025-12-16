@@ -36,6 +36,7 @@ require "plugin.yazi"
 require "plugin.overseer"
 require "plugin.auto-session"
 require "plugin.neovim-tips"
+require "plugin.hlchunk"
 
 -- NOTE: The plugins below should be initialized at the end.
 require "plugin.noice"
