@@ -21,12 +21,11 @@ vim.keymap.set(
     { noremap = true, silent = true, desc = "Create Editor Floating" }
 )
 
-vim.keymap.set(
-    { "v", "x" },
-    "<Leader>yr",
-    ":YodeCreateSeditorReplace<CR>",
-    { noremap = true, silent = true, desc = "Create Editor Replace" }
-)
+vim.keymap.set({ "v", "x" }, "<Leader>yr", function()
+    vim.cmd "tab split"
+    vim.cmd "normal! gv"
+    vim.cmd "tab YodeCreateSeditorReplace"
+end, { noremap = true, silent = true, desc = "Create Editor Replace" })
 
 vim.keymap.set(
     { "n" },
