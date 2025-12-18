@@ -91,6 +91,7 @@ vim.o.autoread = true
 vim.opt.updatetime = 300
 vim.opt.wrap = true
 vim.opt.linebreak = true
+vim.opt.breakindent = true
 
 -- Check if ripgrep is installed.
 if vim.fn.executable "rg" then
