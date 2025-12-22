@@ -71,3 +71,21 @@ end, { desc = "Buffer Delete" })
 vim.keymap.set("n", "<leader>:bw", function()
     vim.cmd "bwipeout"
 end, { desc = "Buffer Wipeout" })
+
+-- Copy relative path to clipboard (e.g., src/main.js)
+vim.keymap.set("n", "<leader>cf", function()
+    vim.fn.setreg("+", vim.fn.expand "%")
+    print "Copied relative path"
+end, { desc = "Copy Relative Filepath" })
+
+-- Copy absolute path to clipboard (e.g., /home/user/project/src/main.js)
+vim.keymap.set("n", "<leader>cF", function()
+    vim.fn.setreg("+", vim.fn.expand "%:p")
+    print "Copied absolute path"
+end, { desc = "Copy Absolute Filepath" })
+
+-- Copy filename only (e.g., main.js)
+vim.keymap.set("n", "<leader>cn", function()
+    vim.fn.setreg("+", vim.fn.expand "%:t")
+    print "Copied filename"
+end, { desc = "Copy Filename" })
