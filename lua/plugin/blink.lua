@@ -40,7 +40,7 @@ blink.setup {
             "lsp",
             "path",
             "snippets",
-            "supermaven",
+            -- "supermaven",
             -- "copilot",
             -- "buffer",
             -- "ripgrep",
@@ -58,12 +58,12 @@ blink.setup {
             buffer = {
                 score_offset = 6,
             },
-            supermaven = {
-                score_offset = -1,
-                name = "supermaven",
-                module = "blink-cmp-supermaven",
-                async = true,
-            },
+            -- supermaven = {
+            --     score_offset = -1,
+            --     name = "supermaven",
+            --     module = "blink-cmp-supermaven",
+            --     async = true,
+            -- },
             -- copilot = {
             --     name = "copilot",
             --     module = "blink-copilot",
