@@ -22,3 +22,11 @@ end
 vim.api.nvim_create_user_command("ColorColumnToggle", function(opts)
     ToggleColorColumn(opts.args)
 end, { nargs = "?", complete = "expression" })
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "netrw",
+    callback = function()
+        vim.wo.number = true
+        vim.wo.relativenumber = true
+    end,
+})
