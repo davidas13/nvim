@@ -8,4 +8,5 @@ require "default.plugin.astrolsp"
 require "default.plugin.conform"
 require "default.plugin.supermaven"
 require "default.plugin.fidget"
+require "default.plugin.whick-key"
 
