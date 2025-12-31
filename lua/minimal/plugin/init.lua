@@ -9,4 +9,7 @@ require "default.plugin.conform"
 require "default.plugin.supermaven"
 require "default.plugin.fidget"
 require "default.plugin.whick-key"
-
+require "default.plugin.quicker"
+require "default.plugin.grugfar"
+require "default.plugin.triforce"
+require "default.plugin.lualine"
