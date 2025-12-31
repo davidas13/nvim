@@ -1,6 +1,7 @@
 -- ==== Intallation ===========================================================
 --
 vim.pack.add {
+    { src = "https://github.com/nvim-lua/plenary.nvim" },
     { src = "https://github.com/mason-org/mason.nvim" },
     { src = "https://github.com/nvim-neotest/nvim-nio" },
     { src = "https://github.com/jay-babu/mason-nvim-dap.nvim" },

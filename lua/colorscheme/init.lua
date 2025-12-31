@@ -1,7 +1,0 @@
-require "colorscheme.gruvbox"
--- require "colorscheme.catppuccin"
--- require "colorscheme.kanagawa"
--- require "colorscheme.xeno"
--- require "colorscheme.vague"
--- require "colorscheme.monoglow"
--- require "colorscheme.iceberg"

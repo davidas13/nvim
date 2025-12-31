@@ -1,0 +1,11 @@
+require "default.plugin.wakatime"
+require "default.plugin.mason"
+require "default.plugin.dap"
+require "default.plugin.treesitter"
+require "default.plugin.mini-snippets"
+require "default.plugin.blink"
+require "default.plugin.astrolsp"
+require "default.plugin.conform"
+require "default.plugin.supermaven"
+require "default.plugin.fidget"
+
