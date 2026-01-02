@@ -11,7 +11,7 @@ vim.pack.add {
 --
 
 require("neovim_tips").setup {
-    daily_tip = 1,
+    daily_tip = 0,
 }
 
 -- ==== Setup Keybindings =====================================================
