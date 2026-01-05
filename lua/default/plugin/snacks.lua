@@ -197,7 +197,7 @@ snacks.setup {
         sort = { "level", "added" }, -- sort by level and time
         -- minimum log level to display. TRACE is the lowest
         -- all notifications are stored in history
-        level = vim.log.levels.TRACE,
+        level = vim.log.levels.WARN,
         icons = {
             error = " ",
             warn = " ",
