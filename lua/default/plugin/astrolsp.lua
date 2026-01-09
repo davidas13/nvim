@@ -8,8 +8,8 @@ vim.pack.add {
     { src = "https://github.com/folke/snacks.nvim" },
 
     -- Main Plugin.
-    { src = "https://github.com/neovim/nvim-lspconfig", version = "v2.5.0" },
-    { src = "https://github.com/AstroNvim/astrolsp", version = "v3.2.1" },
+    { src = "https://github.com/neovim/nvim-lspconfig"},
+    { src = "https://github.com/AstroNvim/astrolsp"},
 }
 
 -- ==== Setup =================================================================
@@ -230,6 +230,7 @@ astrolsp.setup {
 
         -- C/C++
         "neocmake",
+        "cmakels",
         "clangd",
 
         -- Typescript/JavaScript
@@ -246,6 +247,8 @@ astrolsp.setup {
         "gdscript",
 
         "sonarlint",
+
+        "docker-compose-langserver",
     },
 
     -- ---- Server Configurations ---------------------------------------------
@@ -289,13 +292,15 @@ astrolsp.setup {
         --         },
         --     },
         -- },
-        neocmake = {
-            settings = {
-                neocmake = {
-                    buildDirectory = "build",
-                },
-            },
-        },
+        -- neocmake = {
+        --     settings = {
+        --         neocmake = {
+        --             cmd = { "neocmakelsp", "stdio" },
+        --             root_markers = { "CMakePresets.json", "CTestConfig.cmake", ".git", "build", "cmake" },
+        --             buildDirectory = "build",
+        --         },
+        --     },
+        -- },
 
         -- Lua LSP
         lua_ls = {
