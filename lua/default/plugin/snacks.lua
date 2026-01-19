@@ -16,7 +16,7 @@ snacks.setup {
     input = { enabled = true },
     debug = { enabled = true },
     explorer = {
-        enabled = false,
+        enabled = true,
         replace_netrw = true,
     },
     bufdelete = { enabled = true },
