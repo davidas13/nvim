@@ -4,12 +4,10 @@ vim.pack.add {
     { src = "https://github.com/saghen/blink.cmp" },
     { src = "https://github.com/stevearc/conform.nvim" },
     { src = "https://github.com/neovim/nvim-lspconfig" },
-
     { src = "https://github.com/folke/snacks.nvim" },
 
     -- Main Plugin.
-    { src = "https://github.com/neovim/nvim-lspconfig"},
-    { src = "https://github.com/AstroNvim/astrolsp"},
+    { src = "https://github.com/AstroNvim/astrolsp" },
 }
 
 -- ==== Setup =================================================================
