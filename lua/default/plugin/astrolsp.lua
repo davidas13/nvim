@@ -443,9 +443,9 @@ astrolsp.setup {
             vim.lsp.buf.hover { border = "rounded", focusable = false }
         end, { noremap = true, buffer = bufnr, desc = "LSP - Hover" })
 
-        vim.keymap.set({ "n" }, "F", function()
+        vim.keymap.set({ "n" }, "<leader>d", function()
             vim.diagnostic.open_float { focusable = false, { border = "rounded" } }
-        end, { noremap = true, buffer = bufnr, desc = "LSP - Hover" })
+        end, { noremap = true, buffer = bufnr, desc = "LSP - Show Diagnostics" })
 
         vim.keymap.set("n", "gd", function()
             snacks.picker.lsp_definitions()
