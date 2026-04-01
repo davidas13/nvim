@@ -13,7 +13,7 @@ local supermaven = require "supermaven-nvim"
 supermaven.setup {
     log_level = "off",
     -- disables inline completion for use with cmp.
-    disable_inline_completion = false,
+    disable_inline_completion = true,
     -- disables built in keymaps for more manual control.
-    disable_keymaps = false,
+    disable_keymaps = true,
 }
