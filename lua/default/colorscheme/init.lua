@@ -1,6 +1,7 @@
 -- require "default.colorscheme.gruvbox"
 -- require "default.colorscheme.catppuccin"
 -- require "default.colorscheme.kanagawa"
+-- require "default.colorscheme.kanso"
 -- require "default.colorscheme.xeno"
 -- require "default.colorscheme.vague"
 -- require "default.colorscheme.monoglow"
