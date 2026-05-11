@@ -33,6 +33,7 @@ require("conform").setup {
         toml = { "taplo" },
         json = { "prettier" },
         svelte = { "svelte" },
+        typescript = { "eslint", "prettier" },
     },
     formatters = {
         ["cmake-format"] = {
