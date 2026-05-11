@@ -21,7 +21,7 @@ vim.pack.add {
     { src = "https://github.com/saghen/blink.compat" },
 
     -- Main Plugin.
-    { src = "https://github.com/saghen/blink.cmp", version = "v1.7.0" },
+    { src = "https://github.com/saghen/blink.cmp" },
 }
 
 -- ==== Setup =================================================================
