@@ -107,3 +107,16 @@ if vim.fn.executable "rg" then
     vim.opt.grepprg = "rg --vimgrep --no-heading --smart-case"
     vim.opt.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 end
+
+vim.filetype.add {
+    extension = {
+        env = "env",
+    },
+    filename = {
+        [".env"] = "env",
+        [".env.local"] = "env",
+        [".env.development"] = "env",
+        [".env.production"] = "env",
+        [".env.example"] = "env",
+    },
+}
