@@ -1,5 +1,4 @@
 -- All plugin order here is very important for the configuration of the plugins to work.
-require "default.plugin.wakatime"
 require "default.plugin.flash"
 require "default.plugin.mini-ai"
 require "default.plugin.mini-icons"
