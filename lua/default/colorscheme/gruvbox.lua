@@ -1,19 +1,10 @@
 -- ==== Intallation ===========================================================
-vim.pack.add {
-    {
-        src = "https://github.com/sainnhe/gruvbox-material",
-        version = "master",
-    },
-    {
-        src = "https://github.com/f4z3r/gruvbox-material.nvim",
-        version = "master",
-    },
+local specs = require "specs"
 
-    -- Main plugin.
-    {
-        src = "https://github.com/morhetz/gruvbox",
-        version = "master",
-    },
+vim.pack.add {
+    specs["gruvbox-material"],
+    specs["gruvbox-material.nvim"],
+    specs["gruvbox"],
 }
 -- ==== Setup =================================================================
 -- vim.g.gruvbox_material_enable_italic = false

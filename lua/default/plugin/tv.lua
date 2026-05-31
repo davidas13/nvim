@@ -1,8 +1,9 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    -- Main Plugin.
-    { src = "https://github.com/alexpasmantier/tv.nvim" },
+    specs["tv.nvim"],
 }
 
 -- ==== Setup =================================================================

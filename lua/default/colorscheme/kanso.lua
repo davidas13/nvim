@@ -1,22 +1,23 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    -- Main plugin.
-    { src = "https://github.com/webhooked/kanso.nvim", version = "main" },
+    specs["kanso.nvim"],
 }
 
 -- ==== Setup =================================================================
 --
 
 require("kanso").setup {
-    transparent = false,
+    transparent = true,
     bold = true,
     italics = false,
     background = {
         dark = "ink",
     },
     foreground = "default",
-    minimal = false,
+    minimal = true,
 }
 
 vim.cmd [[colorscheme kanso]]

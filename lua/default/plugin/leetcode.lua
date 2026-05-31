@@ -1,10 +1,11 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    { src = "https://github.com/nvim-lua/plenary.nvim" },
-    { src = "https://github.com/MunifTanjim/nui.nvim" },
-    -- Main plugin.
-    { src = "https://github.com/kawre/leetcode.nvim" },
+    specs["plenary.nvim"],
+    specs["nui.nvim"],
+    specs["leetcode.nvim"],
 }
 
 -- ==== Setup =================================================================

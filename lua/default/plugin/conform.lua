@@ -1,8 +1,9 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    -- Main Plugin.
-    { src = "https://github.com/stevearc/conform.nvim", version = "v9.0.0" },
+    specs["conform.nvim"],
 }
 
 -- ==== Setup =================================================================

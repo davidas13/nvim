@@ -1,15 +1,15 @@
 -- ==== Intallation ===========================================================
 --
-vim.pack.add {
-    { src = "https://github.com/nvim-lua/plenary.nvim" },
-    { src = "https://github.com/mason-org/mason.nvim" },
-    { src = "https://github.com/nvim-neotest/nvim-nio" },
-    { src = "https://github.com/jay-babu/mason-nvim-dap.nvim" },
-    { src = "https://github.com/theHamsta/nvim-dap-virtual-text" },
-    { src = "https://github.com/igorlfs/nvim-dap-view", version = "v1.1.0" },
+local specs = require "specs"
 
-    -- Main plugin.
-    { src = "https://github.com/mfussenegger/nvim-dap" },
+vim.pack.add {
+    specs["plenary.nvim"],
+    specs["mason.nvim"],
+    specs["nvim-nio"],
+    specs["mason-nvim-dap.nvim"],
+    specs["nvim-dap-virtual-text"],
+    specs["nvim-dap-view"],
+    specs["nvim-dap"],
 }
 
 -- ==== Setup =================================================================

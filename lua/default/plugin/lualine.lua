@@ -1,11 +1,11 @@
 -- ==== Intallation ===========================================================
 --
-vim.pack.add {
-    { src = "https://github.com/nvzone/volt" },
-    { src = "https://github.com/gisketch/triforce.nvim" },
+local specs = require "specs"
 
-    -- Main plugin
-    { src = "https://github.com/nvim-lualine/lualine.nvim" },
+vim.pack.add {
+    specs["volt"],
+    specs["triforce.nvim"],
+    specs["lualine.nvim"],
 }
 
 -- ==== Setup =================================================================

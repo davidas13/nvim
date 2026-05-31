@@ -1,7 +1,9 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    { src = "https://github.com/stevearc/quicker.nvim" },
+    specs["quicker.nvim"],
 }
 
 -- ==== Setup =================================================================

@@ -1,10 +1,10 @@
 -- ==== Intallation ===========================================================
 --
-vim.pack.add {
-    { src = "https://github.com/nvim-lua/plenary.nvim" },
+local specs = require "specs"
 
-    -- Main plugin.
-    { src = "https://github.com/folke/todo-comments.nvim" },
+vim.pack.add {
+    specs["plenary.nvim"],
+    specs["todo-comments.nvim"],
 }
 
 -- ==== Setup =================================================================

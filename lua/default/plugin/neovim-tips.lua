@@ -1,10 +1,10 @@
 -- ==== Intallation ===========================================================
 --
-vim.pack.add {
-    { src = "https://github.com/MunifTanjim/nui.nvim" },
+local specs = require "specs"
 
-    -- Main plugin.
-    { src = "https://github.com/saxon1964/neovim-tips" },
+vim.pack.add {
+    specs["nui.nvim"],
+    specs["neovim-tips"],
 }
 
 -- ==== Setup =================================================================

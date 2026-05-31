@@ -1,9 +1,8 @@
 -- ==== Intallation ===========================================================
 --
-vim.pack.add {
-    -- Main plugin.
-    { src = "https://github.com/rmagatti/auto-session" },
-}
+local specs = require "specs"
+
+vim.pack.add { specs["auto-session"] }
 
 -- ==== Setup =================================================================
 --

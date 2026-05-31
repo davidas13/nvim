@@ -1,8 +1,10 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    { src = "https://github.com/folke/snacks.nvim" },
-    { src = "https://github.com/lewis6991/gitsigns.nvim" },
+    specs["snacks.nvim"],
+    specs["gitsigns.nvim"],
 }
 
 -- ==== Setup =================================================================

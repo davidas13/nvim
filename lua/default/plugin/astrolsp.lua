@@ -1,37 +1,45 @@
--- ==== Installation ==========================================================
+-- Installation {{{
 --
+local specs = require "specs"
+
 vim.pack.add {
-    { src = "https://github.com/saghen/blink.cmp" },
-    { src = "https://github.com/stevearc/conform.nvim" },
-    { src = "https://github.com/neovim/nvim-lspconfig" },
-    { src = "https://github.com/folke/snacks.nvim" },
-
-    -- Main Plugin.
-    { src = "https://github.com/AstroNvim/astrolsp" },
+    specs["blink.cmp"],
+    specs["conform.nvim"],
+    specs["nvim-lspconfig"],
+    specs["snacks.nvim"],
+    specs["astrolsp"],
 }
+--
+-- }}}
 
--- ==== Setup =================================================================
+-- Setup {{{
 --
 local astrolsp = require "astrolsp"
 
--- Disable default lsp keybindings.
+-- Disable default lsp keybindings. {{{
 local keys = { "gra", "gri", "grn", "grr", "grt", "grO" }
 
 for _, key in ipairs(keys) do
     pcall(vim.keymap.del, "n", key)
 end
+--
+-- }}}
 
 astrolsp.setup {
-    -- ---- Features ----------------------------------------------------------
+    -- Features -- {{{
     -- Configuration table of features provided by AstroLSP
+    --
     features = {
         codelens = true, -- enable/disable codelens refresh on start
         inlay_hints = false, -- enable/disable inlay hints on start
         semantic_tokens = true, -- enable/disable semantic token highlighting
     },
+    --
+    -- }}}
 
-    -- ---- Auto Commands -----------------------------------------------------
+    -- Auto Commands {{{
     -- Configure buffer local auto commands to add when attaching a language server
+    --
     autocmds = {
         -- first key is the `augroup` (:h augroup)
         lsp_codelens_refresh = {
@@ -88,9 +96,12 @@ astrolsp.setup {
             },
         },
     },
+    --
+    -- }}}
 
-    -- ---- User Commands -----------------------------------------------------
+    -- User Commands {{{
     -- Configure buffer local user commands to add when attaching a language server
+    --
     commands = {
         Format = {
             function()
@@ -110,9 +121,12 @@ astrolsp.setup {
             desc = "Format file with LSP",
         },
     },
+    --
+    -- }}}
 
-    -- ---- Capabilities ------------------------------------------------------
+    -- Capabilities {{{
     -- Configure default capabilities for language servers (`:h vim.lsp.protocol.make_client.capabilities()`)
+    --
     capabilities = require("blink.cmp").get_lsp_capabilities {
         textDocument = {
             foldingRange = {
@@ -120,6 +134,7 @@ astrolsp.setup {
             },
         },
     },
+    -- }}}
 
     -- ---- Defaults ----------------------------------------------------------
     defaults = {
@@ -221,7 +236,7 @@ astrolsp.setup {
         -- Python
         "ruff",
         "basedpyright",
-        "pyrefly",
+        -- "pyrefly",
         -- "pylsp",
         -- "ty",
         -- "zuban",
@@ -438,14 +453,107 @@ astrolsp.setup {
             return false
         end
 
-        -- Set up custom LSP keybindings.
-        vim.keymap.set({ "n" }, "K", function()
-            vim.lsp.buf.hover { border = "rounded", focusable = false }
-        end, { noremap = true, buffer = bufnr, desc = "LSP - Hover" })
+        -- ============================================================
+        -- Combined LSP Hover: Diagnostics (atas) + Docs (bawah)
+        -- ============================================================
+        local function combined_hover()
+            local bufnr = vim.api.nvim_get_current_buf()
+            local row = vim.api.nvim_win_get_cursor(0)[1] - 1 -- 0-indexed
 
-        vim.keymap.set({ "n" }, "<leader>d", function()
-            vim.diagnostic.open_float { focusable = false, { border = "rounded" } }
-        end, { noremap = true, buffer = bufnr, desc = "LSP - Show Diagnostics" })
+            -- 1. Ambil diagnostics di baris cursor (sync)
+            local diagnostics = vim.diagnostic.get(bufnr, { lnum = row })
+            local diag_lines = {}
+
+            if #diagnostics > 0 then
+                local icons = {
+                    [vim.diagnostic.severity.ERROR] = "✗ Error",
+                    [vim.diagnostic.severity.WARN] = "⚠ Warn",
+                    [vim.diagnostic.severity.INFO] = "ℹ Info",
+                    [vim.diagnostic.severity.HINT] = "󰌶 Hint",
+                }
+                for _, d in ipairs(diagnostics) do
+                    local label = icons[d.severity] or "•"
+                    -- Bold label + pesan diagnostic
+                    table.insert(diag_lines, ("**%s**: %s"):format(label, d.message))
+                    -- Tampilkan source jika ada (misal: eslint, pyright, dll)
+                    if d.source then
+                        table.insert(diag_lines, ("  *source: %s*"):format(d.source))
+                    end
+                end
+            end
+
+            -- 2. Request LSP hover (async)
+            local params = vim.lsp.util.make_position_params()
+
+            vim.lsp.buf_request(bufnr, "textDocument/hover", params, function(_, result)
+                local hover_lines = {}
+
+                if result and result.contents then
+                    -- convert_input_to_markdown_lines menangani semua format LSP:
+                    -- string, MarkedString, MarkedString[], MarkupContent
+                    hover_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
+                    -- Hapus baris kosong di awal/akhir
+                    while hover_lines[1] == "" do
+                        table.remove(hover_lines, 1)
+                    end
+                    while hover_lines[#hover_lines] == "" do
+                        table.remove(hover_lines)
+                    end
+                end
+
+                -- Jika dua-duanya kosong, tidak perlu tampilkan apapun
+                if #diag_lines == 0 and #hover_lines == 0 then
+                    vim.notify("No diagnostics or hover info available", vim.log.levels.INFO)
+                    return
+                end
+
+                -- 3. Gabungkan: diagnostics (atas) → separator → docs (bawah)
+                local combined = {}
+
+                if #diag_lines > 0 then
+                    vim.list_extend(combined, diag_lines)
+                end
+
+                -- Separator hanya jika keduanya ada
+                if #diag_lines > 0 and #hover_lines > 0 then
+                    table.insert(combined, "")
+                    table.insert(combined, "---")
+                    table.insert(combined, "")
+                end
+
+                if #hover_lines > 0 then
+                    vim.list_extend(combined, hover_lines)
+                end
+
+                -- 4. Tutup float lama sebelum buka yang baru (hindari tumpuk)
+                -- Pakai focus_id agar Neovim reuse/replace window yang sama
+                vim.lsp.util.open_floating_preview(combined, "markdown", {
+                    border = "rounded",
+                    max_width = 80,
+                    max_height = 30,
+                    focusable = true,
+                    focus_id = "combined_lsp_hover", -- KEY: cegah duplikat window
+                    close_events = {
+                        "CursorMoved",
+                        "CursorMovedI",
+                        "BufHidden",
+                        "InsertCharPre",
+                    },
+                })
+            end)
+        end
+
+        vim.keymap.set({ "n" }, "gh", combined_hover, { desc = "Hover: diagnostics + docs" })
+        vim.keymap.set({ "n" }, "K", combined_hover, { desc = "Hover: diagnostics + docs" })
+
+        -- Set up custom LSP keybindings.
+        -- vim.keymap.set({ "n" }, "K", function()
+        --     vim.lsp.buf.hover { border = "rounded", focusable = false }
+        -- end, { noremap = true, buffer = bufnr, desc = "LSP - Hover" })
+
+        -- vim.keymap.set({ "n" }, "gh", function()
+        --     vim.diagnostic.open_float { focusable = false, { border = "rounded" } }
+        -- end, { noremap = true, buffer = bufnr, desc = "LSP - Show Diagnostics" })
 
         vim.keymap.set("n", "gd", function()
             snacks.picker.lsp_definitions()
@@ -499,3 +607,4 @@ if client_caps.workspace then
 end
 
 vim.tbl_map(astrolsp.lsp_setup, astrolsp.config.servers)
+-- }}}

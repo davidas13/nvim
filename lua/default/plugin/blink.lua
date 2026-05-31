@@ -1,27 +1,28 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    { src = "https://github.com/echasnovski/mini.snippets" },
-    { src = "https://github.com/echasnovski/mini.icons" },
-    { src = "https://github.com/mikavilpas/blink-ripgrep.nvim" },
-    { src = "https://github.com/rafamadriz/friendly-snippets" },
-    { src = "https://github.com/onsails/lspkind.nvim" },
-    { src = "https://github.com/AstroNvim/astrolsp" },
+    specs["mini.snippets"],
+    specs["mini.icons"],
+    specs["blink-ripgrep.nvim"],
+    specs["friendly-snippets"],
+    specs["lspkind.nvim"],
+    specs["astrolsp"],
 
     -- AI plugins.
     -- Copilot
     -- NOTE: Disabled until I subscribe again.
-    -- { src = "https://github.com/zbirenbaum/copilot.lua" },
-    -- { src = "https://github.com/fang2hou/blink-copilot" },
-    -- { src = "https://github.com/copilotlsp-nvim/copilot-lsp" },
+    -- specs["copilot.lua"],
+    -- specs["blink-copilot"],
+    -- specs["copilot-lsp"],
+
     -- Supermaven
-    { src = "https://github.com/supermaven-inc/supermaven-nvim" },
-    { src = "https://github.com/huijiro/blink-cmp-supermaven" },
+    specs["supermaven-nvim"],
+    specs["blink-cmp-supermaven"],
 
-    { src = "https://github.com/saghen/blink.compat" },
-
-    -- Main Plugin.
-    { src = "https://github.com/saghen/blink.cmp" },
+    specs["blink.compat"],
+    specs["blink.cmp"],
 }
 
 -- ==== Setup =================================================================
@@ -47,7 +48,7 @@ blink.setup {
         },
         providers = {
             lsp = {
-                score_offset = 100,
+                score_offset = 9,
             },
             path = {
                 score_offset = 8,
@@ -59,7 +60,7 @@ blink.setup {
                 score_offset = 6,
             },
             supermaven = {
-                score_offset = -1,
+                score_offset = 100,
                 name = "supermaven",
                 module = "blink-cmp-supermaven",
                 async = true,
@@ -83,7 +84,7 @@ blink.setup {
         },
     },
     fuzzy = {
-        implementation = "prefer_rust",
+        implementation = "prefer_rust_with_warning",
         sorts = {
             "score",
             "sort_text",

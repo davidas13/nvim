@@ -1,8 +1,9 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    -- Main plugin.
-    { src = "https://github.com/neanias/everforest-nvim" },
+    specs["everforest-nvim"],
 }
 
 -- ==== Setup =================================================================

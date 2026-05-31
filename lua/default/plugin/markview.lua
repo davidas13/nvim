@@ -1,5 +1,7 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    { src = "https://github.com/OXY2DEV/markview.nvim" },
+    specs["markview.nvim"],
 }

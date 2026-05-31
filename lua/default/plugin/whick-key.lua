@@ -1,8 +1,9 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    -- Main plugin.
-    { src = "https://github.com/folke/which-key.nvim", version = "v3.17.0" },
+    specs["which-key.nvim"],
 }
 
 -- ==== Setup =================================================================

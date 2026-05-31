@@ -1,10 +1,10 @@
 -- ==== Intallation ===========================================================
 --
-vim.pack.add {
-    { src = "https://github.com/nvim-lua/plenary.nvim" },
+local specs = require "specs"
 
-    -- Main plugin.
-    { src = "https://github.com/mikavilpas/yazi.nvim" },
+vim.pack.add {
+    specs["plenary.nvim"],
+    specs["yazi.nvim"],
 }
 
 -- ==== Setup =================================================================

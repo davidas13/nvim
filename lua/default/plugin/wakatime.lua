@@ -1,5 +1,7 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    { src = "https://github.com/wakatime/vim-wakatime" },
+    specs["vim-wakatime"],
 }

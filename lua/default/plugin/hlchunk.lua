@@ -1,8 +1,9 @@
 -- ==== intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    -- main plugin.
-    { src = "https://github.com/shellRaining/hlchunk.nvim" },
+    specs["hlchunk.nvim"],
 }
 
 -- ==== setup =================================================================
@@ -14,7 +15,7 @@ require("hlchunk").setup {
         duration = 0,
         delay = 0,
         -- style = "#C99B54",
-        style = "#EA6962"
+        style = "#EA6962",
     },
     line_num = {
         enable = true,

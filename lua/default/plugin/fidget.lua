@@ -1,6 +1,8 @@
 -- ==== Intallation ===========================================================
+local specs = require "specs"
+
 vim.pack.add {
-    { src = "https://github.com/j-hui/fidget.nvim" },
+    specs["fidget.nvim"],
 }
 
 -- ==== Setup =================================================================

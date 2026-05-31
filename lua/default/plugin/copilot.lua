@@ -1,10 +1,10 @@
 -- ==== Intallation ===========================================================
 --
-vim.pack.add {
-    { src = "https://github.com/copilotlsp-nvim/copilot-lsp" },
+local specs = require "specs"
 
-    -- Main Plugin.
-    { src = "https://github.com/zbirenbaum/copilot.lua" },
+vim.pack.add {
+    specs["copilot-lsp"],
+    specs["copilot.lua"],
 }
 
 -- ==== Setup =================================================================

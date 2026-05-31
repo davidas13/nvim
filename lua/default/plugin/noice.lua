@@ -1,9 +1,11 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    { src = "https://github.com/MunifTanjim/nui.nvim" },
-    { src = "https://github.com/rcarriga/nvim-notify" },
-    { src = "https://github.com/folke/noice.nvim" },
+    specs["nui.nvim"],
+    specs["nvim-notify"],
+    specs["noice.nvim"],
 }
 
 -- ==== Setup =================================================================

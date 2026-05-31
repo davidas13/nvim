@@ -1,15 +1,14 @@
 -- ==== Intallation ===========================================================
 --
-vim.pack.add {
-    { src = "https://github.com/folke/which-key.nvim" },
-    { src = "https://github.com/nvim-lua/plenary.nvim" },
-    { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
-    { src = "https://github.com/ravitemer/mcphub.nvim" },
-    { src = "https://github.com/Davidyz/VectorCode" },
+local specs = require "specs"
 
-    -- Main plugin.
-    { src = "https://github.com/ravitemer/codecompanion-history.nvim" },
-    { src = "https://github.com/olimorris/codecompanion.nvim" },
+vim.pack.add {
+    specs["which-key.nvim"],
+    specs["plenary.nvim"],
+    specs["mcphub.nvim"],
+    specs["VectorCode"],
+    specs["codecompanion-history.nvim"],
+    specs["codecompanion.nvim"],
 }
 
 -- ==== Setup =================================================================

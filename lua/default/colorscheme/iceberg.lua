@@ -1,15 +1,9 @@
 -- ==== Intallation ===========================================================
-vim.pack.add {
-    {
-        src = "https://github.com/gkeep/iceberg-dark",
-        version = "master",
-    },
+local specs = require "specs"
 
-    -- Main plugin.
-    {
-        src = "https://github.com/cocopon/iceberg.vim",
-        version = "master",
-    },
+vim.pack.add {
+    specs["iceberg-dark"],
+    specs["iceberg.vim"],
 }
 -- ==== Setup =================================================================
 vim.cmd [[colorscheme iceberg]]

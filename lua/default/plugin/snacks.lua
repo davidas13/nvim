@@ -1,14 +1,15 @@
--- ==== Intallation ===========================================================
+-- Instalation {{{
 --
+local specs = require "specs"
+
 vim.pack.add {
-    { src = "https://github.com/nvim-lua/plenary.nvim" },
-    { src = "https://github.com/folke/todo-comments.nvim" },
-
-    -- Main plugin.
-    { src = "https://github.com/folke/snacks.nvim" },
+    specs["plenary.nvim"],
+    specs["todo-comments.nvim"],
+    specs["snacks.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
+-- Setup {{{
 --
 local snacks = require "snacks"
 
@@ -398,3 +399,5 @@ end, { silent = true, desc = "Buffers", noremap = true })
 vim.keymap.set({ "n" }, "<leader>/", function()
     snacks.picker.grep()
 end, { silent = true, desc = "Grep Files", noremap = true })
+--
+-- }}}

@@ -1,11 +1,11 @@
 -- ==== Intallation ===========================================================
 --
-vim.pack.add {
-    { src = "https://github.com/folke/which-key.nvim" },
-    { src = "https://github.com/nvzone/volt" },
+local specs = require "specs"
 
-    -- Main plugin.
-    { src = "https://github.com/gisketch/triforce.nvim" },
+vim.pack.add {
+    specs["which-key.nvim"],
+    specs["volt"],
+    specs["triforce.nvim"],
 }
 
 -- ==== Setup =================================================================

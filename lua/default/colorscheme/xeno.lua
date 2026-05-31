@@ -1,8 +1,9 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    -- Main plugin.
-    { src = "https://github.com/kyza0d/xeno.nvim", version = "master" },
+    specs.xeno.nvim,
 }
 
 -- ==== Setup =================================================================
@@ -17,9 +18,9 @@ xeno.config {
 }
 
 xeno.new_theme("xeno-kanagawa", {
-    base = "#1F1F28",
-    accent = "#54546D",
-    contrast = -0.1,
+    base = "#16161D",
+    accent = "#E4C184",
+    -- contrast = -0.1,
 })
 
 vim.cmd [[colorscheme xeno-kanagawa]]

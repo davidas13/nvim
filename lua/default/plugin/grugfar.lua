@@ -1,8 +1,9 @@
 -- ==== Intallation ===========================================================
 --
+local specs = require "specs"
+
 vim.pack.add {
-    -- Main Plugin.
-    { src = "https://github.com/MagicDuck/grug-far.nvim" },
+    specs["grug-far.nvim"],
 }
 
 -- ==== Setup Keybindings =====================================================

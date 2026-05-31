@@ -1,10 +1,9 @@
 -- ==== Intallation ===========================================================
 --
-vim.pack.add {
-    { src = "https://github.com/nvim-lua/plenary.nvim" },
+local specs = require "specs"
 
-    -- Main plugin.
-    { src = "https://github.com/hoschi/yode-nvim" },
+vim.pack.add {
+    specs["yode-nvim"],
 }
 
 -- ==== Setup =================================================================
