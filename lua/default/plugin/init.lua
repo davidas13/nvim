@@ -11,7 +11,6 @@ require "default.plugin.gitsigns"
 require "default.plugin.grugfar"
 require "default.plugin.mason"
 require "default.plugin.dap"
--- require "default.plugin.treesitter"
 require "default.plugin.treesitter-manager"
 require "default.plugin.supermaven"
 -- NOTE: Disable until I subscribe again.
