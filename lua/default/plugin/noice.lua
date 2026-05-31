@@ -1,5 +1,4 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -7,9 +6,9 @@ vim.pack.add {
     specs["nvim-notify"],
     specs["noice.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("noice").setup {
     messages = {
         enabled = true,
@@ -54,3 +53,4 @@ require("noice").setup {
         },
     },
 }
+-- }}}

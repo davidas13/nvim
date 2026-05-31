@@ -1,10 +1,10 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 vim.pack.add {
     -- Main Plugin.
     { src = "https://github.com/echasnovski/mini.ai" },
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("mini.ai").setup()
+-- }}}

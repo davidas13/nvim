@@ -1,12 +1,11 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["neoconf.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
-
+-- Setup {{{
 require("neoconf").setup()
+-- }}}

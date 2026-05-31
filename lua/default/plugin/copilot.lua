@@ -1,14 +1,13 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["copilot-lsp"],
     specs["copilot.lua"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("copilot").setup {
     copilot_model = "gpt-5-mini",
     nes = {
@@ -36,3 +35,4 @@ require("copilot").setup {
 --         }
 --     end,
 -- })
+-- }}}

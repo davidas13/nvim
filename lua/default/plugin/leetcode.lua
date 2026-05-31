@@ -1,5 +1,4 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -7,9 +6,9 @@ vim.pack.add {
     specs["nui.nvim"],
     specs["leetcode.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("leetcode").setup {
     ---@type string
     arg = "leetcode.nvim",
@@ -107,3 +106,4 @@ require("leetcode").setup {
     ---@type boolean
     image_support = false,
 }
+-- }}}

@@ -1,16 +1,13 @@
--- Start: Installation
---
+-- Installation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["kanagawa-paper.nvim"],
     specs["kanagawa.nvim"],
 }
---
--- End
+-- }}}
 
--- Start: Setup
---
+-- Setup {{{
 require("kanagawa").setup {
     transparent = true,
     theme = "wave",
@@ -258,12 +255,9 @@ require("kanagawa-paper").setup {
         },
     },
 }
+-- }}}
 
--- End
-
--- Start: Implementation
---
+-- Implementation {{{
 -- vim.cmd [[colorscheme kanagawa]]
 vim.cmd [[colorscheme kanagawa-paper]]
---
--- End
+-- }}}

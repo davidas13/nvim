@@ -1,13 +1,14 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["monoglow.nvim"],
 }
 
--- ==== Setup =================================================================
---
+-- }}}
+
+-- Setup {{{
 require("monoglow").setup()
 
 vim.cmd [[colorscheme monoglow-lack]]
+-- }}}

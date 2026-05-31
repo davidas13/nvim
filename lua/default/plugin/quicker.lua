@@ -1,13 +1,12 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["quicker.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("quicker").setup {
     keys = {
         {
@@ -38,3 +37,4 @@ vim.keymap.set("n", "<leader>ll", function()
 end, {
     desc = "Toggle loclist",
 })
+-- }}}

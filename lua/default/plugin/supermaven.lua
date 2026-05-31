@@ -1,14 +1,13 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["supermaven-nvim"],
     specs["blink-cmp-supermaven"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 local supermaven = require "supermaven-nvim"
 
 supermaven.setup {
@@ -19,3 +18,4 @@ supermaven.setup {
     disable_keymaps = true,
     ignore_filetypes = { env = true },
 }
+-- }}}

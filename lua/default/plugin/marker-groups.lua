@@ -1,5 +1,4 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -7,7 +6,8 @@ vim.pack.add {
     specs["snacks.nvim"],
     specs["marker-groups.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("marker-groups").setup()
+-- }}}

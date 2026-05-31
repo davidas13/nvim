@@ -1,10 +1,11 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 vim.pack.add {
     -- Main Plugin.
     { src = "https://github.com/echasnovski/mini.icons" },
 }
 
--- ==== Setup =================================================================
---
+-- }}}
+
+-- Setup {{{
 require("mini.icons").setup()
+-- }}}

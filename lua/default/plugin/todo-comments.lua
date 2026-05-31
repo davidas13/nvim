@@ -1,14 +1,13 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["plenary.nvim"],
     specs["todo-comments.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("todo-comments").setup {
     keywords = {
         FIX = {
@@ -25,3 +24,4 @@ require("todo-comments").setup {
         TEST = { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },
     },
 }
+-- }}}

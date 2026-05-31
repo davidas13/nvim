@@ -1,5 +1,4 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -7,9 +6,9 @@ vim.pack.add {
     specs["triforce.nvim"],
     specs["lualine.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 local triforce = require("triforce.lualine").components()
 
 require("lualine").setup {
@@ -52,3 +51,4 @@ require("lualine").setup {
     --     lualine_z = { { "buffers" } },
     -- },
 }
+-- }}}

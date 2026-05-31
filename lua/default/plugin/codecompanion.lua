@@ -1,5 +1,4 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -10,9 +9,9 @@ vim.pack.add {
     specs["codecompanion-history.nvim"],
     specs["codecompanion.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 vim.g.codecompanion_current_model = "gpt-4.1"
 
 require("codecompanion").setup {
@@ -238,7 +237,9 @@ require("codecompanion").setup {
     prompt_library = {},
 }
 
--- ==== Setup Keybindings =====================================================
+-- }}}
+
+-- Setup Keybindings {{{
 --
 require("which-key").add {
     { "<leader>a", mode = "n", group = "CodeCompanion" },
@@ -276,3 +277,4 @@ vim.keymap.set(
 
 -- expand 'cc' into 'CodeCompanion' in the command line.
 vim.cmd [[cab cc CodeCompanion]]
+-- }}}

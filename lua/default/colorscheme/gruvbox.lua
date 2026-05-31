@@ -1,4 +1,4 @@
--- ==== Intallation ===========================================================
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -6,7 +6,9 @@ vim.pack.add {
     specs["gruvbox-material.nvim"],
     specs["gruvbox"],
 }
--- ==== Setup =================================================================
+-- }}}
+
+-- Setup {{{
 -- vim.g.gruvbox_material_enable_italic = false
 -- vim.g.gruvbox_material_background = "medium"
 -- vim.cmd [[colorscheme gruvbox-material]]
@@ -20,3 +22,4 @@ require("gruvbox-material").setup {
         transparent = true,
     },
 }
+-- }}}

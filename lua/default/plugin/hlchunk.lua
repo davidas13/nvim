@@ -1,13 +1,12 @@
--- ==== intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["hlchunk.nvim"],
 }
+-- }}}
 
--- ==== setup =================================================================
---
+-- Setup {{{
 require("hlchunk").setup {
     chunk = {
         enable = true,
@@ -27,3 +26,4 @@ require("hlchunk").setup {
         enable = true,
     },
 }
+-- }}}

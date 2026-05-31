@@ -1,14 +1,12 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["kanso.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
-
+-- Setup {{{
 require("kanso").setup {
     transparent = true,
     bold = true,
@@ -21,3 +19,4 @@ require("kanso").setup {
 }
 
 vim.cmd [[colorscheme kanso]]
+-- }}}

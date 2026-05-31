@@ -1,13 +1,12 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs.xeno.nvim,
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 local xeno = require "xeno"
 
 xeno.config {
@@ -24,3 +23,4 @@ xeno.new_theme("xeno-kanagawa", {
 })
 
 vim.cmd [[colorscheme xeno-kanagawa]]
+-- }}}

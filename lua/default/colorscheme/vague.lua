@@ -1,13 +1,13 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["vague.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("vague").setup()
 
 vim.cmd [[colorscheme vague]]
+-- }}}

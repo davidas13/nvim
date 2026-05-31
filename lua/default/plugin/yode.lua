@@ -1,18 +1,18 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["yode-nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 -- NOTE: If error occurs during installation this plugin, run this snippet `git submodule update --init --recursive` in nvim-data to fixing.
 require("yode-nvim").setup()
 
--- ==== Setup Keybindings =====================================================
---
+-- }}}
+
+-- Setup Keybindings {{{
 vim.keymap.set(
     { "v", "x" },
     "<Leader>yc",
@@ -67,3 +67,4 @@ vim.keymap.set(
     ":YodeLayoutShiftWinTop<CR>", -- at the moment this is needed to have no gap for floating windows
     { noremap = true, silent = true, desc = "Shift Window Top" }
 )
+-- }}}

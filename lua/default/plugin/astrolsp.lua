@@ -1,5 +1,4 @@
 -- Installation {{{
---
 local specs = require "specs"
 
 vim.pack.add {
@@ -9,11 +8,9 @@ vim.pack.add {
     specs["snacks.nvim"],
     specs["astrolsp"],
 }
---
 -- }}}
 
 -- Setup {{{
---
 local astrolsp = require "astrolsp"
 
 -- Disable default lsp keybindings. {{{
@@ -22,7 +19,6 @@ local keys = { "gra", "gri", "grn", "grr", "grt", "grO" }
 for _, key in ipairs(keys) do
     pcall(vim.keymap.del, "n", key)
 end
---
 -- }}}
 
 astrolsp.setup {

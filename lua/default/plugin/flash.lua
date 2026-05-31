@@ -1,17 +1,16 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["flash.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("flash").setup()
+-- }}}
 
--- ==== Setup Keybindings =====================================================
---
+-- Setup Keybindings {{{
 vim.keymap.set({ "n", "x", "o" }, "s", function()
     require("flash").jump()
 end, { desc = "Flash" })
@@ -31,3 +30,4 @@ end, { desc = "Treesitter Search" })
 vim.keymap.set({ "c" }, "<c-s>", function()
     require("flash").toggle()
 end, { desc = "Toggle Flash Search" })
+-- }}}

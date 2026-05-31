@@ -1,4 +1,4 @@
--- Lua function to toggle the colorcolumn or set a specific width
+-- Lua function to toggle the colorcolumn or set a specific width  {{{
 function ToggleColorColumn(size_str)
     local size = tonumber(size_str)
     if size_str ~= nil and size ~= nil then
@@ -17,8 +17,10 @@ function ToggleColorColumn(size_str)
         end
     end
 end
+-- }}}
 
--- Create a Vim command that calls the Lua function
+-- Create a Vim command that calls the Lua function {{{
 vim.api.nvim_create_user_command("ColorColumnToggle", function(opts)
     ToggleColorColumn(opts.args)
 end, { nargs = "?", complete = "expression" })
+-- }}}

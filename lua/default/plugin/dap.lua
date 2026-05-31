@@ -1,5 +1,4 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -11,9 +10,9 @@ vim.pack.add {
     specs["nvim-dap-view"],
     specs["nvim-dap"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 local dap = require "dap"
 local dap_view = require "dap-view"
 local dap_mason = require "mason-nvim-dap"
@@ -74,7 +73,9 @@ vscode.json_decode = function(str)
     return vim.json.decode(json.json_strip_comments(str))
 end
 
--- ==== Adapter Configuration =================================================
+-- }}}
+
+-- Adapter Configuration {{{
 
 dap.adapters.codelldb = {
     type = "server",
@@ -91,7 +92,9 @@ dap.adapters.cppdbg = {
     command = vim.fn.stdpath "data" .. "/mason/bin/cppdbg",
 }
 
--- ==== Language Configuration ================================================
+-- }}}
+
+-- Language Configuration {{{
 
 dap.configurations.cpp = {
     -- https://codeberg.org/mfussenegger/nvim-dap/wiki/C-C---Rust-(gdb-via--vscode-cpptools)
@@ -135,7 +138,9 @@ dap.configurations.cpp = {
 dap.configurations.c = dap.configurations.cpp
 dap.configurations.rust = dap.configurations.cpp
 
--- ==== Setup Keybindings =====================================================
+-- }}}
+
+-- Setup Keybindings {{{
 --
 vim.keymap.set("n", "<leader>DB", function()
     dap.set_breakpoint(vim.fn.input "Breakpoint Condition: ")
@@ -211,3 +216,4 @@ end, { desc = "Session" })
 vim.keymap.set("n", "<leader>Dv", function()
     vim.cmd [[DapViewOpen]]
 end, { desc = "Open DAP View" })
+-- }}}

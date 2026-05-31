@@ -1,13 +1,12 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["conform.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("conform").setup {
     default_format_opts = {
         timeout_ms = 3000,
@@ -48,12 +47,13 @@ require("conform").setup {
         },
     },
 }
+-- }}}
 
--- ==== Setup Keybindings =====================================================
---
+-- Setup Keybindings {{{
 vim.keymap.set({ "n", "v" }, "gf", function()
     require("conform").format {
         lsp_format = "fallback",
         timeout_ms = 3000,
     }
 end, { desc = "LSP Format file or range (in visual mode)" })
+-- }}}

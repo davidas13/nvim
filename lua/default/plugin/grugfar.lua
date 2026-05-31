@@ -1,13 +1,12 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["grug-far.nvim"],
 }
+-- }}}
 
--- ==== Setup Keybindings =====================================================
---
+-- Setup Keybindings {{{
 vim.keymap.set({ "n", "x" }, "<leader>sr", function()
     local ext = vim.bo.buftype == "" and vim.fn.expand "%:e"
 
@@ -18,3 +17,4 @@ vim.keymap.set({ "n", "x" }, "<leader>sr", function()
         },
     }
 end, { desc = "Search and Replace" })
+-- }}}

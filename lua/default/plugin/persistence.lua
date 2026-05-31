@@ -1,13 +1,12 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["persistence.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("persistence").setup()
 
 vim.keymap.set("n", "<leader>ql", function()
@@ -17,3 +16,4 @@ end, { desc = "Load Session" })
 vim.keymap.set("n", "<leader>qL", function()
     require("persistence").select()
 end, { desc = "Select Session" })
+-- }}}

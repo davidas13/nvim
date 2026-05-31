@@ -1,11 +1,11 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 vim.pack.add {
     { src = "https://github.com/nanozuki/tabby.nvim" },
 }
 
--- ==== Setup =================================================================
---
+-- }}}
+
+-- Setup {{{
 local theme = {
     fill = "TabLineFill",
     -- Also you can do this: fill = { fg='#f2e9de', bg='#907aa9', style='italic' }
@@ -47,7 +47,9 @@ require("tabby").setup {
     -- option = {}, -- setup modules' option,
 }
 
--- ==== Setup Keybindings =====================================================
+-- }}}
+
+-- Setup Keybindings {{{
 --
 vim.keymap.set({ "n" }, "<leader>pa", function()
     vim.cmd [[:tabnew]]
@@ -90,3 +92,4 @@ end, { noremap = true, silent = true, desc = "Next Tab" })
 vim.keymap.set({ "n" }, "[g", function()
     vim.cmd [[:tabp]]
 end, { noremap = true, silent = true, desc = "Previous Tab" })
+-- }}}

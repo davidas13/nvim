@@ -1,5 +1,4 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -7,15 +6,15 @@ vim.pack.add {
     specs["volt"],
     specs["triforce.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 local triforce = require "triforce"
 
 triforce.setup()
+-- }}}
 
--- ==== Setup Keybindings =====================================================
---
+-- Setup Keybindings {{{
 require("which-key").add {
     { "<leader>\"", mode = "n", group = "Triforce" },
 }
@@ -44,3 +43,4 @@ vim.keymap.set(
     triforce.debug_languages,
     { noremap = true, silent = true, desc = "Debug Triforce Languages" }
 )
+-- }}}

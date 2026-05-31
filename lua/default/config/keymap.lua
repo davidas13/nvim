@@ -1,11 +1,10 @@
--- ==== Clear Highlights ======================================================
---
+-- Clear Highlights {{{
 vim.keymap.set("n", "<space><esc>", function()
     vim.cmd "nohl"
 end, { silent = true, desc = "Clear Highlight", noremap = true })
+-- }}}
 
--- ==== Buffers ===============================================================
---
+-- Buffers {{{
 vim.keymap.set("n", "<leader>c", function()
     -- check if snacks plugin is installed
     if pcall(require, "snacks") then
@@ -23,9 +22,9 @@ vim.keymap.set("n", "<leader>C", function()
         vim.cmd "bdelete"
     end
 end, { desc = "Close All Buffer" })
+-- }}}
 
--- ==== Diagnostics ===========================================================
---
+-- Diagnostics {{{
 vim.keymap.set("n", "[d", function()
     vim.diagnostic.jump { count = -1, float = true }
 end, { desc = "Previous diagnostic" })
@@ -33,9 +32,9 @@ end, { desc = "Previous diagnostic" })
 vim.keymap.set("n", "]d", function()
     vim.diagnostic.jump { count = 1, float = true }
 end, { desc = "Next diagnostic" })
+-- }}}
 
--- ==== Window Navigation and Resizing ========================================
---
+-- Window Navigation and Resizing {{{
 vim.keymap.set("t", "<C-w>h", "<C-\\><C-n><C-w>h", { noremap = true, silent = true })
 vim.keymap.set("t", "<C-w>j", "<C-\\><C-n><C-w>j", { noremap = true, silent = true })
 vim.keymap.set("t", "<C-w>k", "<C-\\><C-n><C-w>k", { noremap = true, silent = true })
@@ -50,14 +49,14 @@ vim.keymap.set("n", "<C-Up>", ":resize +2<CR>", { noremap = true, silent = true 
 vim.keymap.set("n", "<C-Down>", ":resize -2<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", { noremap = true, silent = true })
+-- }}}
 
--- ==== Plugin Keymaps ========================================================
---
+-- Plugin Keymaps {{{
 -- Update plugins
 vim.keymap.set({ "n" }, "<leader>:xu", vim.pack.update, { desc = "Update Plugins" })
+-- }}}
 
--- ==== Editor Keymaps ========================================================
---
+-- Editor Keymaps {{{
 -- Restart neovim.
 vim.keymap.set("n", "<leader>:r", function()
     vim.cmd "restart"
@@ -89,3 +88,4 @@ vim.keymap.set("n", "<leader>cn", function()
     vim.fn.setreg("+", vim.fn.expand "%:t")
     print "Copied filename"
 end, { desc = "Copy Filename" })
+-- }}}

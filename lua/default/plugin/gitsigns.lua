@@ -1,14 +1,13 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["snacks.nvim"],
     specs["gitsigns.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("gitsigns").setup {
     signs = {
         add = { text = "▎" },
@@ -119,3 +118,4 @@ require("snacks")
         end,
     })
     :map "<leader>tG"
+-- }}}

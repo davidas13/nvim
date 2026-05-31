@@ -1,13 +1,12 @@
--- ==== Intallation ===========================================================
---
+-- Intallation {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["which-key.nvim"],
 }
+-- }}}
 
--- ==== Setup =================================================================
---
+-- Setup {{{
 require("which-key").setup {
     preset = "helix",
     defaults = {},
@@ -35,9 +34,10 @@ require("which-key").setup {
         },
     },
 }
+-- }}}
 
--- ==== Setup Keybindings =====================================================
---
+-- Setup Keybindings {{{
 vim.keymap.set("n", "<leader>?", function()
     require("which-key").show { global = false }
 end, { desc = "Buffer Local Keymaps (which-key)" })
+-- }}}
