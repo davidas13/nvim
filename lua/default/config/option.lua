@@ -120,3 +120,7 @@ vim.filetype.add {
         [".env.example"] = "env",
     },
 }
+
+vim.o.foldmethod = "marker"
+vim.o.foldlevel = 99
+vim.o.foldcolumn = "auto"
