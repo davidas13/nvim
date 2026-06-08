@@ -98,6 +98,7 @@ snacks.setup {
                     ".ruff_cache",
                     ".dmypy.json",
                     ".pyre",
+                    ".DS_Store",
                 },
                 jump = {
                     close = true,
