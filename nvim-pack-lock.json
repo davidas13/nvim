@@ -210,8 +210,7 @@
     },
     "mini.snippets": {
       "rev": "9a08aa14e02abb790c823a622d7d6c736cbbe65a",
-      "src": "https://github.com/echasnovski/mini.snippets",
-      "version": "'v0.17.0'"
+      "src": "https://github.com/echasnovski/mini.snippets"
     },
     "monoglow.nvim": {
       "rev": "a249b1f55bfe9171e2f8aff7acf140f78ca4b2bb",
@@ -341,7 +340,8 @@
     },
     "vim-wakatime": {
       "rev": "2a856d0b7863dc34ffc80647cb52fbd1319fe144",
-      "src": "https://github.com/wakatime/vim-wakatime"
+      "src": "https://github.com/wakatime/vim-wakatime",
+      "version": "'12.0.0'"
     },
     "volt": {
       "rev": "620de1321f275ec9d80028c68d1b88b409c0c8b1",
