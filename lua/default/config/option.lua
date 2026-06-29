@@ -124,3 +124,8 @@ vim.filetype.add {
 vim.o.foldmethod = "marker"
 vim.o.foldlevel = 99
 vim.o.foldcolumn = "auto"
+
+vim.opt.path:append "**"
+vim.opt.wildmenu = true
+vim.opt.wildmode = "longest:full,full"
+vim.opt.wildignore:append { "**/node_modules/**", "**/.git/**", "**/build/**" }
