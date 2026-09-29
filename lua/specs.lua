@@ -224,6 +224,10 @@ local M = {
     ["blink-cmp-supermaven"] = {
         src = "https://github.com/huijiro/blink-cmp-supermaven",
     },
+    ["render-markdown.nvim"] = {
+        src = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
+        version = "v8.13.0",
+    },
     -- }}}
 
     -- Colorschemes -------------------------------------------------------- {{{
