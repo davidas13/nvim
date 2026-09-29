@@ -9,7 +9,7 @@ function ToggleColorColumn(size_str)
     else
         -- No size was provided, so toggle default (80) or off
         if vim.o.colorcolumn == "" then
-            vim.o.colorcolumn = "81" -- Set to 81 to highlight the 80 character limit
+            vim.o.colorcolumn = "79, 110" -- Set to 81 to highlight the 80 character limit
             print "ColorColumn enabled at 80 characters"
         else
             vim.o.colorcolumn = ""
