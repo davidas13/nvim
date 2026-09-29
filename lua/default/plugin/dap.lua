@@ -7,14 +7,14 @@ vim.pack.add {
     specs["nvim-nio"],
     specs["mason-nvim-dap.nvim"],
     specs["nvim-dap-virtual-text"],
-    specs["nvim-dap-view"],
+    -- specs["nvim-dap-view"],
     specs["nvim-dap"],
 }
 -- }}}
 
 -- Setup {{{
 local dap = require "dap"
-local dap_view = require "dap-view"
+-- local dap_view = require "dap-view"
 local dap_mason = require "mason-nvim-dap"
 local dap_virtual_text = require "nvim-dap-virtual-text"
 
@@ -49,21 +49,21 @@ vim.fn.sign_define(
 )
 vim.fn.sign_define("DapStopped", { text = "", texthl = "DapStopped", linehl = "DapStopped", numhl = "DapStopped" })
 
-dap.listeners.before.attach.dapui_config = function()
-    dap_view.open()
-end
-
-dap.listeners.before.launch.dapui_config = function()
-    dap_view.open()
-end
-
-dap.listeners.before.event_terminated.dapui_config = function()
-    dap_view.close()
-end
-
-dap.listeners.before.event_exited.dapui_config = function()
-    dap_view.close()
-end
+-- dap.listeners.before.attach.dapui_config = function()
+--     dap_view.open()
+-- end
+--
+-- dap.listeners.before.launch.dapui_config = function()
+--     dap_view.open()
+-- end
+--
+-- dap.listeners.before.event_terminated.dapui_config = function()
+--     dap_view.close()
+-- end
+--
+-- dap.listeners.before.event_exited.dapui_config = function()
+--     dap_view.close()
+-- end
 
 -- setup dap config by VsCode launch.json file
 local vscode = require "dap.ext.vscode"
