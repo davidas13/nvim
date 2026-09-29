@@ -2,7 +2,7 @@
 require "default.plugin.flash"
 require "default.plugin.mini-ai"
 require "default.plugin.mini-icons"
--- require "default.plugin.mini-snippets"
+require "default.plugin.mini-snippets"
 require "default.plugin.mini-pairs"
 require "default.plugin.todo-comments"
 require "default.plugin.snacks"
