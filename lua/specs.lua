@@ -227,9 +227,9 @@ local M = {
     -- }}}
 
     -- Colorschemes -------------------------------------------------------- {{{
-    ["catppuccin.nvim"] = {
+    ["catppuccin"] = {
         src = "https://github.com/catppuccin/nvim",
-        version = "v2.0.0",
+        name = "catppuccin",
     },
     ["everforest-nvim"] = {
         src = "https://github.com/neanias/everforest-nvim",
