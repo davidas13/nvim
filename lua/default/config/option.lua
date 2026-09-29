@@ -129,3 +129,7 @@ vim.opt.path:append "**"
 vim.opt.wildmenu = true
 vim.opt.wildmode = "longest:full,full"
 vim.opt.wildignore:append { "**/node_modules/**", "**/.git/**", "**/build/**" }
+
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
