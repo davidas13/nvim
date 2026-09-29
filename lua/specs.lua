@@ -278,6 +278,10 @@ local M = {
         src = "https://github.com/kyza0d/xeno.nvim",
         version = "master",
     },
+    ["rose-pine"] = {
+        src = "https://github.com/rose-pine/neovim",
+        name = "rose-pine",
+    },
     -- }}}
 }
 
