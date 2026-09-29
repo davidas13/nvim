@@ -126,8 +126,9 @@ vim.o.foldlevel = 99
 vim.o.foldcolumn = "auto"
 
 vim.opt.path:append "**"
-vim.opt.wildmenu = true
-vim.opt.wildmode = "longest:full,full"
+-- Disabled: wildmenu interferes with blink completion menu.
+-- vim.opt.wildmenu = true
+-- vim.opt.wildmode = "longest:full,full"
 vim.opt.wildignore:append { "**/node_modules/**", "**/.git/**", "**/build/**" }
 
 vim.opt.tabstop = 4
