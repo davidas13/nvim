@@ -228,6 +228,9 @@ local M = {
         src = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
         version = "v8.13.0",
     },
+    ["opencode.nvim"] = {
+        src = "https://github.com/sudo-tee/opencode.nvim.git",
+    },
     -- }}}
 
     -- Colorschemes -------------------------------------------------------- {{{
