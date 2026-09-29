@@ -27,18 +27,32 @@ require("conform").setup {
             -- To organize the imports.
             "ruff_organize_imports",
         },
+        c = { "clang_format" },
+        h = { "clang_format" },
         cpp = { "clang_format" },
         hpp = { "clang_format" },
         cmake = { "cmake-format" },
         toml = { "taplo" },
         json = { "prettier" },
         svelte = { "svelte" },
-        typescript = { "eslint", "prettier" },
+        javascript = { "oxfmt", "eslint", "prettier" },
+        typescript = { "oxfmt", "eslint", "prettier" },
+        javascriptreact = { "oxfmt", "eslint", "prettier" },
+        typescriptreact = { "oxfmt", "eslint", "prettier" },
     },
     formatters = {
-        ["cmake-format"] = {
+        clang_format = {
+            command = "clang-format",
+            prepend_args = {
+                "--style={BasedOnStyle: LLVM, BreakBeforeBraces: Allman, IndentWidth: 4, IndentCaseLabels: true, ColumnLimit: 80, PointerAlignment: Left , AlignConsecutiveAssignments: true, AlignConsecutiveDeclarations: true, }",
+            },
+        },
+        cmake_format = {
             command = "cmake-format",
             prepend_args = { "-i" },
+        },
+        prettier = {
+            prepend_args = { "--tab-width", "4" },
         },
         injected = {
             options = {
