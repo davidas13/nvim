@@ -539,17 +539,17 @@ astrolsp.setup {
             end)
         end
 
-        vim.keymap.set({ "n" }, "gh", combined_hover, { desc = "Hover: diagnostics + docs" })
-        vim.keymap.set({ "n" }, "K", combined_hover, { desc = "Hover: diagnostics + docs" })
+        -- vim.keymap.set({ "n" }, "gh", combined_hover, { desc = "Hover: diagnostics + docs" })
+        -- vim.keymap.set({ "n" }, "K", combined_hover, { desc = "Hover: diagnostics + docs" })
 
         -- Set up custom LSP keybindings.
-        -- vim.keymap.set({ "n" }, "K", function()
-        --     vim.lsp.buf.hover { border = "rounded", focusable = false }
-        -- end, { noremap = true, buffer = bufnr, desc = "LSP - Hover" })
+        vim.keymap.set({ "n" }, "K", function()
+            vim.lsp.buf.hover { border = "rounded", focusable = true }
+        end, { noremap = true, buffer = bufnr, desc = "LSP - Hover" })
 
-        -- vim.keymap.set({ "n" }, "gh", function()
-        --     vim.diagnostic.open_float { focusable = false, { border = "rounded" } }
-        -- end, { noremap = true, buffer = bufnr, desc = "LSP - Show Diagnostics" })
+        vim.keymap.set({ "n" }, "gh", function()
+            vim.diagnostic.open_float { focusable = true, { border = "rounded" } }
+        end, { noremap = true, buffer = bufnr, desc = "LSP - Show Diagnostics" })
 
         vim.keymap.set("n", "gd", function()
             snacks.picker.lsp_definitions()
