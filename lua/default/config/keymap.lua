@@ -89,3 +89,18 @@ vim.keymap.set("n", "<leader>cn", function()
     print "Copied filename"
 end, { desc = "Copy Filename" })
 -- }}}
+
+-- NetRW Keymaps {{{
+-- TODO: Complete a custom keymap for netrw.
+vim.api.nvim_create_augroup("netrw_mappings", {
+    clear = true,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "netrw",
+    group = "netrw_mappings",
+    callback = function()
+        vim.keymap.set("n", "<Esc>", "<C-w>z")
+    end,
+})
+-- }}}
