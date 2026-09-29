@@ -2,7 +2,7 @@
 local specs = require "specs"
 
 vim.pack.add {
-    -- specs["mini.snippets"],
+    specs["mini.snippets"],
     -- specs["friendly-snippets"],
     specs["mini.icons"],
     specs["blink-ripgrep.nvim"],
@@ -151,18 +151,8 @@ blink.setup {
         },
         completion = { ghost_text = { enabled = true } },
     },
-    -- snippets = { preset = "mini_snippets" },
-    snippets = {
-        expand = function(snippet)
-            -- Ambil hanya text sebelum karakter special
-            local label = snippet:match "^[%w_:]+"
-            if label then
-                vim.snippet.expand(label)
-            end
-        end,
-    },
+    snippets = { preset = "mini_snippets" },
 }
-
 -- How to make blink active in InserEnter
 -- vim.api.nvim_create_autocmd("InsertEnter", {
 --     callback = function()
