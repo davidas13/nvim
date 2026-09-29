@@ -94,6 +94,7 @@ blink.setup {
         use_proximity = true,
     },
     keymap = {
+        preset = "default",
         ["<c-k>"] = { "show", "show_documentation", "hide_documentation" },
         ["<up>"] = { "select_prev", "fallback" },
         ["<down>"] = { "select_next", "fallback" },
