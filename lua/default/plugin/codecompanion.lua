@@ -5,7 +5,7 @@ vim.pack.add {
     specs["which-key.nvim"],
     specs["plenary.nvim"],
     specs["mcphub.nvim"],
-    specs["VectorCode"],
+    -- specs["VectorCode"],
     specs["codecompanion-history.nvim"],
     specs["codecompanion.nvim"],
 }
@@ -69,73 +69,73 @@ require("codecompanion").setup {
                 save_chat_keymap = "sc",
             },
         },
-        vectorcode = {
-            opts = {
-                prompt_library = {
-                    --           ["Diff code review"] = {
-                    --               strategy = "chat",
-                    --               description = "Perform a code review",
-                    --               opts = {
-                    --                   auto_submit = false,
-                    --                   user_prompt = false,
-                    --               },
-                    --               prompts = {
-                    --                   {
-                    --                       role = "user",
-                    --                       content = function()
-                    --                           local target_branch =
-                    --                               vim.fn.input("Target branch for merge base diff (default: main): ", "main")
-                    --
-                    --                           return string.format(
-                    --                               [[
-                    -- You are a senior software engineer performing a code review. Analyze the following code changes.
-                    --  Identify any potential bugs, performance issues, security vulnerabilities, or areas that could be refactored for better readability or maintainability.
-                    --  Explain your reasoning clearly and provide specific suggestions for improvement.
-                    --  Consider edge cases, error handling, and adherence to best practices and coding standards.
-                    --  Here are the code changes:
-                    --  ```
-                    --   %s
-                    --  ```
-                    --  ]],
-                    --                               vim.fn.system("git diff --merge-base " .. target_branch)
-                    --                           )
-                    --                       end,
-                    --                   },
-                    --               },
-                    --           },
-                },
-                tool_group = {
-                    -- this will register a tool group called `@vectorcode_toolbox` that contains all 3 tools
-                    enabled = true,
-                    -- a list of extra tools that you want to include in `@vectorcode_toolbox`.
-                    -- if you use @vectorcode_vectorise, it'll be very handy to include
-                    -- `file_search` here.
-                    extras = {},
-                    collapse = false, -- whether the individual tools should be shown in the chat
-                },
-                tool_opts = {
-                    ["*"] = {},
-                    ls = {},
-                    vectorise = {},
-                    query = {
-                        max_num = { chunk = -1, document = -1 },
-                        default_num = { chunk = 50, document = 10 },
-                        include_stderr = false,
-                        use_lsp = false,
-                        no_duplicate = true,
-                        chunk_mode = false,
-                        summarise = {
-                            system_prompt = "",
-                            enabled = false,
-                            adapter = "copilot",
-                            query_augmented = true,
-                        },
-                    },
-                    files_ls = {},
-                    files_rm = {},
-                },
-            },
-        },
+        -- vectorcode = {
+        --     opts = {
+        --         prompt_library = {
+        --             --           ["Diff code review"] = {
+        --             --               strategy = "chat",
+        --             --               description = "Perform a code review",
+        --             --               opts = {
+        --             --                   auto_submit = false,
+        --             --                   user_prompt = false,
+        --             --               },
+        --             --               prompts = {
+        --             --                   {
+        --             --                       role = "user",
+        --             --                       content = function()
+        --             --                           local target_branch =
+        --             --                               vim.fn.input("Target branch for merge base diff (default: main): ", "main")
+        --             --
+        --             --                           return string.format(
+        --             --                               [[
+        --             -- You are a senior software engineer performing a code review. Analyze the following code changes.
+        --             --  Identify any potential bugs, performance issues, security vulnerabilities, or areas that could be refactored for better readability or maintainability.
+        --             --  Explain your reasoning clearly and provide specific suggestions for improvement.
+        --             --  Consider edge cases, error handling, and adherence to best practices and coding standards.
+        --             --  Here are the code changes:
+        --             --  ```
+        --             --   %s
+        --             --  ```
+        --             --  ]],
+        --             --                               vim.fn.system("git diff --merge-base " .. target_branch)
+        --             --                           )
+        --             --                       end,
+        --             --                   },
+        --             --               },
+        --             --           },
+        --         },
+        --         tool_group = {
+        --             -- this will register a tool group called `@vectorcode_toolbox` that contains all 3 tools
+        --             enabled = true,
+        --             -- a list of extra tools that you want to include in `@vectorcode_toolbox`.
+        --             -- if you use @vectorcode_vectorise, it'll be very handy to include
+        --             -- `file_search` here.
+        --             extras = {},
+        --             collapse = false, -- whether the individual tools should be shown in the chat
+        --         },
+        --         tool_opts = {
+        --             ["*"] = {},
+        --             ls = {},
+        --             vectorise = {},
+        --             query = {
+        --                 max_num = { chunk = -1, document = -1 },
+        --                 default_num = { chunk = 50, document = 10 },
+        --                 include_stderr = false,
+        --                 use_lsp = false,
+        --                 no_duplicate = true,
+        --                 chunk_mode = false,
+        --                 summarise = {
+        --                     system_prompt = "",
+        --                     enabled = false,
+        --                     adapter = "copilot",
+        --                     query_augmented = true,
+        --                 },
+        --             },
+        --             files_ls = {},
+        --             files_rm = {},
+        --         },
+        --     },
+        -- },
     },
     strategies = {
         chat = {
