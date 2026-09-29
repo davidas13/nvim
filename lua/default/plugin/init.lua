@@ -36,6 +36,7 @@ require "default.plugin.overseer"
 require "default.plugin.auto-session"
 require "default.plugin.neovim-tips"
 require "default.plugin.hlchunk"
+require "default.plugin.wakatime"
 require "default.plugin.opencode"
 
 -- NOTE: The plugins below should be initialized at the end.
