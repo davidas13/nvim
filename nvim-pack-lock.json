@@ -4,6 +4,10 @@
       "rev": "aeef62ee97872d2557d25904d160ec93a4a355f8",
       "src": "https://github.com/sainnhe/EverForest"
     },
+    "NrrwRgn": {
+      "rev": "e6f29bd507903b587229c544d3e1eba3cc0f0a13",
+      "src": "https://github.com/chrisbra/NrrwRgn"
+    },
     "VectorCode": {
       "rev": "3eacce5ad1c8e439e7dbeab3a8d6bdb6b8aa1cab",
       "src": "https://github.com/Davidyz/VectorCode",
@@ -72,6 +76,11 @@
       "rev": "39db9af4d26a91a8a6261c66ffb624f8b3d29114",
       "src": "https://github.com/dyng/ctrlsf.vim"
     },
+    "defold.nvim": {
+      "rev": "4ca8fcb5a478a2207e64a50929120dc325194e36",
+      "src": "https://github.com/atomicptr/defold.nvim",
+      "version": "'v0.10.2'"
+    },
     "devdocs.nvim": {
       "rev": "5d3690ea29179ede67ae661669f0434bc8b80339",
       "src": "https://github.com/maskudo/devdocs.nvim"
@@ -131,6 +140,10 @@
       "src": "https://github.com/f4z3r/gruvbox-material.nvim",
       "version": "'master'"
     },
+    "hgsigns.nvim": {
+      "rev": "4d71a6b3be836d69e51946cc845bf2761eb6e483",
+      "src": "https://github.com/cavanaug/hgsigns.nvim"
+    },
     "hlchunk.nvim": {
       "rev": "06f51922ca43d5cdacf96725c106405fe064c59e",
       "src": "https://github.com/shellRaining/hlchunk.nvim",
@@ -145,6 +158,10 @@
       "rev": "23835d5ed696436f716cbfdb56a93a7850fe3b18",
       "src": "https://github.com/cocopon/iceberg.vim",
       "version": "'master'"
+    },
+    "jjsigns.nvim": {
+      "rev": "f5f5cefef0945cc00ba914584275f9cef8c2e792",
+      "src": "https://github.com/evanphx/jjsigns.nvim"
     },
     "kanagawa-paper.nvim": {
       "rev": "25d3656a187c9596647b73abb71521f0339616c7",
@@ -178,6 +195,11 @@
       "rev": "4b2507b2dfdeafba83b534c2b8e46ddc551ac686",
       "src": "https://github.com/jameswolensky/marker-groups.nvim",
       "version": "'v1.1.0'"
+    },
+    "marks.nvim": {
+      "rev": "f353e8c08c50f39e99a9ed474172df7eddd89b72",
+      "src": "https://github.com/chentoast/marks.nvim",
+      "version": "'master'"
     },
     "markview.nvim": {
       "rev": "fbe5ec7d127ab3435ffd62740a7b27e7fabf42dc",
@@ -222,6 +244,11 @@
       "src": "https://github.com/wnkz/monoglow.nvim",
       "version": "'main'"
     },
+    "narrowing-nvim": {
+      "rev": "17615d0bdc0b45851f9df7fd16aab86f874ff2ba",
+      "src": "https://github.com/tkancf/narrowing-nvim",
+      "version": "'main'"
+    },
     "neoconf.nvim": {
       "rev": "53ff3ce70013d7881f7216180f52b862ad9f6a72",
       "src": "https://github.com/folke/neoconf.nvim",
@@ -238,7 +265,8 @@
     },
     "noice.nvim": {
       "rev": "7bfd942445fb63089b59f97ca487d605e715f155",
-      "src": "https://github.com/folke/noice.nvim"
+      "src": "https://github.com/folke/noice.nvim",
+      "version": "'v4.10.0'"
     },
     "nui.nvim": {
       "rev": "de740991c12411b663994b2860f1a4fd0937c130",
@@ -280,7 +308,8 @@
     },
     "nvim-notify": {
       "rev": "8701bece920b38ea289b457f902e2ad184131a5d",
-      "src": "https://github.com/rcarriga/nvim-notify"
+      "src": "https://github.com/rcarriga/nvim-notify",
+      "version": "'v3.15.0'"
     },
     "oil.nvim": {
       "rev": "b73018b75affd13fa38e2fc94ef753b465f770d7",

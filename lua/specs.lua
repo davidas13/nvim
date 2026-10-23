@@ -111,6 +111,14 @@ local M = {
         src = "https://github.com/lewis6991/gitsigns.nvim",
         version = "v2.1.0",
     },
+    ["hgsigns.nvim"] = {
+        src = "https://github.com/cavanaug/hgsigns.nvim",
+        tag = "v2.1.0-hg.1",
+    },
+    ["jjsigns.nvim"] = {
+        src = "https://github.com/evanphx/jjsigns.nvim",
+        tag = "main",
+    },
     ["glslView-nvim"] = {
         src = "https://github.com/timtro/glslView-nvim",
     },
@@ -230,6 +238,14 @@ local M = {
     },
     ["opencode.nvim"] = {
         src = "https://github.com/sudo-tee/opencode.nvim.git",
+    },
+    ["defold.nvim"] = {
+        src = "https://github.com/atomicptr/defold.nvim",
+        version = "v0.10.2",
+    },
+    ["marks.nvim"] = {
+        src = "https://github.com/chentoast/marks.nvim",
+        version = "master",
     },
     -- }}}
 

@@ -134,3 +134,5 @@ vim.opt.wildignore:append { "**/node_modules/**", "**/.git/**", "**/build/**" }
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
+vim.o.exrc = true
+vim.o.secure = true
