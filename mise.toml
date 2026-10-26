@@ -1,2 +1,7 @@
 [tools]
 "aqua:gittower/git-flow-next" = "latest"
+"aqua:JohnnyMorganz/StyLua" = "latest"
+
+[tasks.verify]
+description = "Check Lua formatting with stylua"
+run = "stylua --check ."
