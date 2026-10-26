@@ -14,8 +14,6 @@ require "default.plugin.mason"
 require "default.plugin.dap"
 require "default.plugin.treesitter-manager"
 require "default.plugin.supermaven"
--- NOTE: Disable until I subscribe again.
--- require "plugin.copilot"
 require "default.plugin.blink"
 require "default.plugin.astrolsp"
 require "default.plugin.conform"
