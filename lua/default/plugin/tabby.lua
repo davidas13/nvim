@@ -1,8 +1,9 @@
--- Intallation {{{
-vim.pack.add {
-    { src = "https://github.com/nanozuki/tabby.nvim" },
-}
+-- Installation {{{
+local specs = require "specs"
 
+vim.pack.add {
+    specs["tabby.nvim"],
+}
 -- }}}
 
 -- Setup {{{
