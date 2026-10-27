@@ -50,15 +50,6 @@
       "rev": "79e2049a0fdf7ec840f8463fe1d962c94493196b",
       "src": "https://github.com/catppuccin/nvim"
     },
-    "codecompanion-history.nvim": {
-      "rev": "bc1b4fe06eaaf0aa2399be742e843c22f7f1652a",
-      "src": "https://github.com/ravitemer/codecompanion-history.nvim"
-    },
-    "codecompanion.nvim": {
-      "rev": "6cbbcb4503430644f04ea5f087c8e2ea4cdc6f6e",
-      "src": "https://github.com/olimorris/codecompanion.nvim",
-      "version": "'v19.14.0'"
-    },
     "conform.nvim": {
       "rev": "a6f5bdb78caa305496357d17e962bbc4c0b392e2",
       "src": "https://github.com/stevearc/conform.nvim",
@@ -315,10 +306,6 @@
       "rev": "b73018b75affd13fa38e2fc94ef753b465f770d7",
       "src": "https://github.com/stevearc/oil.nvim"
     },
-    "opencode.nvim": {
-      "rev": "71f66dcdfe0df29297cb20048f3be5d7983afe07",
-      "src": "https://github.com/sudo-tee/opencode.nvim.git"
-    },
     "overseer.nvim": {
       "rev": "a93d9f6d6defdac4bcd6d2c8ba988650e42e0a0e",
       "src": "https://github.com/stevearc/overseer.nvim",
@@ -385,11 +372,6 @@
       "rev": "8ee15ea4505d64ede559ff1cb112582a6f2ea138",
       "src": "https://github.com/vague-theme/vague.nvim",
       "version": "'main'"
-    },
-    "vim-wakatime": {
-      "rev": "2a856d0b7863dc34ffc80647cb52fbd1319fe144",
-      "src": "https://github.com/wakatime/vim-wakatime",
-      "version": "'12.0.0'"
     },
     "volt": {
       "rev": "620de1321f275ec9d80028c68d1b88b409c0c8b1",

@@ -66,13 +66,6 @@ local M = {
         src = "https://github.com/Davidyz/VectorCode",
         version = "0.7.20",
     },
-    ["codecompanion-history.nvim"] = {
-        src = "https://github.com/ravitemer/codecompanion-history.nvim",
-    },
-    ["codecompanion.nvim"] = {
-        src = "https://github.com/olimorris/codecompanion.nvim",
-        version = "v19.14.0",
-    },
     ["mason.nvim"] = {
         src = "https://github.com/mason-org/mason.nvim",
         version = "v2.3.0",
@@ -216,9 +209,6 @@ local M = {
     ["render-markdown.nvim"] = {
         src = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
         version = "v8.13.0",
-    },
-    ["opencode.nvim"] = {
-        src = "https://github.com/sudo-tee/opencode.nvim.git",
     },
     ["defold.nvim"] = {
         src = "https://github.com/atomicptr/defold.nvim",
