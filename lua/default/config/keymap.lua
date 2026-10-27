@@ -13,15 +13,6 @@ vim.keymap.set("n", "<leader>c", function()
         vim.cmd "bdelete"
     end
 end, { desc = "Close Buffer" })
-
-vim.keymap.set("n", "<leader>C", function()
-    -- TODO: Create shorcut to close all buffers.
-    if pcall(require, "snacks") then
-        require("snacks").bufdelete()
-    else
-        vim.cmd "bdelete"
-    end
-end, { desc = "Close All Buffer" })
 -- }}}
 
 -- Diagnostics {{{
