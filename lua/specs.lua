@@ -172,10 +172,6 @@ local M = {
         src = "https://github.com/folke/noice.nvim",
         version = "v4.10.0",
     },
-    ["oil.nvim"] = {
-        src = "https://github.com/stevearc/oil.nvim",
-        version = "v2.16.0",
-    },
     ["overseer.nvim"] = {
         src = "https://github.com/stevearc/overseer.nvim",
         version = "v2.1.0",
@@ -196,9 +192,6 @@ local M = {
         src = "https://github.com/romus204/tree-sitter-manager.nvim",
         version = "main",
     },
-    ["tv.nvim"] = {
-        src = "https://github.com/alexpasmantier/tv.nvim",
-    },
     ["vim-wakatime"] = {
         src = "https://github.com/wakatime/vim-wakatime",
         version = "12.0.0",
@@ -213,18 +206,6 @@ local M = {
     -- }}}
 
     -- AI plugins ---------------------------------------------------------- {{{
-    -- Copilot
-    ["copilot.lua"] = {
-        src = "https://github.com/zbirenbaum/copilot.lua",
-        version = "v2.0.4",
-    },
-    ["blink-copilot"] = {
-        src = "https://github.com/fang2hou/blink-copilot",
-        version = "v1.4.1",
-    },
-    ["copilot-lsp"] = {
-        src = "https://github.com/copilotlsp-nvim/copilot-lsp",
-    },
     -- Supermaven
     ["supermaven-nvim"] = {
         src = "https://github.com/supermaven-inc/supermaven-nvim",
@@ -257,48 +238,12 @@ local M = {
     ["everforest-nvim"] = {
         src = "https://github.com/neanias/everforest-nvim",
     },
-    ["gruvbox-material"] = {
-        src = "https://github.com/sainnhe/gruvbox-material",
-        version = "v1.2.5",
-    },
-    ["gruvbox-material.nvim"] = {
-        src = "https://github.com/f4z3r/gruvbox-material.nvim",
-        version = "v1.8.2",
-    },
-    ["gruvbox"] = {
-        src = "https://github.com/morhetz/gruvbox",
-        version = "v2.0.0",
-    },
-    ["iceberg-dark"] = {
-        src = "https://github.com/gkeep/iceberg-dark",
-        version = "master",
-    },
-    ["iceberg.vim"] = {
-        src = "https://github.com/cocopon/iceberg.vim",
-        version = "1.0",
-    },
     ["kanagawa-paper.nvim"] = {
         src = "https://github.com/thesimonho/kanagawa-paper.nvim",
         version = "v4.0.0",
     },
     ["kanagawa.nvim"] = {
         src = "https://github.com/rebelot/kanagawa.nvim",
-        version = "master",
-    },
-    ["kanso.nvim"] = {
-        src = "https://github.com/webhooked/kanso.nvim",
-        version = "main",
-    },
-    ["monoglow.nvim"] = {
-        src = "https://github.com/wnkz/monoglow.nvim",
-        version = "main",
-    },
-    ["vague.nvim"] = {
-        src = "https://github.com/vague-theme/vague.nvim",
-        version = "v2.1.2",
-    },
-    ["xeno.nvim"] = {
-        src = "https://github.com/kyza0d/xeno.nvim",
         version = "master",
     },
     ["rose-pine"] = {

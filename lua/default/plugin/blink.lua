@@ -10,12 +10,6 @@ vim.pack.add {
     specs["astrolsp"],
 
     -- AI plugins.
-    -- Copilot
-    -- NOTE: Disabled until I subscribe again.
-    -- specs["copilot.lua"],
-    -- specs["blink-copilot"],
-    -- specs["copilot-lsp"],
-
     -- Supermaven
     specs["supermaven-nvim"],
     specs["blink-cmp-supermaven"],
