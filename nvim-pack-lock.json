@@ -359,7 +359,8 @@
     },
     "tabby.nvim": {
       "rev": "3c130e1fcb598ce39a9c292847e32d7c3987cf11",
-      "src": "https://github.com/nanozuki/tabby.nvim"
+      "src": "https://github.com/nanozuki/tabby.nvim",
+      "version": "'v2.8.1'"
     },
     "todo-comments.nvim": {
       "rev": "31e3c38ce9b29781e4422fc0322eb0a21f4e8668",
