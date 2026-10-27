@@ -1,4 +1,4 @@
--- Intallation {{{
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -19,7 +19,7 @@ vim.pack.add {
 }
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 require("blink.compat").setup {}
 
 local blink = require "blink.cmp"

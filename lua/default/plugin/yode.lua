@@ -1,4 +1,4 @@
--- Intallation {{{
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -6,13 +6,13 @@ vim.pack.add {
 }
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 -- NOTE: If error occurs during installation this plugin, run this snippet `git submodule update --init --recursive` in nvim-data to fixing.
 require("yode-nvim").setup()
 
 -- }}}
 
--- Setup Keybindings {{{
+-- Setup Keybindings ------------------------------------------------------- {{{
 vim.keymap.set(
     { "v", "x" },
     "<Leader>yc",

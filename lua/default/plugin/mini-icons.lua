@@ -1,4 +1,4 @@
--- Intallation {{{
+-- Installation ------------------------------------------------------------ {{{
 vim.pack.add {
     -- Main Plugin.
     { src = "https://github.com/echasnovski/mini.icons" },
@@ -6,6 +6,6 @@ vim.pack.add {
 
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 require("mini.icons").setup()
 -- }}}

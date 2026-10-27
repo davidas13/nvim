@@ -1,4 +1,4 @@
--- Installation {{{
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -6,7 +6,7 @@ vim.pack.add {
 }
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 local theme = {
     fill = "TabLineFill",
     -- Also you can do this: fill = { fg='#f2e9de', bg='#907aa9', style='italic' }
@@ -50,7 +50,7 @@ require("tabby").setup {
 
 -- }}}
 
--- Setup Keybindings {{{
+-- Setup Keybindings ------------------------------------------------------- {{{
 --
 vim.keymap.set({ "n" }, "<leader>pa", function()
     vim.cmd [[:tabnew]]

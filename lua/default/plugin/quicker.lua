@@ -1,4 +1,4 @@
--- Intallation {{{
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -6,7 +6,7 @@ vim.pack.add {
 }
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 require("quicker").setup {
     keys = {
         {

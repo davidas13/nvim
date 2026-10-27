@@ -1,4 +1,4 @@
--- Intallation {{{
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -8,7 +8,7 @@ vim.pack.add {
 }
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 require("noice").setup {
     messages = {
         enabled = true,

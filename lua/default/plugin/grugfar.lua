@@ -1,4 +1,4 @@
--- Intallation {{{
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -6,7 +6,7 @@ vim.pack.add {
 }
 -- }}}
 
--- Setup Keybindings {{{
+-- Setup Keybindings ------------------------------------------------------- {{{
 vim.keymap.set({ "n", "x" }, "<leader>sr", function()
     local ext = vim.bo.buftype == "" and vim.fn.expand "%:e"
 

@@ -1,4 +1,4 @@
--- Intallation {{{
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -6,11 +6,11 @@ vim.pack.add {
 }
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 require("flash").setup()
 -- }}}
 
--- Setup Keybindings {{{
+-- Setup Keybindings ------------------------------------------------------- {{{
 vim.keymap.set({ "n", "x", "o" }, "s", function()
     require("flash").jump()
 end, { desc = "Flash" })

@@ -1,4 +1,4 @@
--- Intallation {{{
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -6,11 +6,11 @@ vim.pack.add {
 }
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 require("overseer").setup()
 -- }}}
 
--- Setup Keybindings {{{
+-- Setup Keybindings ------------------------------------------------------- {{{
 vim.keymap.set("n", "<leader>oo", ":OverseerOpen<CR>", { noremap = true, silent = true, desc = "Overseer Open" })
 
 vim.keymap.set("n", "<leader>oc", ":OverseerClose<CR>", { noremap = true, silent = true, desc = "Overseer Close" })

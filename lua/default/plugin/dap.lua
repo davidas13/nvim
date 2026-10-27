@@ -1,4 +1,4 @@
--- Intallation {{{
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -12,7 +12,7 @@ vim.pack.add {
 }
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 local dap = require "dap"
 -- local dap_view = require "dap-view"
 local dap_mason = require "mason-nvim-dap"
@@ -140,7 +140,7 @@ dap.configurations.rust = dap.configurations.cpp
 
 -- }}}
 
--- Setup Keybindings {{{
+-- Setup Keybindings ------------------------------------------------------- {{{
 --
 vim.keymap.set("n", "<leader>DB", function()
     dap.set_breakpoint(vim.fn.input "Breakpoint Condition: ")

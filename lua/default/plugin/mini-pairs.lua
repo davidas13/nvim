@@ -1,10 +1,10 @@
--- Intallation {{{
+-- Installation ------------------------------------------------------------ {{{
 vim.pack.add {
     { src = "https://github.com/echasnovski/mini.pairs" },
 }
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 require("mini.pairs").setup {
     modes = {
         insert = true,

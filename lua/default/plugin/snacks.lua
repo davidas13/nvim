@@ -1,4 +1,4 @@
--- Instalation {{{
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -8,7 +8,7 @@ vim.pack.add {
 }
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 local snacks = require "snacks"
 
 snacks.setup {
@@ -261,7 +261,7 @@ snacks.setup {
     },
 }
 
--- Setup Keybindings {{{
+-- Setup Keybindings ------------------------------------------------------- {{{
 --
 vim.keymap.set("n", "<leader>e", function()
     snacks.explorer()

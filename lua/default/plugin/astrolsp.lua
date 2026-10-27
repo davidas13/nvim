@@ -1,4 +1,4 @@
--- Installation {{{
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -10,7 +10,7 @@ vim.pack.add {
 }
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 local astrolsp = require "astrolsp"
 
 -- Disable default lsp keybindings. {{{

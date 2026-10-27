@@ -1,4 +1,4 @@
--- Intallation {{{
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -11,7 +11,7 @@ vim.pack.add {
 }
 -- }}}
 
--- Setup {{{
+-- Setup ------------------------------------------------------------------- {{{
 vim.g.codecompanion_current_model = "gpt-4.1"
 
 require("codecompanion").setup {
@@ -239,7 +239,7 @@ require("codecompanion").setup {
 
 -- }}}
 
--- Setup Keybindings {{{
+-- Setup Keybindings ------------------------------------------------------- {{{
 --
 require("which-key").add {
     { "<leader>a", mode = "n", group = "CodeCompanion" },
