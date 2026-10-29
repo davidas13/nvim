@@ -5,3 +5,14 @@
 [tasks.verify]
 description = "Check Lua formatting with stylua"
 run = "stylua --check ."
+
+[tasks.smoke]
+description = "Load every plugin config module headless and fail on load errors"
+run = """
+status=0
+nvim --headless '+luafile scripts/smoke.lua' +qa >"${TMPDIR:-/tmp}/nvim-smoke.log" 2>&1 || status=$?
+cat "${TMPDIR:-/tmp}/nvim-smoke.log"
+grep -qi "error" "${TMPDIR:-/tmp}/nvim-smoke.log" && exit 1
+test "$status" -eq 0 || exit 1
+echo "smoke passed"
+"""
