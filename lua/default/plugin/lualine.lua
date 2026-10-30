@@ -27,7 +27,8 @@ require("lualine").setup {
             triforce.streak,
             triforce.session_time,
             function()
-                local statusline = require("arrow.statusline").text_for_statusline_with_icons()
+                local statusline =
+                    require("arrow.statusline").text_for_statusline_with_icons()
 
                 if not statusline then
                     return ""
