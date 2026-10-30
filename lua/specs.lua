@@ -196,6 +196,10 @@ local M = {
     ["yode-nvim"] = {
         src = "https://github.com/hoschi/yode-nvim",
     },
+    ["obsidian.nvim"] = {
+        src = "https://github.com/obsidian-nvim/obsidian.nvim",
+        version = "v3.16.10",
+    },
     -- }}}
 
     -- AI plugins ---------------------------------------------------------- {{{
