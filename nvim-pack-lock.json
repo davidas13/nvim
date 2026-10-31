@@ -278,16 +278,16 @@
       "version": "'main'"
     },
     "nvim-dap": {
-      "rev": "6a5bba0ddea5d419a783e170c20988046376090d",
+      "rev": "9e848e09a697ee95302a3ef2dd43fd6eb709e570",
       "src": "https://github.com/mfussenegger/nvim-dap",
-      "version": "'0.10.0'"
+      "version": "'master'"
     },
     "nvim-dap-ui": {
       "rev": "1a66cabaa4a4da0be107d5eda6d57242f0fe7e49",
       "src": "https://github.com/rcarriga/nvim-dap-ui"
     },
     "nvim-dap-view": {
-      "rev": "80f0e74533872388ba1545da8930f43d6ade9692",
+      "rev": "210b2c0e4acc08aad23fbd5a7989dd0169f716d0",
       "src": "https://github.com/igorlfs/nvim-dap-view",
       "version": "'v1.2.1'"
     },

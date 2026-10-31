@@ -7,6 +7,7 @@ vim.pack.add {
     specs["mason-nvim-dap.nvim"],
     specs["nvim-dap-virtual-text"],
     specs["nvim-dap"],
+    specs["nvim-dap-view"],
 }
 
 local dap_mason = require "mason-nvim-dap"
@@ -19,6 +20,8 @@ dap_mason.setup {
 }
 
 dap_virtual_text.setup()
+
+require("dap-view").setup {}
 
 vim.api.nvim_set_hl(0, "DapBreakpoint", { ctermbg = 0, fg = "#993939", bg = "#31353f" })
 vim.api.nvim_set_hl(0, "DapLogPoint", { ctermbg = 0, fg = "#61afef", bg = "#31353f" })
