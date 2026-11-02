@@ -79,7 +79,8 @@ setting `debug = true` or `-g` in the profile, `zig build
 -Doptimize=Debug`, and `-g` for C/C++ compilers.
 
 Share a configuration with other editors by writing `.vscode/launch.json`
-in the project root and running `:DebugReloadJson`.
+in the project root; Neovim reads it on demand when a session starts, no
+reload step needed.
 ```
 
 ***
