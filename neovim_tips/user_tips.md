@@ -51,3 +51,35 @@
 
 
 ***
+
+
+# Title: Debug Python, Rust, Zig, C/C++
+# Category: debugging
+# Tags: dap, debug, workflow
+---
+
+```markdown
+Set a breakpoint with `<leader>Dt` (plain) or `:DebugBreakpoint` (with a
+condition) or `:DebugLogPoint` (prints a message, never stops). Start a
+session with `:DapContinue`: it picks a configuration for the current
+filetype, or `:DapNew` and Tab-complete the configuration name. The
+executable path is asked for, never guessed, nothing is built for you.
+
+Step with `<leader>DO` (over), `<leader>Di` (into), `<leader>Do` (out),
+resume with `<leader>Dc`, rerun with `<leader>Dl`, stop with `<leader>DT`.
+Run the current file with arguments via `<leader>Da`. Open or close the
+debug view (watches, scopes, stack, breakpoints, REPL) with `:DebugView`.
+
+Per language: Python runs `${file}` with the venv from `VIRTUAL_ENV`, no
+build step, through the mason entry `Python: Launch file`. Rust, Zig, C,
+and C++ prompt for the binary; the default
+starts at `target/debug/` for Rust, `zig-out/bin/` for Zig, and the
+project root for C/C++. Build with symbols first: `cargo build` after
+setting `debug = true` or `-g` in the profile, `zig build
+-Doptimize=Debug`, and `-g` for C/C++ compilers.
+
+Share a configuration with other editors by writing `.vscode/launch.json`
+in the project root and running `:DebugReloadJson`.
+```
+
+***
