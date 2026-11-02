@@ -14,7 +14,7 @@ local dap_mason = require "mason-nvim-dap"
 local dap_virtual_text = require "nvim-dap-virtual-text"
 
 dap_mason.setup {
-    ensure_installed = { "cppdbg", "codelldb", "bash", "python" },
+    ensure_installed = { "cppdbg", "codelldb", "bash", "python", "js", "delve" },
     automatic_installation = true,
     handlers = {},
 }
