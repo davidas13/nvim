@@ -87,7 +87,7 @@ local M = {
     },
     ["nvim-dap"] = {
         src = "https://github.com/mfussenegger/nvim-dap",
-        version = "master",
+        version = "0.10.0",
     },
     ["diffview.nvim"] = {
         src = "https://github.com/sindrets/diffview.nvim",
