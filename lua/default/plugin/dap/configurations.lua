@@ -1,4 +1,4 @@
--- Launch configurations for C, C++, and Rust, plus VSCode launch.json support.
+-- Launch configurations for C, C++, Rust, Zig, plus VSCode launch.json support.
 local dap = require "dap"
 local vscode = require "dap.ext.vscode"
 local json = require "plenary.json"
@@ -20,18 +20,6 @@ dap.configurations.cpp = {
         stopOnEntry = true,
         exitAfterTaskReturns = false,
     },
-    {
-        name = "cppgdbg: Attach to gdbserver :1234",
-        type = "cppdbg",
-        request = "launch",
-        MIMode = "gdb",
-        miDebuggerServerAddress = "localhost:1234",
-        miDebuggerPath = "/usr/bin/gdb",
-        cwd = "${workspaceFolder}",
-        program = function()
-            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-        end,
-    },
     -- https://codeberg.org/mfussenegger/nvim-dap/wiki/C-C---Rust-%28via--codelldb%29
     {
         name = "codelldbc: Launch file",
@@ -47,4 +35,31 @@ dap.configurations.cpp = {
 }
 
 dap.configurations.c = dap.configurations.cpp
-dap.configurations.rust = dap.configurations.cpp
+
+dap.configurations.rust = {
+    {
+        name = "codelldb: Launch binary",
+        type = "codelldb",
+        request = "launch",
+        program = function()
+            return vim.fn.input("Executable path: ", vim.fn.getcwd() .. "/target/debug/", "file")
+        end,
+        cwd = "${workspaceFolder}",
+        stopOnEntry = false,
+        -- Rust toolchain formatters for the inspected values.
+        sourceLanguages = { "rust" },
+    },
+}
+
+dap.configurations.zig = {
+    {
+        name = "codelldb: Launch binary",
+        type = "codelldb",
+        request = "launch",
+        program = function()
+            return vim.fn.input("Executable path: ", vim.fn.getcwd() .. "/zig-out/bin/", "file")
+        end,
+        cwd = "${workspaceFolder}",
+        stopOnEntry = false,
+    },
+}
