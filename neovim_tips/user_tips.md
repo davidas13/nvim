@@ -81,6 +81,16 @@ setting `debug = true` or `-g` in the profile, `zig build
 Share a configuration with other editors by writing `.vscode/launch.json`
 in the project root; Neovim reads it on demand when a session starts, no
 reload step needed.
+
+JavaScript, TypeScript, JSX, TSX, and Svelte debug through the js-debug
+adapter: those buffers offer `pwa-node` entries (`Launch file` runs the
+current file, `Launch entry` prompts for the entry point) and `pwa-chrome`
+entries that launch a URL or attach to Chrome on port 9222. The `pwa-node`
+entries run node by default; in a bun or deno project set
+`runtimeExecutable` in `.vscode/launch.json` before starting the session.
+
+Go is wired through delve: a go buffer offers debug of the package, debug
+of the folder, and debug of the test under the cursor.
 ```
 
 ***
