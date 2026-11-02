@@ -49,3 +49,4 @@ vim.fn.sign_define("DapStopped", { text = "", texthl = "DapStopped", linehl =
 require "default.plugin.dap.adapters"
 require "default.plugin.dap.configurations"
 require "default.plugin.dap.keymaps"
+require "default.plugin.dap.commands"
