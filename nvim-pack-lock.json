@@ -8,11 +8,6 @@
       "rev": "e6f29bd507903b587229c544d3e1eba3cc0f0a13",
       "src": "https://github.com/chrisbra/NrrwRgn"
     },
-    "VectorCode": {
-      "rev": "3eacce5ad1c8e439e7dbeab3a8d6bdb6b8aa1cab",
-      "src": "https://github.com/Davidyz/VectorCode",
-      "version": "'0.7.20'"
-    },
     "astrolsp": {
       "rev": "ebc1676127b3bfbd46e3e26589b104853cac3730",
       "src": "https://github.com/AstroNvim/astrolsp",
@@ -214,11 +209,6 @@
       "rev": "16ba83bfc8a25f52bb545134f5bee082b195c460",
       "src": "https://github.com/mason-org/mason.nvim",
       "version": "'v2.3.0'"
-    },
-    "mcphub.nvim": {
-      "rev": "7cd5db330f41b7bae02b2d6202218a061c3ebc1f",
-      "src": "https://github.com/ravitemer/mcphub.nvim",
-      "version": "'v6.2.0'"
     },
     "mini.ai": {
       "rev": "4511b3481707c1d021485475d34f2ed2a50bf47b",

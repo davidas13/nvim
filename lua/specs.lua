@@ -58,14 +58,6 @@ local M = {
         src = "https://github.com/folke/which-key.nvim",
         version = "v3.17.0",
     },
-    ["mcphub.nvim"] = {
-        src = "https://github.com/ravitemer/mcphub.nvim",
-        version = "v6.2.0",
-    },
-    ["VectorCode"] = {
-        src = "https://github.com/Davidyz/VectorCode",
-        version = "0.7.20",
-    },
     ["mason.nvim"] = {
         src = "https://github.com/mason-org/mason.nvim",
         version = "v2.3.0",
