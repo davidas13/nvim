@@ -4,7 +4,6 @@ return {
         "lsp",
         "path",
         "snippets",
-        "supermaven",
     },
     providers = {
         lsp = {
@@ -19,12 +18,6 @@ return {
         -- kept as a provider so it can be added to the default list later
         buffer = {
             score_offset = 6,
-        },
-        supermaven = {
-            score_offset = 100,
-            name = "supermaven",
-            module = "blink-cmp-supermaven",
-            async = true,
         },
     },
 }

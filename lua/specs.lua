@@ -192,16 +192,6 @@ local M = {
         src = "https://github.com/obsidian-nvim/obsidian.nvim",
         version = "v3.16.10",
     },
-    -- }}}
-
-    -- AI plugins ---------------------------------------------------------- {{{
-    -- Supermaven
-    ["supermaven-nvim"] = {
-        src = "https://github.com/supermaven-inc/supermaven-nvim",
-    },
-    ["blink-cmp-supermaven"] = {
-        src = "https://github.com/huijiro/blink-cmp-supermaven",
-    },
     ["render-markdown.nvim"] = {
         src = "https://github.com/MeanderingProgrammer/render-markdown.nvim",
         version = "v8.13.0",

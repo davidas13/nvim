@@ -5,11 +5,6 @@ vim.pack.add {
     specs["mini.icons"],
     specs["astrolsp"],
 
-    -- AI plugins.
-    -- Supermaven
-    specs["supermaven-nvim"],
-    specs["blink-cmp-supermaven"],
-
     specs["blink.compat"],
     specs["blink.cmp"],
 }
