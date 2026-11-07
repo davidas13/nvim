@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Console layout and behavior.
 return {
     open_on_runcode = true, ---@type boolean
@@ -19,3 +20,4 @@ return {
         size = "40%", ---@type lc.size
     },
 }
+-- }}}

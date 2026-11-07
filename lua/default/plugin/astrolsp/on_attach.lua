@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Buffer local mappings and behavior added when a language server attaches.
 return function(client, bufnr)
     client.server_capabilities.semanticTokensProvider = nil
@@ -97,3 +98,4 @@ return function(client, bufnr)
         end, { noremap = true, buffer = bufnr, desc = "LSP - Show Workspace Symbols" })
     end
 end
+-- }}}

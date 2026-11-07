@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- blink.cmp cmdline completion.
 return {
     keymap = {
@@ -8,3 +9,4 @@ return {
     },
     completion = { ghost_text = { enabled = true } },
 }
+-- }}}

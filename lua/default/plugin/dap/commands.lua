@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Debug workflow commands. The :Dap* commands cover the session actions; this
 -- file adds only what they do not provide.
 local dap = require "dap"
@@ -13,3 +14,4 @@ end, { desc = "Log point with message" })
 vim.api.nvim_create_user_command("DebugView", function()
     vim.cmd "DapViewToggle"
 end, { desc = "Toggle debug view" })
+-- }}}

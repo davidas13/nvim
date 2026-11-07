@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 vim.keymap.set({ "n" }, "<leader>pa", function()
     vim.cmd [[:tabnew]]
 end, { noremap = true, silent = true, desc = "New Tab" })
@@ -39,3 +40,4 @@ end, { noremap = true, silent = true, desc = "Next Tab" })
 vim.keymap.set({ "n" }, "[g", function()
     vim.cmd [[:tabp]]
 end, { noremap = true, silent = true, desc = "Previous Tab" })
+-- }}}

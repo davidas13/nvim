@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Git signs for the working tree.
 return {
     add = { text = "▎" },
@@ -7,3 +8,4 @@ return {
     changedelete = { text = "▎" },
     untracked = { text = "▎" },
 }
+-- }}}

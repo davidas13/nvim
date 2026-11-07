@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Buffer local user commands added when a language server attaches.
 return {
     Format = {
@@ -15,3 +16,4 @@ return {
         desc = "Format file with LSP",
     },
 }
+-- }}}

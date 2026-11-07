@@ -1,3 +1,4 @@
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -8,7 +9,9 @@ vim.pack.add {
     specs["blink.compat"],
     specs["blink.cmp"],
 }
+-- }}}
 
+-- Setup ------------------------------------------------------------------- {{{
 require("blink.compat").setup {}
 
 local blink = require "blink.cmp"
@@ -23,3 +26,4 @@ blink.setup {
     cmdline = require "default.plugin.blink.cmdline",
     snippets = require "default.plugin.blink.snippets",
 }
+-- }}}

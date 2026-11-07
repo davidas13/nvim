@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Global keymaps for snacks pickers and explorer.
 local snacks = require "snacks"
 
@@ -136,3 +137,4 @@ end, { silent = true, desc = "Buffers", noremap = true })
 vim.keymap.set({ "n" }, "<leader>/", function()
     snacks.picker.grep()
 end, { silent = true, desc = "Grep Files", noremap = true })
+-- }}}

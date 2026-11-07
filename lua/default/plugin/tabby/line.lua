@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Tab line renderer and its highlight theme.
 local theme = {
     fill = "TabLineFill",
@@ -35,3 +36,4 @@ return function(line)
         hl = theme.fill,
     }
 end
+-- }}}

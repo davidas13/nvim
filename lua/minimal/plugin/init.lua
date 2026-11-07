@@ -1,3 +1,4 @@
+-- Modules ----------------------------------------------------------------- {{{
 require "default.plugin.mason"
 require "default.plugin.dap"
 require "default.plugin.mini-snippets"
@@ -11,3 +12,4 @@ require "default.plugin.grugfar"
 require "default.plugin.triforce"
 require "default.plugin.lualine"
 require "default.plugin.gitsigns"
+-- }}}

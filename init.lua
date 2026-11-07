@@ -1,5 +1,4 @@
--- ==== Load configurations ===================================================
---
+-- Load configurations ----------------------------------------------------- {{{
 local config_file = vim.fn.stdpath "data" .. "/chosen_config"
 
 local function load_config(name)
@@ -29,9 +28,10 @@ if saved then
 else
     select_config()
 end
+-- }}}
 
--- ==== Set Neovim as Git editor if nvr is available ==========================
---
+-- Set Neovim as Git editor if nvr is available ---------------------------- {{{
 if vim.fn.has "nvim" == 1 and vim.fn.executable "nvr" == 1 then
     vim.env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
 end
+-- }}}

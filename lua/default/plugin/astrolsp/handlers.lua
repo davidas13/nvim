@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Handlers that configure and enable each language server.
 return {
     -- default handler, first entry with no key
@@ -6,3 +7,4 @@ return {
         vim.lsp.enable(server)
     end,
 }
+-- }}}

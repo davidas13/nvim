@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Language servers to set up, including ones not installed with Mason.
 return {
     "ast_grep",
@@ -42,3 +43,4 @@ return {
 
     "docker-compose-langserver",
 }
+-- }}}

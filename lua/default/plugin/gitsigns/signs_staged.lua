@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Git signs for staged changes.
 return {
     add = { text = "▎" },
@@ -6,3 +7,4 @@ return {
     topdelete = { text = "" },
     changedelete = { text = "▎" },
 }
+-- }}}

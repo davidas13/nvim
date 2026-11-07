@@ -1,3 +1,4 @@
+-- Modules ----------------------------------------------------------------- {{{
 -- All plugin order here is very important for the configuration of the plugins to work.
 require "default.plugin.flash"
 require "default.plugin.mini-ai"
@@ -42,3 +43,4 @@ require "default.plugin.marks-nvim"
 -- require "default.plugin.noice"
 -- Tabby must be the last plugin to be initialized.
 require "default.plugin.tabby"
+-- }}}

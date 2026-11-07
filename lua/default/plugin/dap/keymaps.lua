@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Debug keymaps.
 local dap = require "dap"
 
@@ -75,3 +76,4 @@ end, { desc = "Session" })
 vim.keymap.set("n", "<leader>Dv", function()
     vim.cmd [[DapViewOpen]]
 end, { desc = "Open DAP View" })
+-- }}}

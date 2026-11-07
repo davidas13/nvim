@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- snacks.picker config: custom layout, explorer source, custom actions.
 return {
     layout = "custom",
@@ -183,3 +184,4 @@ return {
         },
     },
 }
+-- }}}

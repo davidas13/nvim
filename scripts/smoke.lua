@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Headless smoke check for every plugin config module in this repo.
 --
 -- Startup already exercises the active profile, so this script forces the
@@ -36,3 +37,4 @@ if #failed > 0 then
     vim.cmd "cquit 1"
 end
 print(("SMOKE OK %d modules"):format(vim.tbl_count(loaded)))
+-- }}}

@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Problem description window.
 return {
     position = "left", ---@type lc.position
@@ -6,3 +7,4 @@ return {
 
     show_stats = true, ---@type boolean
 }
+-- }}}

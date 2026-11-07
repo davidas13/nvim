@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- blink.cmp key mappings.
 return {
     preset = "default",
@@ -11,3 +12,4 @@ return {
     ["<c-e>"] = { "hide", "fallback" },
     ["<cr>"] = { "accept", "fallback" },
 }
+-- }}}

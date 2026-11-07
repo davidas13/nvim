@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- blink.cmp signature help window.
 return {
     enabled = true,
@@ -6,3 +7,4 @@ return {
         winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
     },
 }
+-- }}}

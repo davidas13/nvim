@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Debug adapters installed through mason.
 local dap = require "dap"
 
@@ -29,3 +30,4 @@ for _, adapter_name in ipairs { "pwa-node", "pwa-chrome" } do
         },
     }
 end
+-- }}}

@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- snacks.notifier config.
 return {
     ---@class snacks.notifier.Config
@@ -32,3 +33,4 @@ return {
     more_format = " ↓ %d lines ",
     refresh = 30, -- refresh at most every 50ms
 }
+-- }}}

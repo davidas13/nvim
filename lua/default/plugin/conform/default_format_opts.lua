@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Fallback options applied to every formatter.
 return {
     timeout_ms = 3000,
@@ -8,3 +9,4 @@ return {
     -- NOTE: not recommended to change.
     lsp_format = "fallback",
 }
+-- }}}

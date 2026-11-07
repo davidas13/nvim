@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- LSP window customizations applied on top of the AstroLSP defaults.
 return {
     hover = {
@@ -6,3 +7,4 @@ return {
     }, -- customize lsp hover window
     signature_help = true, -- disable any default customizations
 }
+-- }}}

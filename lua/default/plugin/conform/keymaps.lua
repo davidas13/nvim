@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Format keymap.
 vim.keymap.set({ "n", "v" }, "gf", function()
     require("conform").format {
@@ -5,3 +6,4 @@ vim.keymap.set({ "n", "v" }, "gf", function()
         timeout_ms = 3000,
     }
 end, { desc = "LSP Format file or range (in visual mode)" })
+-- }}}

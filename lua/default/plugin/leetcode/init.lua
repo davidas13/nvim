@@ -1,3 +1,4 @@
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -5,7 +6,9 @@ vim.pack.add {
     specs["nui.nvim"],
     specs["leetcode.nvim"],
 }
+-- }}}
 
+-- Setup ------------------------------------------------------------------- {{{
 require("leetcode").setup {
     arg = require "default.plugin.leetcode.arg",
     lang = require "default.plugin.leetcode.lang",
@@ -24,3 +27,4 @@ require("leetcode").setup {
     theme = require "default.plugin.leetcode.theme",
     image_support = require "default.plugin.leetcode.image_support",
 }
+-- }}}

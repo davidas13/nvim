@@ -1,10 +1,13 @@
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
     specs["snacks.nvim"],
     specs["gitsigns.nvim"],
 }
+-- }}}
 
+-- Setup ------------------------------------------------------------------- {{{
 require("gitsigns").setup {
     signs = require "default.plugin.gitsigns.signs",
     signs_staged = require "default.plugin.gitsigns.signs_staged",
@@ -22,3 +25,4 @@ require("snacks")
         end,
     })
     :map "<leader>tG"
+-- }}}

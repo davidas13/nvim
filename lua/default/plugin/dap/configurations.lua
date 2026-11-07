@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Launch configurations for C, C++, Rust, Zig, plus VSCode launch.json support.
 local dap = require "dap"
 local vscode = require "dap.ext.vscode"
@@ -123,3 +124,4 @@ dap.configurations.typescript =
 dap.configurations.typescriptreact =
     with_sourcemap_resolution(vim.deepcopy(js_configs))
 dap.configurations.svelte = with_sourcemap_resolution(vim.deepcopy(js_configs))
+-- }}}

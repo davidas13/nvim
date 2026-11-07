@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- LSP file operation methods and their timeout.
 return {
     -- timeout when executing LSP client operations
@@ -12,3 +13,4 @@ return {
         didDelete = true,
     },
 }
+-- }}}

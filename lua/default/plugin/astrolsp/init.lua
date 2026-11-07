@@ -1,3 +1,4 @@
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -7,7 +8,9 @@ vim.pack.add {
     specs["snacks.nvim"],
     specs["astrolsp"],
 }
+-- }}}
 
+-- Setup ------------------------------------------------------------------- {{{
 -- Default LSP keymaps are removed so the on_attach mappings own them.
 local keys = { "gra", "gri", "grn", "grr", "grt", "grO" }
 
@@ -33,3 +36,4 @@ astrolsp.setup {
 }
 
 vim.tbl_map(astrolsp.lsp_setup, astrolsp.config.servers)
+-- }}}

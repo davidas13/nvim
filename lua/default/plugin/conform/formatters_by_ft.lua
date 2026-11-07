@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Formatters per filetype.
 return {
     lua = { "stylua" },
@@ -22,3 +23,4 @@ return {
     javascriptreact = { "oxfmt", "eslint", "prettier" },
     typescriptreact = { "oxfmt", "eslint", "prettier" },
 }
+-- }}}

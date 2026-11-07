@@ -1,3 +1,4 @@
+-- General ----------------------------------------------------------------- {{{
 vim.g.mapleader = " "
 vim.g.localleader = ","
 
@@ -6,8 +7,9 @@ vim.opt.clipboard = "unnamed,unnamedplus"
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
 -- Allow use the mouse in Nvim.
 vim.opt.mouse = "a"
+-- }}}
 
--- Tab
+-- Tab --------------------------------------------------------------------- {{{
 -- Number of visual spaces per Tab.
 vim.opt.tabstop = 4
 -- Number of spacein tab when editing.
@@ -16,8 +18,9 @@ vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 -- tabs are spaces.
 vim.opt.expandtab = true
+-- }}}
 
--- UI
+-- UI ---------------------------------------------------------------------- {{{
 -- Show absolute number.
 vim.opt.number = true
 -- Add numbers to each line on the left side.
@@ -30,8 +33,9 @@ vim.opt.splitbelow = true
 vim.opt.splitright = true
 -- Show mode.
 vim.opt.showmode = true
+-- }}}
 
--- Search text
+-- Search text ------------------------------------------------------------- {{{
 -- Search as characters are entered.
 vim.opt.incsearch = true
 -- Show highlight matches.
@@ -40,7 +44,9 @@ vim.opt.hlsearch = true
 vim.opt.ignorecase = true
 -- Make case sensitive if an uppercase is entered.
 vim.opt.smartcase = true
+-- }}}
 
+-- Display ----------------------------------------------------------------- {{{
 vim.opt.termguicolors = true
 vim.opt.scrolloff = 10
 vim.opt.autoindent = true
@@ -68,7 +74,9 @@ vim.opt.listchars:append {
 vim.opt.laststatus = 3
 vim.opt.signcolumn = "yes"
 vim.opt.numberwidth = 4
+-- }}}
 
+-- Diagnostics ------------------------------------------------------------- {{{
 vim.diagnostic.config {
     virtual_text = false, -- show inline messages
     signs = true, -- show signs in the gutter
@@ -76,7 +84,9 @@ vim.diagnostic.config {
     update_in_insert = false, -- don't update diagnostics while typing
     severity_sort = true, -- sort diagnostics by severity
 }
+-- }}}
 
+-- Behavior ---------------------------------------------------------------- {{{
 vim.o.background = "dark"
 -- Show the cursor position.
 vim.o.splitkeep = "screen"
@@ -92,7 +102,9 @@ vim.opt.updatetime = 300
 vim.opt.wrap = true
 vim.opt.linebreak = true
 vim.opt.breakindent = true
+-- }}}
 
+-- Files ------------------------------------------------------------------- {{{
 -- vim.g.loaded_netrw = 1
 -- vim.g.loaded_netrwPlugin = 1
 vim.g.netrw_banner = 0
@@ -101,7 +113,9 @@ vim.g.netrw_keepdir = 0
 vim.g.netrw_altv = 1
 vim.g.netrw_winsize = 15
 vim.g.netrw_browse_split = 4
+-- }}}
 
+-- Search Tools ------------------------------------------------------------ {{{
 -- Check if ripgrep is installed.
 if vim.fn.executable "rg" then
     vim.opt.grepprg = "rg --vimgrep --no-heading --smart-case"
@@ -120,7 +134,9 @@ vim.filetype.add {
         [".env.example"] = "env",
     },
 }
+-- }}}
 
+-- Fold -------------------------------------------------------------------- {{{
 vim.o.foldmethod = "marker"
 vim.o.foldlevel = 99
 vim.o.foldcolumn = "auto"
@@ -136,3 +152,4 @@ vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.o.exrc = true
 vim.o.secure = true
+-- }}}

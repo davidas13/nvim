@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- blink.cmp fuzzy matching options.
 return {
     implementation = "prefer_rust_with_warning",
@@ -9,3 +10,4 @@ return {
     },
     use_proximity = true,
 }
+-- }}}

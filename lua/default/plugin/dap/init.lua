@@ -1,3 +1,4 @@
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -9,7 +10,9 @@ vim.pack.add {
     specs["nvim-dap"],
     specs["nvim-dap-view"],
 }
+-- }}}
 
+-- Setup ------------------------------------------------------------------- {{{
 local dap_mason = require "mason-nvim-dap"
 local dap_virtual_text = require "nvim-dap-virtual-text"
 
@@ -50,3 +53,4 @@ require "default.plugin.dap.adapters"
 require "default.plugin.dap.configurations"
 require "default.plugin.dap.keymaps"
 require "default.plugin.dap.commands"
+-- }}}

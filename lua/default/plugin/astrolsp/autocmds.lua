@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Buffer local auto commands added when a language server attaches.
 return {
     -- first key is the `augroup` (:h augroup)
@@ -30,3 +31,4 @@ return {
         },
     },
 }
+-- }}}

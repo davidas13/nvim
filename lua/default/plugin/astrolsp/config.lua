@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Per server configuration overrides (`:h lspconfig-setup`).
 return {
     -- Lua LSP
@@ -48,3 +49,4 @@ return {
         },
     },
 }
+-- }}}

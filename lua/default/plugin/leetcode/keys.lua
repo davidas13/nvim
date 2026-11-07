@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- In-question keymaps.
 return {
     toggle = { "q" }, ---@type string|string[]
@@ -8,3 +9,4 @@ return {
     focus_testcases = "H", ---@type string
     focus_result = "L", ---@type string
 }
+-- }}}

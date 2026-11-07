@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Formatter overrides for custom commands and arguments.
 return {
     clang_format = {
@@ -19,3 +20,4 @@ return {
         },
     },
 }
+-- }}}

@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- snacks.toggle config.
 return {
     map = vim.keymap.set, -- keymap.set function to use
@@ -18,3 +19,4 @@ return {
         disabled = "Enable ",
     },
 }
+-- }}}

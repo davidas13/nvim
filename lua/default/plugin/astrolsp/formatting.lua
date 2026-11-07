@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Formatting control for language servers.
 return {
     format_on_save = {
@@ -19,3 +20,4 @@ return {
     -- default format timeout
     timeout_ms = 1000,
 }
+-- }}}

@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- blink.cmp completion menu and documentation windows.
 return {
     trigger = { prefetch_on_insert = false },
@@ -33,3 +34,4 @@ return {
         },
     },
 }
+-- }}}

@@ -1,3 +1,4 @@
+-- Setup ------------------------------------------------------------------- {{{
 -- Buffer-local keymaps and toggles registered when gitsigns attaches.
 return function(bufnr)
     local gitsigns = require "gitsigns"
@@ -80,3 +81,4 @@ return function(bufnr)
     -- Text object
     map({ "o", "x" }, "gih", gitsigns.select_hunk, { desc = "Select Hunk" })
 end
+-- }}}

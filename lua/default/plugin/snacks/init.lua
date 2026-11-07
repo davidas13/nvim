@@ -1,3 +1,4 @@
+-- Installation ------------------------------------------------------------ {{{
 local specs = require "specs"
 
 vim.pack.add {
@@ -5,7 +6,9 @@ vim.pack.add {
     specs["todo-comments.nvim"],
     specs["snacks.nvim"],
 }
+-- }}}
 
+-- Setup ------------------------------------------------------------------- {{{
 local snacks = require "snacks"
 
 snacks.setup {
@@ -20,3 +23,4 @@ snacks.setup {
 }
 
 require "default.plugin.snacks.keymaps"
+-- }}}
