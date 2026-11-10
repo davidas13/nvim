@@ -28,10 +28,6 @@ local M = {
         src = "https://github.com/folke/todo-comments.nvim",
         version = "v1.5.0",
     },
-    ["auto-session"] = {
-        src = "https://github.com/rmagatti/auto-session",
-        version = "v2.5.1",
-    },
     ["mini.snippets"] = {
         src = "https://github.com/echasnovski/mini.snippets",
         version = "v0.17.0",
@@ -133,10 +129,6 @@ local M = {
     ["lualine.nvim"] = {
         src = "https://github.com/nvim-lualine/lualine.nvim",
     },
-    ["marker-groups.nvim"] = {
-        src = "https://github.com/jameswolensky/marker-groups.nvim",
-        version = "v1.1.0",
-    },
     ["markview.nvim"] = {
         src = "https://github.com/OXY2DEV/markview.nvim",
         version = "v28.3.0",
@@ -168,10 +160,6 @@ local M = {
     ["quicker.nvim"] = {
         src = "https://github.com/stevearc/quicker.nvim",
         version = "v1.5.1",
-    },
-    ["tabby.nvim"] = {
-        src = "https://github.com/nanozuki/tabby.nvim",
-        version = "v2.8.1",
     },
     ["tree-sitter-manager.nvim"] = {
         src = "https://github.com/romus204/tree-sitter-manager.nvim",

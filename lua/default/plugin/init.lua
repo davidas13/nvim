@@ -22,8 +22,6 @@ require "default.plugin.lualine"
 require "default.plugin.glsl-view"
 require "default.plugin.fidget"
 require "default.plugin.persistence"
-require "default.plugin.marker-groups"
--- require "default.plugin.markview"
 require "default.plugin.render-markdown"
 require "default.plugin.obsidian"
 require "default.plugin.diffview"
@@ -33,14 +31,7 @@ require "default.plugin.leetcode"
 require "default.plugin.yode"
 require "default.plugin.yazi"
 require "default.plugin.overseer"
-require "default.plugin.auto-session"
 require "default.plugin.neovim-tips"
 require "default.plugin.hlchunk"
 require "default.plugin.defold"
 require "default.plugin.marks-nvim"
-
--- NOTE: The plugins below should be initialized at the end.
--- require "default.plugin.noice"
--- Tabby must be the last plugin to be initialized.
-require "default.plugin.tabby"
--- }}}

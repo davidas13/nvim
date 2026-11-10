@@ -13,11 +13,6 @@
       "src": "https://github.com/AstroNvim/astrolsp",
       "version": "'v4.0.0'"
     },
-    "auto-session": {
-      "rev": "3e145ee9af42eb6764908a1a481f53fe7f0bdbe5",
-      "src": "https://github.com/rmagatti/auto-session",
-      "version": "'v2.5.1'"
-    },
     "blink-ripgrep.nvim": {
       "rev": "3c3c6ed047f60c417809e1f7540fa5f42f903b6e",
       "src": "https://github.com/mikavilpas/blink-ripgrep.nvim",
@@ -160,11 +155,6 @@
     "lualine.nvim": {
       "rev": "221ce6b2d999187044529f49da6554a92f740a96",
       "src": "https://github.com/nvim-lualine/lualine.nvim"
-    },
-    "marker-groups.nvim": {
-      "rev": "4b2507b2dfdeafba83b534c2b8e46ddc551ac686",
-      "src": "https://github.com/jameswolensky/marker-groups.nvim",
-      "version": "'v1.1.0'"
     },
     "marks.nvim": {
       "rev": "f353e8c08c50f39e99a9ed474172df7eddd89b72",
@@ -318,11 +308,6 @@
       "rev": "e6fd58c82f2f3fcddd3fe81703d47d6d48fc7b9f",
       "src": "https://github.com/folke/snacks.nvim",
       "version": "'v2.31.0'"
-    },
-    "tabby.nvim": {
-      "rev": "3c130e1fcb598ce39a9c292847e32d7c3987cf11",
-      "src": "https://github.com/nanozuki/tabby.nvim",
-      "version": "'v2.8.1'"
     },
     "todo-comments.nvim": {
       "rev": "31e3c38ce9b29781e4422fc0322eb0a21f4e8668",
