@@ -28,5 +28,59 @@ if vault_root then
             name = "snacks.picker",
         },
     }
+
+    -- Setup Keybindings ------------------------------------------------------- {{{
+    require("which-key").add {
+        { "<leader>O", mode = "n", group = "Obsidian" },
+    }
+
+    -- Each subkey runs one "Obsidian" subcommand from the plugin command table.
+    -- Subkeys whose action needs a note read the current markdown buffer.
+    local obsidian_commands = {
+        n = { "new", "New note" },
+        N = { "unique_note", "New unique note" },
+        q = { "quick_switch", "Quick switch note" },
+        s = { "search", "Search notes" },
+        o = { "open", "Open in the Obsidian app" },
+        t = { "today", "Open today note" },
+        y = { "yesterday", "Open yesterday note" },
+        T = { "tomorrow", "Open tomorrow note" },
+        d = { "dailies", "Browse daily notes" },
+        f = { "follow_link", "Follow link under cursor" },
+        c = { "toggle_checkbox", "Toggle checkbox" },
+        b = { "backlinks", "Backlinks of note" },
+        r = { "rename", "Rename note" },
+    }
+
+    for subkey, mapping in pairs(obsidian_commands) do
+        vim.keymap.set(
+            "n",
+            "<leader>O" .. subkey,
+            "<cmd>Obsidian " .. mapping[1] .. "<cr>",
+            { desc = mapping[2] }
+        )
+    end
+    -- }}}
+
+    -- Markdown Keymaps ------------------------------------------------------- {{{
+    -- Buffer local so the LSP "gd" mapping stays intact in non-note buffers of
+    -- the vault.
+    vim.api.nvim_create_augroup("obsidian_markdown_mappings", {
+        clear = true,
+    })
+
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = "markdown",
+        group = "obsidian_markdown_mappings",
+        callback = function(args)
+            vim.keymap.set(
+                "n",
+                "gd",
+                "<cmd>Obsidian follow_link<cr>",
+                { buffer = args.buf, desc = "Follow Obsidian link" }
+            )
+        end,
+    })
+    -- }}}
 end
 -- }}}
