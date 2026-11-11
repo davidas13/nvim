@@ -4,12 +4,11 @@ return {
     -- Lua LSP
     lua_ls = {
         settings = {
+            -- lua_ls reads these under settings.Lua, root-level keys are ignored.
             Lua = {
-                enable = true,
-                quote_style = "double",
+                signatureHelp = { enable = true },
+                hint = { enable = true, arrayIndex = "Disable" },
             },
-            signatureHelp = { enable = true },
-            hint = { enable = true, arrayIndex = "Disable" },
         },
     },
 
@@ -36,15 +35,18 @@ return {
 
     -- Python LSP
     ruff = {
-        settings = {
-            logLevel = "debug",
-            lint = {
-                preview = true,
-                enable = true,
-            },
-            format = {
-                preview = true,
-                enable = true,
+        -- ruff reads server settings from init_options, not workspace settings.
+        init_options = {
+            settings = {
+                logLevel = "debug",
+                lint = {
+                    preview = true,
+                    enable = true,
+                },
+                format = {
+                    preview = true,
+                    enable = true,
+                },
             },
         },
     },
