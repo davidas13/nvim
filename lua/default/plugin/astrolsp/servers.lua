@@ -36,11 +36,6 @@ return {
     -- Zig
     "zls",
 
-    -- Godot
-    "gdscript",
-
-    "sonarlint",
-
     "docker-compose-langserver",
 }
 -- }}}
