@@ -1,8 +1,6 @@
 -- Setup ------------------------------------------------------------------- {{{
 -- Buffer local mappings and behavior added when a language server attaches.
 return function(client, bufnr)
-    client.server_capabilities.semanticTokensProvider = nil
-
     local snacks = require "snacks"
     local kind_filter = {
         default = {
