@@ -209,11 +209,6 @@
       "src": "https://github.com/folke/neoconf.nvim",
       "version": "'v1.4.0'"
     },
-    "neovim-tips": {
-      "rev": "1339a0da1ff59fab8cfc07661ef92aa8c7d07f79",
-      "src": "https://github.com/saxon1964/neovim-tips",
-      "version": "'v0.8.4'"
-    },
     "netrw.nvim": {
       "rev": "3f643df59951d9adc4cf348cefe435fcdb5a3671",
       "src": "https://github.com/prichrd/netrw.nvim"

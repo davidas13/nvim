@@ -137,10 +137,6 @@ local M = {
         src = "https://github.com/folke/neoconf.nvim",
         version = "v1.4.0",
     },
-    ["neovim-tips"] = {
-        src = "https://github.com/saxon1964/neovim-tips",
-        version = "v0.8.4",
-    },
     ["nvim-notify"] = {
         src = "https://github.com/rcarriga/nvim-notify",
         version = "v3.15.0",
