@@ -96,6 +96,28 @@ vim.o.timeoutlen = 400
 -- vim.o.colorcolumn = "79,110"
 vim.o.fileformat = "unix"
 vim.o.showtabline = 2
+
+-- Tabline without the builtin close button, which is mouse only. Tab labels
+-- stay clickable through %NT.
+local function tabline()
+    local parts = {}
+    local current = vim.fn.tabpagenr()
+    for i = 1, vim.fn.tabpagenr "$" do
+        local buf = vim.fn.tabpagebuflist(i)[vim.fn.tabpagewinnr(i)]
+        local name = vim.fn.fnamemodify(vim.fn.bufname(buf), ":t")
+        parts[#parts + 1] = ("%%#%s#%%%dT %d %s%s "):format(
+            i == current and "TabLineSel" or "TabLine",
+            i,
+            i,
+            name == "" and "[No Name]" or name,
+            vim.bo[buf].modified and " +" or ""
+        )
+    end
+    return table.concat(parts) .. "%#TabLineFill#%T"
+end
+
+_G.tabline_without_close = tabline
+vim.o.tabline = "%!v:lua.tabline_without_close()"
 vim.o.sessionoptions = "blank,buffers,curdir,folds,globals,help,tabpages,terminal,winsize,winpos,localoptions"
 vim.o.autoread = true
 vim.opt.updatetime = 300
