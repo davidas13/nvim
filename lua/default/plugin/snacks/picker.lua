@@ -1,5 +1,17 @@
 -- Setup ------------------------------------------------------------------- {{{
 -- snacks.picker config: custom layout, explorer source, custom actions.
+
+-- Opens ": <path>" with the cursor right after ":" (via <C-b>), so an Ex
+-- command can be typed in front of the path.
+local function start_cmdline(path)
+    local to_start = vim.api.nvim_replace_termcodes("<C-b>", true, false, true)
+    vim.api.nvim_feedkeys(
+        ": " .. vim.fn.fnameescape(path) .. to_start,
+        "n",
+        false
+    )
+end
+
 return {
     layout = "custom",
     layouts = {
@@ -41,8 +53,41 @@ return {
                 relativenumber = true,
                 numberwidth = 3,
             },
+            keys = {
+                ["<c-l>"] = "loclist",
+                ["<c-x>"] = "start_cmd",
+                ["<c-y>"] = "start_cmd_abs",
+            },
         },
-        input = {},
+        input = {
+            keys = {
+                ["<c-l>"] = { "loclist", mode = { "i", "n" } },
+                ["<c-x>"] = { "start_cmd", mode = { "i", "n" } },
+                ["<c-y>"] = { "start_cmd_abs", mode = { "i", "n" } },
+            },
+        },
+    },
+    actions = {
+        start_cmd = {
+            action = function(picker, item)
+                if not item or not item.file then
+                    return
+                end
+                picker:close()
+                -- ":." resolves against the main window cwd after the picker
+                -- closes, the same base the Ex command uses
+                start_cmdline(vim.fn.fnamemodify(item.file, ":."))
+            end,
+        },
+        start_cmd_abs = {
+            action = function(picker, item)
+                if not item or not item.file then
+                    return
+                end
+                picker:close()
+                start_cmdline(item.file)
+            end,
+        },
     },
     sources = {
         explorer = {
