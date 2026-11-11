@@ -62,23 +62,25 @@ vim.keymap.set("n", "<leader>:bw", function()
     vim.cmd "bwipeout"
 end, { desc = "Buffer Wipeout" })
 
--- Copy relative path to clipboard (e.g., src/main.js)
+-- Copy Reference {{{
+-- Every path, scope, and line combination for the cursor position.
+vim.keymap.set("n", "<C-y>", function()
+    require("default.config.copy_location").pick()
+end, { silent = true, desc = "Copy Reference Picker", noremap = true })
+
+-- One-shot copies that skip the picker.
 vim.keymap.set("n", "<leader>cf", function()
-    vim.fn.setreg("+", vim.fn.expand "%")
-    print "Copied relative path"
-end, { desc = "Copy Relative Filepath" })
+    require("default.config.copy_location").copy "rel"
+end, { silent = true, desc = "Copy Relative Filepath", noremap = true })
 
--- Copy absolute path to clipboard (e.g., /home/user/project/src/main.js)
 vim.keymap.set("n", "<leader>cF", function()
-    vim.fn.setreg("+", vim.fn.expand "%:p")
-    print "Copied absolute path"
-end, { desc = "Copy Absolute Filepath" })
+    require("default.config.copy_location").copy "abs"
+end, { silent = true, desc = "Copy Absolute Filepath", noremap = true })
 
--- Copy filename only (e.g., main.js)
 vim.keymap.set("n", "<leader>cn", function()
-    vim.fn.setreg("+", vim.fn.expand "%:t")
-    print "Copied filename"
-end, { desc = "Copy Filename" })
+    require("default.config.copy_location").copy "base"
+end, { silent = true, desc = "Copy Filename", noremap = true })
+-- }}}
 -- }}}
 
 -- NetRW Keymaps {{{
