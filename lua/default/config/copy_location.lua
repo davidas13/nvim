@@ -92,6 +92,23 @@ local function scope_chain(pos, bufnr)
     return table.concat(outer_first, ".")
 end
 
+-- Modes where a selection exists, so a line range can be derived from it.
+local visual_modes = { v = true, V = true, ["\22"] = true }
+
+-- Selection bounds as 1-based lines. The anchor and the cursor swap places when
+-- the selection runs upward, so take the extremes instead of assuming an order.
+local function selection_lines()
+    local mode = vim.fn.mode()
+    if not visual_modes[mode] then
+        return nil
+    end
+    local anchor = vim.fn.getpos "v"
+    local cursor = vim.fn.getpos "."
+    local first = math.min(anchor[2], cursor[2])
+    local last = math.max(anchor[2], cursor[2])
+    return first, last
+end
+
 local function capture()
     local bufnr = vim.api.nvim_get_current_buf()
     local abs = vim.fn.expand "%:p"
@@ -100,7 +117,8 @@ local function capture()
     end
     local cursor = vim.api.nvim_win_get_cursor(0)
     local row, col = cursor[1], cursor[2]
-    return {
+    local first, last = selection_lines()
+    local ctx = {
         bufnr = bufnr,
         row = row,
         col = col,
@@ -112,10 +130,25 @@ local function capture()
         -- suffixes out instead of failing the whole action.
         scope = scope_chain({ row - 1, col }, bufnr),
     }
+    if first then
+        ctx.first, ctx.last = first, last
+    end
+    return ctx
+end
+
+local function line_reference(ctx)
+    if ctx.first == nil then
+        return ctx.row
+    end
+    if ctx.first == ctx.last then
+        return ctx.first
+    end
+    return ("%d-%d"):format(ctx.first, ctx.last)
 end
 
 local function build_items(ctx)
     local items = {}
+    local line_ref = line_reference(ctx)
     for _, fmt in ipairs(path_formats) do
         for _, combo in ipairs(combos) do
             local scope_suffix, label = "", fmt.label
@@ -127,8 +160,8 @@ local function build_items(ctx)
                 label = label .. " :: " .. ctx.scope
             end
             if combo.line then
-                scope_suffix = scope_suffix .. fmt.line_sep .. ctx.row
-                label = label .. " : " .. ctx.row
+                scope_suffix = scope_suffix .. fmt.line_sep .. line_ref
+                label = label .. " : " .. line_ref
             end
             local value = ctx[fmt.key] .. scope_suffix
             items[#items + 1] = {

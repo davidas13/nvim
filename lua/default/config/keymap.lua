@@ -63,8 +63,9 @@ vim.keymap.set("n", "<leader>:bw", function()
 end, { desc = "Buffer Wipeout" })
 
 -- Copy Reference {{{
--- Every path, scope, and line combination for the cursor position.
-vim.keymap.set("n", "<C-y>", function()
+-- Every path, scope, and line combination for the cursor position. A visual
+-- selection over more than one line turns the line number into a range.
+vim.keymap.set({ "n", "x", "v" }, "<C-y>", function()
     require("default.config.copy_location").pick()
 end, { silent = true, desc = "Copy Reference Picker", noremap = true })
 
