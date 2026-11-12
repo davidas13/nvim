@@ -350,10 +350,6 @@
       "rev": "f98b74eac038de111e9b3f5226e5e43fdb7232ac",
       "src": "https://github.com/mikavilpas/yazi.nvim",
       "version": "'v13.1.7'"
-    },
-    "yode-nvim": {
-      "rev": "eaf3141b919c143ebf174d7ad180abd9c032b38c",
-      "src": "https://github.com/hoschi/yode-nvim"
     }
   }
 }

@@ -169,9 +169,6 @@ local M = {
         src = "https://github.com/mikavilpas/yazi.nvim",
         version = "v13.1.7",
     },
-    ["yode-nvim"] = {
-        src = "https://github.com/hoschi/yode-nvim",
-    },
     ["obsidian.nvim"] = {
         src = "https://github.com/obsidian-nvim/obsidian.nvim",
         version = "v3.16.10",
