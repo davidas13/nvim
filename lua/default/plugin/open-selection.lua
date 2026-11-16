@@ -8,6 +8,7 @@ local syncing_origin = nil
 local dirty = {}
 local pending = {}
 local reanchor = {}
+local separated_count = {}
 local refresh_scheduled = false
 local flush_scheduled = false
 
@@ -26,20 +27,35 @@ local function selection_type()
 end
 
 local function forget_sed(buf)
+    local sed = seditors[buf]
     seditors[buf] = nil
     dirty[buf] = nil
     pending[buf] = nil
     reanchor[buf] = nil
+    if not sed then
+        return
+    end
+    local count = (separated_count[sed.file_bufnr] or 1) - 1
+    separated_count[sed.file_bufnr] = count > 0 and count or nil
+    if count > 0 then
+        vim.api.nvim_buf_set_var(sed.file_bufnr, "seditor_separated", count)
+    else
+        pcall(vim.api.nvim_buf_del_var, sed.file_bufnr, "seditor_separated")
+    end
 end
 
 -- Locate the block of lines the seditor still holds inside the source file.
 -- The block identifies itself, which avoids recomputing an interval when
--- another seditor or an external edit moved the lines around.
+-- another seditor or an external edit moved the lines around. A second return
+-- value counts every place the block matches, because a repeated block makes
+-- the anchor ambiguous and the caller has to say so.
 local function match_block(sed_bufnr, source)
     local content = vim.api.nvim_buf_get_lines(sed_bufnr, 0, -1, false)
     if #content == 0 then
-        return nil
+        return nil, 0
     end
+    local first = nil
+    local total = 0
     for i = 1, #source - #content + 1 do
         if source[i] == content[1] then
             local matched = true
@@ -50,11 +66,40 @@ local function match_block(sed_bufnr, source)
                 end
             end
             if matched then
-                return i - 1
+                total = total + 1
+                first = first or (i - 1)
             end
         end
     end
-    return nil
+    return first, total
+end
+
+-- A sync that falls back to line numbers, or anchors on a repeated block,
+-- points the seditor at content the user did not choose. Both cases get a
+-- warning instead of a silent drift.
+local function warn_anchor(sed_bufnr, start, total)
+    if total > 1 then
+        vim.notify(
+            ("Seditor block matches %d places in %s, anchored on the first"):format(
+                total,
+                vim.fn.fnamemodify(
+                    vim.api.nvim_buf_get_name(seditors[sed_bufnr].file_bufnr),
+                    ":t"
+                )
+            ),
+            vim.log.levels.WARN
+        )
+    elseif not start then
+        vim.notify(
+            ("Seditor block is gone from %s, sync now uses line numbers"):format(
+                vim.fn.fnamemodify(
+                    vim.api.nvim_buf_get_name(seditors[sed_bufnr].file_bufnr),
+                    ":t"
+                )
+            ),
+            vim.log.levels.WARN
+        )
+    end
 end
 
 -- Source edits and reloads rebuild a seditor from its range in the file.
@@ -73,12 +118,13 @@ local function refresh_seditors()
                 vim.api.nvim_buf_get_lines(sed.file_bufnr, 0, -1, false)
             if reanchor[sed_bufnr] then
                 reanchor[sed_bufnr] = nil
-                local start = match_block(sed_bufnr, source)
+                local start, total = match_block(sed_bufnr, source)
                 if start then
                     sed.firstline = start
                     sed.lastline = start
                         + vim.api.nvim_buf_line_count(sed_bufnr)
                 end
+                warn_anchor(sed_bufnr, start, total)
             end
             local to = math.min(sed.lastline, #source)
             local new_lines = {}
@@ -219,13 +265,14 @@ local function reanchor_seditors(buf)
         if sed.file_bufnr ~= buf then
             goto continue
         end
-        local start = match_block(sed_bufnr, source)
+        local start, total = match_block(sed_bufnr, source)
         if start then
             sed.firstline = start
             sed.lastline = start + vim.api.nvim_buf_line_count(sed_bufnr)
         else
             sed.lastline = math.min(sed.lastline, #source)
         end
+        warn_anchor(sed_bufnr, start, total)
         dirty[sed_bufnr] = true
         ::continue::
     end
@@ -287,6 +334,12 @@ local function open_selection(command)
         firstline = firstline - 1,
         lastline = lastline,
     }
+    separated_count[file_bufnr] = (separated_count[file_bufnr] or 0) + 1
+    vim.api.nvim_buf_set_var(
+        file_bufnr,
+        "seditor_separated",
+        separated_count[file_bufnr]
+    )
     attach_file(file_bufnr)
     watch_file_reloads(file_bufnr)
 

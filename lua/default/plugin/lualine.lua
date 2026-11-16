@@ -20,7 +20,16 @@ require("lualine").setup {
         lualine_a = { "mode" },
         lualine_b = { "branch", "diff", "diagnostics" },
         -- lualine_c = { { "filename", path = 1 }, "lsp_progress" },
-        lualine_c = { { "filename", path = 1 } },
+        lualine_c = {
+            { "filename", path = 1 },
+            function()
+                local count = vim.b.seditor_separated
+                if not count or count == 0 then
+                    return ""
+                end
+                return "SEP:" .. count
+            end,
+        },
         lualine_x = {
             triforce.level,
             triforce.achievements,
