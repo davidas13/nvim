@@ -9,6 +9,7 @@ local dirty = {}
 local pending = {}
 local reanchor = {}
 local separated_count = {}
+local file_guards = {}
 local refresh_scheduled = false
 local flush_scheduled = false
 
@@ -26,6 +27,54 @@ local function selection_type()
     return "V"
 end
 
+-- The source file is locked for as long as any seditor shows a piece of it.
+-- Low level API writes still reach the buffer for the live sync, but editing,
+-- saving and reloading the file behind the seditor's back are refused.
+local function lock_source(buf)
+    -- An automation harness can opt out before opening the first seditor, so
+    -- the sync probes still exercise reload and direct file edits.
+    if file_guards[buf] or vim.b[buf].seditor_unlock then
+        return
+    end
+    file_guards[buf] = {
+        modifiable = vim.bo[buf].modifiable,
+        readonly = vim.bo[buf].readonly,
+    }
+    vim.bo[buf].modifiable = false
+    vim.bo[buf].readonly = true
+    local guard = vim.api.nvim_create_autocmd("BufReadPre", {
+        buffer = buf,
+        callback = function()
+            if vim.b.seditor_unlock then
+                return
+            end
+            -- A verbose echo raises E605, which aborts the reload before the
+            -- core replaces the buffer content.
+            vim.api.nvim_echo({
+                {
+                    ("%s has %d seditor(s) open, close them with :SeditorClose first"):format(
+                        vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":t"),
+                        separated_count[buf] or 0
+                    ),
+                    "WarningMsg",
+                },
+            }, true, {})
+        end,
+    })
+    file_guards[buf].read_autocmd = guard
+end
+
+local function unlock_source(buf)
+    local saved = file_guards[buf]
+    if not saved then
+        return
+    end
+    file_guards[buf] = nil
+    vim.api.nvim_del_autocmd(saved.read_autocmd)
+    vim.bo[buf].modifiable = saved.modifiable
+    vim.bo[buf].readonly = saved.readonly
+end
+
 local function forget_sed(buf)
     local sed = seditors[buf]
     seditors[buf] = nil
@@ -41,6 +90,7 @@ local function forget_sed(buf)
         vim.api.nvim_buf_set_var(sed.file_bufnr, "seditor_separated", count)
     else
         pcall(vim.api.nvim_buf_del_var, sed.file_bufnr, "seditor_separated")
+        unlock_source(sed.file_bufnr)
     end
 end
 
@@ -154,6 +204,15 @@ end
 -- the full range instead of the captured event keeps every seditor of a file
 -- in step, because the mapping is recomputed from the live range instead of
 -- from positions that an earlier flush already moved.
+-- The API obeys 'modifiable' too, so a flush temporarily opens the locked
+-- source buffer before writing the synced range.
+local function set_source_lines(source, firstline, lastline, lines)
+    local modifiable = vim.bo[source].modifiable
+    vim.bo[source].modifiable = true
+    vim.api.nvim_buf_set_lines(source, firstline, lastline, false, lines)
+    vim.bo[source].modifiable = modifiable
+end
+
 local function flush_seditors()
     flush_scheduled = false
     refresh_seditors()
@@ -168,11 +227,10 @@ local function flush_seditors()
             local content = vim.api.nvim_buf_get_lines(sed_bufnr, 0, -1, false)
             syncing = true
             syncing_origin = sed_bufnr
-            vim.api.nvim_buf_set_lines(
+            set_source_lines(
                 sed.file_bufnr,
                 sed.firstline,
                 sed.lastline,
-                false,
                 content
             )
             sed.lastline = sed.firstline + #content
@@ -334,6 +392,9 @@ local function open_selection(command)
         firstline = firstline - 1,
         lastline = lastline,
     }
+    if (separated_count[file_bufnr] or 0) == 0 then
+        lock_source(file_bufnr)
+    end
     separated_count[file_bufnr] = (separated_count[file_bufnr] or 0) + 1
     vim.api.nvim_buf_set_var(
         file_bufnr,
@@ -368,19 +429,38 @@ local function open_selection(command)
         callback = function()
             pending[buf] = true
             flush_seditors()
-            pcall(
-                vim.api.nvim_buf_call,
-                seditors[buf] and seditors[buf].file_bufnr or buf,
-                function()
-                    vim.cmd "silent write"
-                end
-            )
+            local source = seditors[buf] and seditors[buf].file_bufnr or buf
+            local readonly = vim.bo[source].readonly
+            vim.bo[source].readonly = false
+            pcall(vim.api.nvim_buf_call, source, function()
+                vim.cmd "silent write"
+            end)
+            vim.bo[source].readonly = readonly
             vim.bo[buf].modified = false
         end,
     })
 
     return buf
 end
+
+-- One source file can hold several seditors. Closing all of them releases the
+-- lock and gives the file back to the normal editing flow.
+vim.api.nvim_create_user_command("SeditorClose", function()
+    local current = vim.api.nvim_get_current_buf()
+    local source = seditors[current] and seditors[current].file_bufnr or current
+    for sed_bufnr, sed in pairs(vim.deepcopy(seditors)) do
+        if sed.file_bufnr == source then
+            pcall(vim.api.nvim_buf_delete, sed_bufnr, { force = true })
+        end
+    end
+end, { desc = "Close every seditor attached to this file" })
+
+vim.keymap.set(
+    "n",
+    "<Leader>yq",
+    "<Cmd>SeditorClose<CR>",
+    { desc = "Close Seditors for File" }
+)
 
 vim.keymap.set({ "v", "x" }, "<Leader>yt", function()
     open_selection "tabnew"
