@@ -120,6 +120,7 @@ local function capture()
     local first, last = selection_lines()
     local ctx = {
         bufnr = bufnr,
+        filetype = vim.bo[bufnr].filetype,
         row = row,
         col = col,
         abs = abs,
@@ -200,6 +201,12 @@ function M.pick()
         return
     end
     local items = build_items(ctx)
+    -- Module references come after the path items. They cost one bounded LSP
+    -- request and stay empty on any language without a module layout.
+    local ok_module, copy_module = pcall(require, "default.config.copy_module")
+    if ok_module then
+        vim.list_extend(items, copy_module.items(ctx))
+    end
     local ok, snacks = pcall(require, "snacks")
     if ok and snacks.picker then
         snacks.picker {
