@@ -7,6 +7,7 @@ local syncing = false
 local syncing_origin = nil
 local dirty = {}
 local pending = {}
+local reanchor = {}
 local refresh_scheduled = false
 local flush_scheduled = false
 
@@ -28,6 +29,32 @@ local function forget_sed(buf)
     seditors[buf] = nil
     dirty[buf] = nil
     pending[buf] = nil
+    reanchor[buf] = nil
+end
+
+-- Locate the block of lines the seditor still holds inside the source file.
+-- The block identifies itself, which avoids recomputing an interval when
+-- another seditor or an external edit moved the lines around.
+local function match_block(sed_bufnr, source)
+    local content = vim.api.nvim_buf_get_lines(sed_bufnr, 0, -1, false)
+    if #content == 0 then
+        return nil
+    end
+    for i = 1, #source - #content + 1 do
+        if source[i] == content[1] then
+            local matched = true
+            for j = 2, #content do
+                if source[i + j - 1] ~= content[j] then
+                    matched = false
+                    break
+                end
+            end
+            if matched then
+                return i - 1
+            end
+        end
+    end
+    return nil
 end
 
 -- Source edits and reloads rebuild a seditor from its range in the file.
@@ -44,6 +71,15 @@ local function refresh_seditors()
             dirty[sed_bufnr] = nil
             local source =
                 vim.api.nvim_buf_get_lines(sed.file_bufnr, 0, -1, false)
+            if reanchor[sed_bufnr] then
+                reanchor[sed_bufnr] = nil
+                local start = match_block(sed_bufnr, source)
+                if start then
+                    sed.firstline = start
+                    sed.lastline = start
+                        + vim.api.nvim_buf_line_count(sed_bufnr)
+                end
+            end
             local to = math.min(sed.lastline, #source)
             local new_lines = {}
             if sed.firstline < to then
@@ -113,8 +149,7 @@ local function attach_file(buf)
     if files_attached[buf] then
         return
     end
-    files_attached[buf] = true
-    vim.api.nvim_buf_attach(buf, false, {
+    local ok = vim.api.nvim_buf_attach(buf, false, {
         on_lines = function(
             _,
             attached_buf,
@@ -133,10 +168,24 @@ local function attach_file(buf)
                     if lastline <= sed.firstline then
                         sed.firstline = sed.firstline + delta
                         sed.lastline = sed.lastline + delta
-                    elseif firstline < sed.lastline then
-                        sed.lastline =
-                            math.max(sed.firstline, sed.lastline + delta)
+                    elseif firstline >= sed.lastline then
+                        -- below the range, the seditor does not follow
+                    elseif
+                        firstline <= sed.firstline
+                        and lastline >= sed.lastline
+                    then
+                        sed.firstline = firstline
+                        sed.lastline = new_lastline
                         dirty[sed_bufnr] = true
+                        dirtied = true
+                    else
+                        if lastline >= sed.lastline then
+                            sed.lastline = math.min(sed.lastline, new_lastline)
+                        else
+                            sed.lastline = sed.lastline + delta
+                        end
+                        dirty[sed_bufnr] = true
+                        reanchor[sed_bufnr] = true
                         dirtied = true
                     end
                 end
@@ -152,6 +201,13 @@ local function attach_file(buf)
             files_attached[detached] = nil
         end,
     })
+    -- The attach can fail while the buffer is not fully loaded during a
+    -- reload, so only a real success marks the file as attached.
+    if ok == false then
+        files_attached[buf] = nil
+        return false
+    end
+    files_attached[buf] = true
 end
 
 -- A reload re-anchors each seditor on the block of lines it still holds, so a
@@ -163,28 +219,11 @@ local function reanchor_seditors(buf)
         if sed.file_bufnr ~= buf then
             goto continue
         end
-        local content = vim.api.nvim_buf_get_lines(sed_bufnr, 0, -1, false)
-        local anchored = false
-        if #content > 0 then
-            for i = 1, #source - #content + 1 do
-                if source[i] == content[1] then
-                    local match = true
-                    for j = 2, #content do
-                        if source[i + j - 1] ~= content[j] then
-                            match = false
-                            break
-                        end
-                    end
-                    if match then
-                        sed.firstline = i - 1
-                        sed.lastline = i - 1 + #content
-                        anchored = true
-                        break
-                    end
-                end
-            end
-        end
-        if not anchored then
+        local start = match_block(sed_bufnr, source)
+        if start then
+            sed.firstline = start
+            sed.lastline = start + vim.api.nvim_buf_line_count(sed_bufnr)
+        else
             sed.lastline = math.min(sed.lastline, #source)
         end
         dirty[sed_bufnr] = true
