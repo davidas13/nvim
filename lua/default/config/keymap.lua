@@ -26,25 +26,90 @@ end, { desc = "Next diagnostic" })
 -- }}}
 
 -- Window Navigation and Resizing {{{
-vim.keymap.set("t", "<C-w>h", "<C-\\><C-n><C-w>h", { noremap = true, silent = true })
-vim.keymap.set("t", "<C-w>j", "<C-\\><C-n><C-w>j", { noremap = true, silent = true })
-vim.keymap.set("t", "<C-w>k", "<C-\\><C-n><C-w>k", { noremap = true, silent = true })
-vim.keymap.set("t", "<C-w>l", "<C-\\><C-n><C-w>l", { noremap = true, silent = true })
+vim.keymap.set(
+    "t",
+    "<C-w>h",
+    "<C-\\><C-n><C-w>h",
+    { noremap = true, silent = true }
+)
+vim.keymap.set(
+    "t",
+    "<C-w>j",
+    "<C-\\><C-n><C-w>j",
+    { noremap = true, silent = true }
+)
+vim.keymap.set(
+    "t",
+    "<C-w>k",
+    "<C-\\><C-n><C-w>k",
+    { noremap = true, silent = true }
+)
+vim.keymap.set(
+    "t",
+    "<C-w>l",
+    "<C-\\><C-n><C-w>l",
+    { noremap = true, silent = true }
+)
 
-vim.keymap.set("t", "<C-Up>", "<C-\\><C-n>:resize +2<CR>", { noremap = true, silent = true })
-vim.keymap.set("t", "<C-Down>", "<C-\\><C-n>:resize -2<CR>", { noremap = true, silent = true })
-vim.keymap.set("t", "<C-Left>", "<C-\\><C-n>:vertical resize -2<CR>", { noremap = true, silent = true })
-vim.keymap.set("t", "<C-Right>", "<C-\\><C-n>:vertical resize +2<CR>", { noremap = true, silent = true })
+vim.keymap.set(
+    "t",
+    "<C-Up>",
+    "<C-\\><C-n>:resize +2<CR>",
+    { noremap = true, silent = true }
+)
+vim.keymap.set(
+    "t",
+    "<C-Down>",
+    "<C-\\><C-n>:resize -2<CR>",
+    { noremap = true, silent = true }
+)
+vim.keymap.set(
+    "t",
+    "<C-Left>",
+    "<C-\\><C-n>:vertical resize -2<CR>",
+    { noremap = true, silent = true }
+)
+vim.keymap.set(
+    "t",
+    "<C-Right>",
+    "<C-\\><C-n>:vertical resize +2<CR>",
+    { noremap = true, silent = true }
+)
 
-vim.keymap.set("n", "<C-Up>", ":resize +2<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<C-Down>", ":resize -2<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", { noremap = true, silent = true })
+vim.keymap.set(
+    "n",
+    "<C-Up>",
+    ":resize +2<CR>",
+    { noremap = true, silent = true }
+)
+vim.keymap.set(
+    "n",
+    "<C-Down>",
+    ":resize -2<CR>",
+    { noremap = true, silent = true }
+)
+vim.keymap.set(
+    "n",
+    "<C-Left>",
+    ":vertical resize -2<CR>",
+    { noremap = true, silent = true }
+)
+vim.keymap.set(
+    "n",
+    "<C-Right>",
+    ":vertical resize +2<CR>",
+    { noremap = true, silent = true }
+)
 -- }}}
 
 -- Plugin Keymaps {{{
 -- Update plugins
-vim.keymap.set({ "n" }, "<leader>:xu", vim.pack.update, { desc = "Update Plugins" })
+vim.keymap.set(
+    { "n" },
+    "<leader>:xu",
+    vim.pack.update,
+    { desc = "Update Plugins" }
+)
 -- }}}
 
 -- Editor Keymaps {{{

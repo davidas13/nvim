@@ -57,7 +57,12 @@ return function(bufnr)
 
     map("n", "<leader>ghp", gitsigns.preview_hunk, { desc = "Preview Hunk" })
 
-    map("n", "<leader>ghi", gitsigns.preview_hunk_inline, { desc = "Preview Hunk Inline" })
+    map(
+        "n",
+        "<leader>ghi",
+        gitsigns.preview_hunk_inline,
+        { desc = "Preview Hunk Inline" }
+    )
 
     map("n", "<leader>ghb", function()
         gitsigns.blame_line { full = true }
@@ -75,8 +80,18 @@ return function(bufnr)
     map("n", "<leader>ghq", gitsigns.setqflist, { desc = "Set QF List" })
 
     -- Toggles
-    map("n", "<leader>thb", gitsigns.toggle_current_line_blame, { desc = "Toggle Current Line Blame" })
-    map("n", "<leader>thw", gitsigns.toggle_word_diff, { desc = "Toggle Word Diff" })
+    map(
+        "n",
+        "<leader>thb",
+        gitsigns.toggle_current_line_blame,
+        { desc = "Toggle Current Line Blame" }
+    )
+    map(
+        "n",
+        "<leader>thw",
+        gitsigns.toggle_word_diff,
+        { desc = "Toggle Word Diff" }
+    )
 
     -- Text object
     map({ "o", "x" }, "gih", gitsigns.select_hunk, { desc = "Select Hunk" })

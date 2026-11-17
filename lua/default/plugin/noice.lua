@@ -48,7 +48,10 @@ require("noice").setup {
                 padding = { 0, 1 },
             },
             win_options = {
-                winhighlight = { Normal = "Normal", FloatBorder = "DiagnosticInfo" },
+                winhighlight = {
+                    Normal = "Normal",
+                    FloatBorder = "DiagnosticInfo",
+                },
             },
         },
     },

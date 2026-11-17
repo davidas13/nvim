@@ -118,7 +118,8 @@ end
 
 _G.tabline_without_close = tabline
 vim.o.tabline = "%!v:lua.tabline_without_close()"
-vim.o.sessionoptions = "blank,buffers,curdir,folds,globals,help,tabpages,terminal,winsize,winpos,localoptions"
+vim.o.sessionoptions =
+    "blank,buffers,curdir,folds,globals,help,tabpages,terminal,winsize,winpos,localoptions"
 vim.o.autoread = true
 vim.opt.updatetime = 300
 vim.opt.wrap = true

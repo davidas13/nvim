@@ -15,7 +15,11 @@ dap.configurations.cpp = {
         type = "cppdbg",
         request = "launch",
         program = function()
-            return vim.fn.input("Executable path: ", vim.fn.getcwd() .. "/", "file")
+            return vim.fn.input(
+                "Executable path: ",
+                vim.fn.getcwd() .. "/",
+                "file"
+            )
         end,
         cwd = "${workspaceFolder}",
         stopOnEntry = true,
@@ -27,7 +31,11 @@ dap.configurations.cpp = {
         type = "codelldb",
         request = "launch",
         program = function()
-            return vim.fn.input("Executable path: ", vim.fn.getcwd() .. "/", "file")
+            return vim.fn.input(
+                "Executable path: ",
+                vim.fn.getcwd() .. "/",
+                "file"
+            )
         end,
         cwd = "${workspaceFolder}",
         stopOnEntry = false,
@@ -43,7 +51,11 @@ dap.configurations.rust = {
         type = "codelldb",
         request = "launch",
         program = function()
-            return vim.fn.input("Executable path: ", vim.fn.getcwd() .. "/target/debug/", "file")
+            return vim.fn.input(
+                "Executable path: ",
+                vim.fn.getcwd() .. "/target/debug/",
+                "file"
+            )
         end,
         cwd = "${workspaceFolder}",
         stopOnEntry = false,
@@ -58,7 +70,11 @@ dap.configurations.zig = {
         type = "codelldb",
         request = "launch",
         program = function()
-            return vim.fn.input("Executable path: ", vim.fn.getcwd() .. "/zig-out/bin/", "file")
+            return vim.fn.input(
+                "Executable path: ",
+                vim.fn.getcwd() .. "/zig-out/bin/",
+                "file"
+            )
         end,
         cwd = "${workspaceFolder}",
         stopOnEntry = false,
@@ -112,7 +128,8 @@ local function with_sourcemap_resolution(configs)
     for _, config in ipairs(configs) do
         -- TypeScript and Svelte emit maps next to the sources; node_modules
         -- resolution noise is excluded so breakpoints land on project files.
-        config.resolveSourceMapLocations = { "${workspaceFolder}/**", "!**/node_modules/**" }
+        config.resolveSourceMapLocations =
+            { "${workspaceFolder}/**", "!**/node_modules/**" }
     end
     return configs
 end

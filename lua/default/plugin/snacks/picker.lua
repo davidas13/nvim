@@ -28,7 +28,12 @@ return {
                 {
                     box = "horizontal",
                     { win = "list", border = "rounded" },
-                    { win = "preview", title = "{preview}", width = 0.6, border = "rounded" },
+                    {
+                        win = "preview",
+                        title = "{preview}",
+                        width = 0.6,
+                        border = "rounded",
+                    },
                 },
                 { win = "input", height = 1, border = "bottom" },
             },
@@ -144,12 +149,24 @@ return {
                         end
 
                         local vals = {
-                            ["BASENAME"] = vim.fn.fnamemodify(item.file, ":t:r"),
-                            ["EXTENSION"] = vim.fn.fnamemodify(item.file, ":t:e"),
+                            ["BASENAME"] = vim.fn.fnamemodify(
+                                item.file,
+                                ":t:r"
+                            ),
+                            ["EXTENSION"] = vim.fn.fnamemodify(
+                                item.file,
+                                ":t:e"
+                            ),
                             ["FILENAME"] = vim.fn.fnamemodify(item.file, ":t"),
                             ["PATH"] = item.file,
-                            ["PATH (CWD)"] = vim.fn.fnamemodify(item.file, ":."),
-                            ["PATH (HOME)"] = vim.fn.fnamemodify(item.file, ":~"),
+                            ["PATH (CWD)"] = vim.fn.fnamemodify(
+                                item.file,
+                                ":."
+                            ),
+                            ["PATH (HOME)"] = vim.fn.fnamemodify(
+                                item.file,
+                                ":~"
+                            ),
                             ["URI"] = vim.uri_from_fname(item.file),
                         }
 
@@ -164,7 +181,10 @@ return {
                         vim.ui.select(options, {
                             prompt = "Choose to copy to clipboard:",
                             format_item = function(list_item)
-                                return ("%s: %s"):format(list_item, vals[list_item])
+                                return ("%s: %s"):format(
+                                    list_item,
+                                    vals[list_item]
+                                )
                             end,
                         }, function(choice)
                             local result = vals[choice]
@@ -218,7 +238,12 @@ return {
                             Snacks.notify.info(sel[1].file)
                             vim.cmd("tabnew " .. sel[1].file)
                             vim.cmd("vert diffs " .. sel[2].file)
-                            Snacks.notify.info("Diffing " .. sel[1].file .. " against " .. sel[2].file)
+                            Snacks.notify.info(
+                                "Diffing "
+                                    .. sel[1].file
+                                    .. " against "
+                                    .. sel[2].file
+                            )
                             return
                         end
 

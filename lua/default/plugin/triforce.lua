@@ -26,7 +26,12 @@ vim.keymap.set(
     { noremap = true, silent = true, desc = "Open Triforce Profile" }
 )
 
-vim.keymap.set("n", "<leader>\"s", triforce.get_stats, { noremap = true, silent = true, desc = "Get Triforce Stats" })
+vim.keymap.set(
+    "n",
+    "<leader>\"s",
+    triforce.get_stats,
+    { noremap = true, silent = true, desc = "Get Triforce Stats" }
+)
 
 vim.keymap.set(
     "n",
@@ -35,7 +40,12 @@ vim.keymap.set(
     { noremap = true, silent = true, desc = "Reset Triforce Stats" }
 )
 
-vim.keymap.set("n", "<leader>\"S", triforce.save_stats, { noremap = true, silent = true, desc = "Save Triforce Stats" })
+vim.keymap.set(
+    "n",
+    "<leader>\"S",
+    triforce.save_stats,
+    { noremap = true, silent = true, desc = "Save Triforce Stats" }
+)
 
 vim.keymap.set(
     "n",

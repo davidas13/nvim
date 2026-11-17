@@ -7,12 +7,16 @@ local function load_config(name)
 end
 
 local function select_config()
-    vim.ui.select({ "minimal", "default" }, { prompt = "Choose Neovim config:" }, function(choice)
-        if choice then
-            load_config(choice)
-            vim.notify("Loaded config: " .. choice)
+    vim.ui.select(
+        { "minimal", "default" },
+        { prompt = "Choose Neovim config:" },
+        function(choice)
+            if choice then
+                load_config(choice)
+                vim.notify("Loaded config: " .. choice)
+            end
         end
-    end)
+    )
 end
 
 -- Create user command
@@ -21,7 +25,8 @@ vim.api.nvim_create_user_command("Config", function()
 end, {})
 
 -- Load saved config or ask once
-local saved = vim.fn.filereadable(config_file) == 1 and vim.fn.readfile(config_file)[1]
+local saved = vim.fn.filereadable(config_file) == 1
+    and vim.fn.readfile(config_file)[1]
 
 if saved then
     require(saved)

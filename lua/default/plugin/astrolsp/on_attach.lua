@@ -63,13 +63,22 @@ return function(client, bufnr)
         vim.lsp.buf.declaration()
     end, { noremap = true, buffer = bufnr, desc = "LSP - Go to Declaration" })
 
-    vim.keymap.set("n", "gi", function()
-        snacks.picker.lsp_implementations()
-    end, { noremap = true, buffer = bufnr, desc = "LSP - Go to Implementation" })
+    vim.keymap.set(
+        "n",
+        "gi",
+        function()
+            snacks.picker.lsp_implementations()
+        end,
+        { noremap = true, buffer = bufnr, desc = "LSP - Go to Implementation" }
+    )
 
     vim.keymap.set("n", "go", function()
         snacks.picker.lsp_type_definitions()
-    end, { noremap = true, buffer = bufnr, desc = "LSP  - Go to type definition" })
+    end, {
+        noremap = true,
+        buffer = bufnr,
+        desc = "LSP  - Go to type definition",
+    })
 
     vim.keymap.set("n", "gr", function()
         snacks.picker.lsp_references()
@@ -87,13 +96,21 @@ return function(client, bufnr)
     if is_supported_method("documentSymbol", client) then
         vim.keymap.set("n", "<leader>ss", function()
             snacks.picker.lsp_symbols { filter = kind_filter }
-        end, { noremap = true, buffer = bufnr, desc = "LSP - Show Symbols" })
+        end, {
+            noremap = true,
+            buffer = bufnr,
+            desc = "LSP - Show Symbols",
+        })
     end
 
     if is_supported_method("workspace/symbols", client) then
         vim.keymap.set("n", "<leader>sS", function()
             snacks.picker.lsp_workspace_symbols { filter = kind_filter }
-        end, { noremap = true, buffer = bufnr, desc = "LSP - Show Workspace Symbols" })
+        end, {
+            noremap = true,
+            buffer = bufnr,
+            desc = "LSP - Show Workspace Symbols",
+        })
     end
 end
 -- }}}

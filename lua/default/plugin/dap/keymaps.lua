@@ -17,11 +17,15 @@ end, { desc = "Run/Continue" })
 vim.keymap.set("n", "<leader>Da", function()
     dap.continue {
         before = function(config)
-            local args = type(config.args) == "function" and (config.args() or {}) or config.args or {}
+            local args = type(config.args) == "function"
+                    and (config.args() or {})
+                or config.args
+                or {}
             config = vim.deepcopy(config)
             ---@cast args string[]
             config.args = function()
-                local new_args = vim.fn.input("Run with args: ", table.concat(args, " "))
+                local new_args =
+                    vim.fn.input("Run with args: ", table.concat(args, " "))
                 return vim.split(vim.fn.expand(new_args), " ")
             end
             return config
