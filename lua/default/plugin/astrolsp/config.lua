@@ -14,6 +14,9 @@ local web_markers = vim.list_extend(vim.deepcopy(vcs_markers), {
 })
 local servers = require "default.plugin.astrolsp.servers"
 
+-- ast-grep needs sgconfig, so a VCS root would start it without a project.
+local config_marker_servers = { ast_grep = true }
+
 -- Some configs fall back to cwd, so resolve the root from markers instead.
 local function project_root(markers)
     return function(bufnr, on_dir)
@@ -100,7 +103,10 @@ for _, server in ipairs(servers) do
         local entry = vim.tbl_deep_extend("force", config[server] or {}, {
             workspace_required = true,
         })
-        if type(resolved.root_dir) ~= "function" then
+        if
+            type(resolved.root_dir) ~= "function"
+            and not config_marker_servers[server]
+        then
             local markers = vim.deepcopy(resolved.root_markers or vcs_markers)
             for _, marker in ipairs(vcs_markers) do
                 if not vim.list_contains(markers, marker) then
