@@ -6,6 +6,10 @@
 description = "Check Lua formatting with stylua"
 run = "stylua --check ."
 
+[tasks.test]
+description = "Check tabline labels for plain, diff, and mixed window layouts"
+run = "nvim --headless '+luafile scripts/tabline-test.lua' +qa"
+
 [tasks.smoke]
 description = "Load every plugin config module headless and fail on load errors"
 run = """

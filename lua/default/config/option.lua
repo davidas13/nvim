@@ -103,14 +103,31 @@ local function tabline()
     local parts = {}
     local current = vim.fn.tabpagenr()
     for i = 1, vim.fn.tabpagenr "$" do
-        local buf = vim.fn.tabpagebuflist(i)[vim.fn.tabpagewinnr(i)]
-        local name = vim.fn.fnamemodify(vim.fn.bufname(buf), ":t")
-        parts[#parts + 1] = ("%%#%s#%%%dT %d %s%s "):format(
+        local plain, diff = {}, {}
+        for _, win in ipairs(vim.api.nvim_tabpage_list_wins(i)) do
+            local buf = vim.api.nvim_win_get_buf(win)
+            local name = vim.fn.fnamemodify(vim.fn.bufname(buf), ":t")
+            if name == "" then
+                name = "[No Name]"
+            end
+            if vim.bo[buf].modified then
+                name = name .. " +"
+            end
+            local group = vim.wo[win].diff and diff or plain
+            group[#group + 1] = name
+        end
+        local names = {}
+        if #plain > 0 then
+            names[#names + 1] = table.concat(plain, ", ")
+        end
+        if #diff > 0 then
+            names[#names + 1] = table.concat(diff, " <-> ")
+        end
+        parts[#parts + 1] = ("%%#%s#%%%dT %d %s "):format(
             i == current and "TabLineSel" or "TabLine",
             i,
             i,
-            name == "" and "[No Name]" or name,
-            vim.bo[buf].modified and " +" or ""
+            table.concat(names, ", ")
         )
     end
     return table.concat(parts) .. "%#TabLineFill#%T"
