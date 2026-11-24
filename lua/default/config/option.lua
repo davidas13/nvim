@@ -103,32 +103,43 @@ local function tabline()
     local parts = {}
     local current = vim.fn.tabpagenr()
     for i = 1, vim.fn.tabpagenr "$" do
-        local plain, diff = {}, {}
-        for _, win in ipairs(vim.api.nvim_tabpage_list_wins(i)) do
-            local buf = vim.api.nvim_win_get_buf(win)
-            local name = vim.fn.fnamemodify(vim.fn.bufname(buf), ":t")
-            if name == "" then
-                name = "[No Name]"
+        if vim.api.nvim_tabpage_is_valid(i) then
+            local plain, diff = {}, {}
+            for _, win in ipairs(vim.api.nvim_tabpage_list_wins(i)) do
+                -- Ignore floating plugin UI and special buffers, but keep
+                -- read-only diff snapshots.
+                if vim.api.nvim_win_get_config(win).relative == "" then
+                    local buf = vim.api.nvim_win_get_buf(win)
+                    local buftype = vim.bo[buf].buftype
+                    local is_diff = vim.wo[win].diff
+                    if buftype == "" or (buftype == "nowrite" and is_diff) then
+                        local name =
+                            vim.fn.fnamemodify(vim.fn.bufname(buf), ":t")
+                        if name == "" then
+                            name = "[No Name]"
+                        end
+                        if vim.bo[buf].modified then
+                            name = name .. " +"
+                        end
+                        local group = is_diff and diff or plain
+                        group[#group + 1] = name
+                    end
+                end
             end
-            if vim.bo[buf].modified then
-                name = name .. " +"
+            local names = {}
+            if #plain > 0 then
+                names[#names + 1] = table.concat(plain, ", ")
             end
-            local group = vim.wo[win].diff and diff or plain
-            group[#group + 1] = name
+            if #diff > 0 then
+                names[#names + 1] = table.concat(diff, " <-> ")
+            end
+            parts[#parts + 1] = ("%%#%s#%%%dT %d %s "):format(
+                i == current and "TabLineSel" or "TabLine",
+                i,
+                i,
+                table.concat(names, ", ")
+            )
         end
-        local names = {}
-        if #plain > 0 then
-            names[#names + 1] = table.concat(plain, ", ")
-        end
-        if #diff > 0 then
-            names[#names + 1] = table.concat(diff, " <-> ")
-        end
-        parts[#parts + 1] = ("%%#%s#%%%dT %d %s "):format(
-            i == current and "TabLineSel" or "TabLine",
-            i,
-            i,
-            table.concat(names, ", ")
-        )
     end
     return table.concat(parts) .. "%#TabLineFill#%T"
 end
