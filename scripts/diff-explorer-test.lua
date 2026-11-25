@@ -262,4 +262,32 @@ end
 assert(#tree.view_items < tree_count, "tree: folder collapses")
 tree.close()
 
+vim.cmd.cd(git_dir)
+local opened_panel = explorer_diff.open()
+local opened_tab = vim.api.nvim_get_current_tabpage()
+vim.cmd.DiffExplorerFocusFiles()
+eq(vim.api.nvim_get_current_win(), opened_panel.win, "command: focus files")
+vim.cmd.DiffExplorerNext()
+vim.cmd.DiffExplorerToggleFiles()
+eq(
+    vim.api.nvim_win_is_valid(opened_panel.win),
+    false,
+    "command: toggle closes panel"
+)
+vim.cmd.DiffExplorerToggleFiles()
+local reopened = vim.api.nvim_get_current_win()
+eq(
+    vim.api.nvim_win_get_option(reopened, "diff"),
+    false,
+    "command: toggle reopens panel"
+)
+eq(
+    vim.bo[vim.api.nvim_win_get_buf(reopened)].readonly,
+    true,
+    "command: reopened panel readonly"
+)
+vim.cmd.DiffExplorerRefresh()
+vim.cmd.DiffExplorerClose()
+eq(vim.api.nvim_tabpage_is_valid(opened_tab), false, "command: close tab")
+
 print "DIFF EXPLORER TEST OK"

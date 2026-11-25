@@ -152,6 +152,20 @@ function M.create(entries, on_select, on_cycle, opts)
         refresh(new_entries)
     end
 
+    function panel.select_index(row)
+        if not api.nvim_win_is_valid(win) then
+            return
+        end
+        if row < 1 or row > #panel.view_items then
+            return
+        end
+        api.nvim_win_set_cursor(win, { row, 0 })
+        local item = panel.view_items[row]
+        if item and item.kind == "file" and on_select then
+            on_select(item.file)
+        end
+    end
+
     function panel.close()
         if panel.autocmd then
             api.nvim_del_autocmd(panel.autocmd)
