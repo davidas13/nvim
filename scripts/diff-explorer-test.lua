@@ -79,6 +79,17 @@ run(
     conflict_dir
 )
 
+local path_dir = base .. "/paths"
+vim.fn.mkdir(path_dir .. "/sub", "p")
+write(path_dir .. "/root.txt", "r1\n")
+write(path_dir .. "/sub/inner.txt", "i1\n")
+run(
+    "git init -q && git config user.email t@example.com && git config user.name t && git add . && git commit -qm init",
+    path_dir
+)
+write(path_dir .. "/root.txt", "r2\n")
+write(path_dir .. "/sub/inner.txt", "i2\n")
+
 eq(sources.detect_vcs(git_dir .. "/file.txt"), "git", "detect git")
 eq(sources.detect_vcs(hg_dir .. "/file.txt"), "hg", "detect hg")
 eq(sources.detect_vcs(jj_dir .. "/file.txt"), "jj", "detect jj")
@@ -171,6 +182,21 @@ eq(parsed.after, "worktree", "parse after")
 parsed = explorer_diff.parse_args "@/tmp/prod"
 eq(type(parsed.before), "table", "parse external before")
 eq(parsed.before.path, "/tmp/prod", "parse external path")
+parsed = explorer_diff.parse_args "HEAD~2 -- lua/diffview plugin"
+eq(parsed.before.rev, "HEAD~2", "parse revision")
+eq(#parsed.paths, 2, "parse pathspec")
+eq(parsed.paths[1], "lua/diffview", "parse first path")
+parsed = explorer_diff.parse_args "before=rev:HEAD~1"
+eq(parsed.before.rev, "HEAD~1", "parse rev option")
+eq(
+    sources.read_side(
+        { rev = git_history[2].rev },
+        hist_dir .. "/file.txt",
+        "git"
+    ),
+    "h1\n",
+    "read side at revision"
+)
 
 local pane = diff.create_pane()
 assert(vim.api.nvim_tabpage_is_valid(pane.tab), "create pane: invalid tabpage")
@@ -497,6 +523,14 @@ eq(
 )
 eq(explorer_diff.redirect_cmdline "bd", "<C-u>", "lock: buffer delete blocked")
 eq(explorer_diff.redirect_cmdline "set number", "<C-u>", "lock: set blocked")
+explorer_diff.close()
+
+vim.cmd.cd(path_dir)
+local filtered_panel = explorer_diff.open "-- sub"
+eq(#filtered_panel.entries, 1, "pathspec: entries kept")
+for _, entry in ipairs(filtered_panel.entries) do
+    assert(entry.file:find "/sub/", "pathspec: only matching files")
+end
 explorer_diff.close()
 
 vim.cmd.cd(hist_dir)

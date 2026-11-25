@@ -130,15 +130,25 @@ local function parse_spec(value)
     if type(value) == "string" and value:sub(1, 2) == "@/" then
         return { path = value:sub(2) }
     end
+    if type(value) == "string" and value:sub(1, 4) == "rev:" then
+        return { rev = value:sub(5) }
+    end
     return nil
 end
 
 function M.parse_args(args)
-    local result = { profile = nil, before = nil, after = nil }
+    local text = tostring(args or "")
+    local left, path_text = text:match "^(.-)%s-%-%-%s-(.-)$"
+    left = left or text
+    path_text = path_text or ""
+    local result = { profile = nil, before = nil, after = nil, paths = {} }
+    for path in path_text:gmatch "%S+" do
+        table.insert(result.paths, path)
+    end
     local fallback = config.profiles[config.default_profile]
         or DEFAULT_PROFILES.working
     local has_kv = false
-    for key, value in tostring(args or ""):gmatch "(%w+)%s*=%s*(%S+)" do
+    for key, value in left:gmatch "(%w+)%s*=%s*(%S+)" do
         has_kv = true
         if key == "before" then
             result.before = parse_spec(value)
@@ -151,13 +161,19 @@ function M.parse_args(args)
         result.after = result.after or "worktree"
         return result
     end
-    local name = vim.trim(tostring(args or ""))
+    local name = vim.trim(left)
     if name == "" then
         result.profile = config.default_profile
     elseif config.profiles[name] then
         result.profile = name
+    elseif name:sub(1, 2) == "@/" then
+        result.before = parse_spec(name)
+        result.after = "worktree"
+    elseif name ~= "" then
+        result.before = { rev = name }
+        result.after = "worktree"
     else
-        result.before = parse_spec(name) or fallback.before
+        result.before = fallback.before
         result.after = "worktree"
     end
     return result
@@ -191,13 +207,28 @@ local function cycle(state)
     state.profile = named_profile(state.name)
 end
 
-local function changed_files()
+local function changed_files(paths)
     local probe = vim.fn.getcwd() .. "/__diff_explorer_probe__"
     local vcs = sources.detect_vcs(probe)
     if not vcs then
         return {}
     end
-    return sources.status(probe, vcs)
+    local entries = sources.status(probe, vcs)
+    if not paths or #paths == 0 then
+        return entries
+    end
+    local filtered = {}
+    for _, entry in ipairs(entries) do
+        local rel = sources.relative(entry.file, vcs) or entry.file
+        for _, path in ipairs(paths) do
+            local wanted = path:gsub("/$", "")
+            if rel == wanted or rel:find(wanted .. "/", 1, true) then
+                table.insert(filtered, entry)
+                break
+            end
+        end
+    end
+    return filtered
 end
 
 local function current_view()
@@ -217,7 +248,7 @@ function M.open(args)
     local config_snapshot = apply_project_config()
     local parsed = M.parse_args(args)
     local name, profile = current_profile(parsed)
-    local state = { name = name, profile = profile }
+    local state = { name = name, profile = profile, paths = parsed.paths }
     local pane = diff.create_pane()
     local session = { tab = pane.tab, pane = pane, state = state, panel = nil }
 
@@ -233,18 +264,23 @@ function M.open(args)
 
     local function build_panel()
         api.nvim_set_current_win(pane.base_win)
-        session.panel = panel_module.create(changed_files(), function(file)
-            pcall(show, file)
-        end, function()
-            cycle(state)
-            if state.file then
-                pcall(show, state.file)
-            end
-        end, {
-            listing_style = config.listing_style,
-            width = config.panel_width,
-            cwd = vim.fn.getcwd(),
-        })
+        session.panel = panel_module.create(
+            changed_files(state.paths),
+            function(file)
+                pcall(show, file)
+            end,
+            function()
+                cycle(state)
+                if state.file then
+                    pcall(show, state.file)
+                end
+            end,
+            {
+                listing_style = config.listing_style,
+                width = config.panel_width,
+                cwd = vim.fn.getcwd(),
+            }
+        )
         mark_no_lsp(pane.base_buf)
         mark_no_lsp(session.panel.buf)
         if session.panel.entries[1] then
@@ -257,7 +293,7 @@ function M.open(args)
     session.build_panel = build_panel
     session.refresh_panel = function()
         if session.panel then
-            session.panel.refresh(changed_files())
+            session.panel.refresh(changed_files(state.paths))
             api.nvim_set_current_win(session.panel.win)
         end
     end

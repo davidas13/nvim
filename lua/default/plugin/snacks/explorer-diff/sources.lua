@@ -81,6 +81,9 @@ function M.read_side(spec, file, vcs)
     if type(spec) == "function" then
         return spec(file, vcs)
     end
+    if type(spec) == "table" and spec.rev then
+        return M.at_rev(file, vcs, spec.rev)
+    end
     if spec == "worktree" then
         return read_file(file)
     end
