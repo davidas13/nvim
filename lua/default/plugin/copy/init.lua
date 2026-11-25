@@ -38,5 +38,17 @@ end, { silent = true, desc = "Copy Filename", noremap = true })
 vim.api.nvim_create_user_command("CopyDiff", M.copy_diff, {})
 vim.api.nvim_create_user_command("CopyDiffClear", M.clear_diff, {})
 
+local function copy_path(key)
+    return function()
+        M.copy(key)
+    end
+end
+
+vim.api.nvim_create_user_command("CopyReference", M.pick, {})
+vim.api.nvim_create_user_command("CopyAbs", copy_path "abs", {})
+vim.api.nvim_create_user_command("CopyRel", copy_path "rel", {})
+vim.api.nvim_create_user_command("CopyBase", copy_path "base", {})
+vim.api.nvim_create_user_command("CopyUri", copy_path "uri", {})
+
 return M
 -- }}}

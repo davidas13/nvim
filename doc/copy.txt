@@ -25,6 +25,15 @@ COMMANDS					*copy-commands*
 <leader>cF		Copy the absolute path.
 <leader>cn		Copy the file name.
 
+:CopyReference		Open the Copy Reference picker. Same as <C-y>.
+
+:CopyAbs		Copy the absolute path.
+:CopyRel		Copy the path relative to the current directory.
+:CopyBase		Copy the file name.
+:CopyUri		Copy the file URI.
+
+Each command copies one path format without opening the picker.
+
 :CopyDiff		Copy a unified diff of every pair of diff-mode windows.
 			See |copy-diff| below.
 
