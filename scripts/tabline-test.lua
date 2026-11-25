@@ -75,6 +75,33 @@ local function expect_plugin_windows()
     )
 end
 
+local function expect_two_tabs()
+    vim.cmd "tabonly!"
+    vim.cmd "only!"
+    vim.cmd "enew"
+    vim.api.nvim_buf_set_name(
+        vim.api.nvim_win_get_buf(0),
+        "/tmp/tabline-test-two/a.txt"
+    )
+    vim.cmd "tabnew"
+    vim.cmd "tabclose"
+    vim.cmd "tabnew"
+    local second = vim.api.nvim_get_current_tabpage()
+    vim.api.nvim_buf_set_name(
+        vim.api.nvim_win_get_buf(0),
+        "/tmp/tabline-test-two/b.txt"
+    )
+    local actual = _G.tabline_without_close()
+    local expected = "%#TabLine#%1T 1 a.txt "
+        .. "%#TabLineSel#%2T 2 b.txt "
+        .. "%#TabLineFill#%T"
+    assert(
+        actual == expected,
+        ("tabline for two tabs: expected %q, got %q"):format(expected, actual)
+    )
+    vim.cmd(("tabclose %d"):format(vim.api.nvim_tabpage_get_number(second)))
+end
+
 local function expect_stale_tab()
     if vim.fn.winnr "$" > 1 then
         vim.cmd "only!"
@@ -118,6 +145,7 @@ local ok, err = pcall(function()
         "diff snapshot buffer"
     )
     expect_plugin_windows()
+    expect_two_tabs()
     expect_stale_tab()
 end)
 

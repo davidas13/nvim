@@ -102,51 +102,49 @@ vim.o.showtabline = 2
 local function tabline()
     local parts = {}
     local current = vim.fn.tabpagenr()
-    for i = 1, vim.fn.tabpagenr "$" do
-        if vim.api.nvim_tabpage_is_valid(i) then
-            local custom = vim.fn.gettabvar(i, "diffexplorer_title", "")
-            local plain, diff = {}, {}
-            for _, win in
-                ipairs(custom == "" and vim.api.nvim_tabpage_list_wins(i) or {})
-            do
-                -- Ignore floating plugin UI and special buffers, but keep
-                -- read-only diff snapshots.
-                if vim.api.nvim_win_get_config(win).relative == "" then
-                    local buf = vim.api.nvim_win_get_buf(win)
-                    local buftype = vim.bo[buf].buftype
-                    local is_diff = vim.wo[win].diff
-                    if buftype == "" or (buftype == "nowrite" and is_diff) then
-                        local name =
-                            vim.fn.fnamemodify(vim.fn.bufname(buf), ":t")
-                        if name == "" then
-                            name = "[No Name]"
-                        end
-                        if vim.bo[buf].modified then
-                            name = name .. " +"
-                        end
-                        local group = is_diff and diff or plain
-                        group[#group + 1] = name
+    for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
+        local i = vim.api.nvim_tabpage_get_number(tab)
+        local custom = vim.fn.gettabvar(i, "diffexplorer_title", "")
+        local plain, diff = {}, {}
+        for _, win in
+            ipairs(custom == "" and vim.api.nvim_tabpage_list_wins(tab) or {})
+        do
+            -- Ignore floating plugin UI and special buffers, but keep
+            -- read-only diff snapshots.
+            if vim.api.nvim_win_get_config(win).relative == "" then
+                local buf = vim.api.nvim_win_get_buf(win)
+                local buftype = vim.bo[buf].buftype
+                local is_diff = vim.wo[win].diff
+                if buftype == "" or (buftype == "nowrite" and is_diff) then
+                    local name = vim.fn.fnamemodify(vim.fn.bufname(buf), ":t")
+                    if name == "" then
+                        name = "[No Name]"
                     end
+                    if vim.bo[buf].modified then
+                        name = name .. " +"
+                    end
+                    local group = is_diff and diff or plain
+                    group[#group + 1] = name
                 end
             end
-            local names = {}
-            if custom ~= "" then
-                names[1] = custom
-            else
-                if #plain > 0 then
-                    names[#names + 1] = table.concat(plain, ", ")
-                end
-                if #diff > 0 then
-                    names[#names + 1] = table.concat(diff, " <-> ")
-                end
-            end
-            parts[#parts + 1] = ("%%#%s#%%%dT %d %s "):format(
-                i == current and "TabLineSel" or "TabLine",
-                i,
-                i,
-                table.concat(names, ", ")
-            )
         end
+        local names = {}
+        if custom ~= "" then
+            names[1] = custom
+        else
+            if #plain > 0 then
+                names[#names + 1] = table.concat(plain, ", ")
+            end
+            if #diff > 0 then
+                names[#names + 1] = table.concat(diff, " <-> ")
+            end
+        end
+        parts[#parts + 1] = ("%%#%s#%%%dT %d %s "):format(
+            i == current and "TabLineSel" or "TabLine",
+            i,
+            i,
+            table.concat(names, ", ")
+        )
     end
     return table.concat(parts) .. "%#TabLineFill#%T"
 end
