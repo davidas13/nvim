@@ -69,6 +69,13 @@ function M.show_file(pane, file, before)
         api.nvim_win_set_buf(pane.work_win, work_buf)
     end
     set_base_lines(pane.base_buf, before)
+    local ft = vim.bo[work_buf].filetype
+    if ft == "" then
+        ft = vim.filetype.match { filename = file } or ""
+    end
+    if ft ~= "" then
+        vim.bo[pane.base_buf].filetype = ft
+    end
     M.apply_diff { pane.base_win, pane.work_win }
     return work_buf
 end

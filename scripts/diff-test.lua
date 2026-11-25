@@ -267,6 +267,56 @@ for i = 1, 10 do
     )
 end
 
+vim.cmd.filetype "on"
+local ft_pane = diff.create_pane()
+local ft_file = base .. "/ft_sample.py"
+write(ft_file, "one\ntwo\nthree\n")
+local ft_work = diff.show_file(ft_pane, ft_file, "one\nBASE\nthree\n")
+vim.cmd.redraw()
+assert(vim.bo[ft_work].filetype ~= "", "filetype: work buffer detected")
+eq(
+    vim.bo[ft_pane.base_buf].filetype,
+    vim.bo[ft_work].filetype,
+    "filetype: baseline mirrors work"
+)
+for label, win in pairs { base = ft_pane.base_win, work = ft_pane.work_win } do
+    eq(vim.api.nvim_win_get_option(win, "diff"), true, label .. ": diff")
+    eq(
+        vim.api.nvim_win_get_option(win, "scrollbind"),
+        true,
+        label .. ": scrollbind"
+    )
+    eq(
+        vim.api.nvim_win_get_option(win, "cursorbind"),
+        true,
+        label .. ": cursorbind"
+    )
+    eq(vim.wo[win].foldmethod, "diff", label .. ": diff fold")
+end
+vim.api.nvim_win_call(ft_pane.work_win, function()
+    vim.cmd "normal! 3G"
+end)
+vim.cmd.redraw()
+eq(
+    vim.api.nvim_win_get_cursor(ft_pane.base_win)[1],
+    3,
+    "diff sync: cursor follows"
+)
+vim.api.nvim_buf_set_lines(ft_work, 1, 2, false, { "BASE" })
+vim.cmd.diffupdate()
+vim.cmd.redraw()
+local clear_hl = vim.api.nvim_win_call(ft_pane.work_win, function()
+    return vim.fn.diff_hlID(2, 1)
+end)
+eq(clear_hl, 0, "diff sync: hunk clears")
+vim.api.nvim_buf_set_lines(ft_work, 1, 2, false, { "CHANGED" })
+vim.cmd.diffupdate()
+vim.cmd.redraw()
+local change_hl = vim.api.nvim_win_call(ft_pane.work_win, function()
+    return vim.fn.diff_hlID(2, 1)
+end)
+assert(change_hl ~= 0, "diff sync: hunk appears")
+
 vim.api.nvim_set_current_win(pane.base_win)
 local selected
 local panel = panel_module.create({
