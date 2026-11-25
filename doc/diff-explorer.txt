@@ -1,0 +1,95 @@
+*diff-explorer.txt*	Show file diffs in a dedicated tab for Neovim.
+
+==============================================================================
+INTRODUCTION					*diff-explorer*
+
+Diff Explorer opens a new tab with a file panel and two diff buffers. It reads
+git, hg, and jj repositories. The panel lists changed files. Moving the cursor
+to a file loads its baseline on the left and the working file on the right.
+Both sides use Neovim diff mode, so `diffget`, `diffput`, and `:w` work.
+
+The baseline buffer is read-only. The working buffer is a real file buffer.
+
+==============================================================================
+COMMANDS					*diff-explorer-commands*
+
+:Diff [rev] [-- paths]			Open the diff view. Without a rev, compare
+					working tree against HEAD, parent, or @-.
+					A rev such as HEAD~2 sets the baseline.
+					Paths after `--` narrow the file panel.
+
+:DiffOpen [args]			Same as :Diff.
+
+:DiffHistory [file]			Show commits that changed the file. The panel
+					lists revisions. Selecting one loads that
+					revision as the baseline.
+
+:DiffMerge				Show conflicted files in a three-way view.
+					Columns are ours, base, and theirs. The ours
+					buffer is the real file. Write it to resolve.
+
+:DiffFiles {left} {right}		Diff two arbitrary files in a new tab.
+
+:DiffDirs {left} {right}		Diff two directories. The panel lists files
+					found in either directory.
+
+:DiffClose				Close the current Diff tab.
+
+:DiffToggleFiles			Hide or show the file panel.
+
+:DiffFocusFiles				Move focus to the file panel.
+
+:DiffToggle				Alias for :DiffToggleFiles.
+
+:DiffRefresh				Reload the panel entries.
+
+:DiffNext / :DiffPrev			Move to the next or previous file.
+
+In a Diff tab, other commands are blocked. `:e` becomes `:tabedit`, so the
+Diff layout stays intact. `:w`, `diffget`, `diffput`, `do`, `dp`, and
+`diffupdate` still run. All `Diff*` commands are allowed.
+
+==============================================================================
+PROFILES					*diff-explorer-profiles*
+
+working				Baseline is HEAD for git, parent for hg, @- for jj.
+staged				Git only. Compare HEAD with the index.
+unstaged			Git only. Compare the index with the working file.
+
+Press `<Tab>` in the panel to cycle profiles. You can also pass specs to
+`:Diff`:
+
+	:Diff before=head after=worktree
+	:Diff before=rev:HEAD~1
+	:Diff before=@/path/to/other/repo
+
+The `@/` form maps the current relative file path under another root.
+
+==============================================================================
+CONFIGURATION				*diff-explorer-config*
+
+Call `require("default.plugin.diff").setup{}` in your config. A trusted
+`.nvim.lua` in the project root can call `Diff.setup{}` to override values for
+that project only.
+
+	default_profile		"working"
+	profiles		table of before and after specs
+	listing_style		"list" or "tree"
+	panel_width		40
+	tab_title		"Diff"
+	history_tab_title	"DiffHistory"
+	merge_tab_title		"DiffMerge"
+	diff_files_tab_title	"DiffFiles"
+	diff_dirs_tab_title	"DiffDirs"
+	redirect_commands	table mapping command names to tab-safe commands
+
+Tab titles include the command arguments. For example, `:Diff HEAD~2 -- sub`
+shows `Diff HEAD~2 -- sub` in the tabline.
+
+==============================================================================
+LIMITATIONS				*diff-explorer-limitations*
+
+The tree style lists changed files only, not the whole working tree. File
+history uses the left panel, not a bottom log panel. Merge mode has three
+columns and does not add a fourth base. Staging from the panel is not part of
+this module. Jujutsu support follows the installed jj 0.7.1 command set.
