@@ -1,3 +1,9 @@
+copy	copy.txt	/*copy*
+copy-commands	copy.txt	/*copy-commands*
+copy-config	copy.txt	/*copy-config*
+copy-diff	copy.txt	/*copy-diff*
+copy-reference	copy.txt	/*copy-reference*
+copy.txt	copy.txt	/*copy.txt*
 diff	diff-explorer.txt	/*diff*
 diff-commands	diff-explorer.txt	/*diff-commands*
 diff-config	diff-explorer.txt	/*diff-config*

@@ -2,6 +2,8 @@
 -- Copy the unified diff of every pair of diff-mode windows to the clipboard,
 -- with the changed regions highlighted in each buffer at word granularity.
 
+local M = {}
+
 local ns = vim.api.nvim_create_namespace "copydiff_hl"
 
 -- Highlight groups (change the colors to your liking)
@@ -142,7 +144,10 @@ local function hl_hunk(h, left, right)
     end
 end
 
-vim.api.nvim_create_user_command("CopyDiff", function()
+-- API -------------------------------------------------------------------- {{{
+
+---Copy the diff and highlight the changed regions in every diff buffer.
+function M.copy()
     local sides = diff_windows()
 
     if #sides < 2 then
@@ -192,13 +197,15 @@ vim.api.nvim_create_user_command("CopyDiff", function()
         "Diff copied to clipboard and differences highlighted!",
         vim.log.levels.INFO
     )
-end, {})
+end
 
--- Remove all highlights
-vim.api.nvim_create_user_command("CopyDiffClear", function()
+---Remove every highlight placed by M.copy.
+function M.clear()
     for _, b in ipairs(vim.api.nvim_list_bufs()) do
         vim.api.nvim_buf_clear_namespace(b, ns, 0, -1)
     end
     vim.notify("Diff highlights cleared.", vim.log.levels.INFO)
-end, {})
+end
 -- }}}
+
+return M

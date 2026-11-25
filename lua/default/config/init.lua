@@ -3,7 +3,4 @@
 require "default.config.option"
 require "default.config.autocmd"
 require "default.config.keymap"
-require "default.config.copy_location"
-require "default.config.copy_module"
-require "default.config.copydiff"
 -- }}}

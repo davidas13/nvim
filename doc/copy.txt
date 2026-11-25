@@ -1,0 +1,82 @@
+*copy.txt*	Copy references and unified diffs from the current buffer.
+
+=============================================================================
+INTRODUCTION					*copy*		*copy-reference*
+
+Copy Reference builds a reference to the cursor position from a path, an
+optional enclosing scope, an optional line number, and an optional module path
+from the language server. A picker lists the combinations and copies the chosen
+one to the `+` and `"` registers.
+
+The scope comes from the treesitter tree. It walks the ancestors of the cursor
+and keeps nodes whose type contains function, method, class, impl, interface,
+trait, struct, or module. Names are joined outer first with a dot. A cursor
+outside any declaration produces no scope suffix.
+
+A visual selection over one or more lines turns the line number into a range,
+as in `12-15`. The anchor and the cursor can face either direction.
+
+=============================================================================
+COMMANDS					*copy-commands*
+
+<C-y>			Open the Copy Reference picker.
+
+<leader>cf		Copy the path relative to the current directory.
+<leader>cF		Copy the absolute path.
+<leader>cn		Copy the file name.
+
+:CopyDiff		Copy a unified diff of every pair of diff-mode windows.
+			See |copy-diff| below.
+
+:CopyDiffClear		Remove all highlights placed by :CopyDiff.
+
+=============================================================================
+PATH FORMATS
+
+Each format has up to four variants, ordered from the plain path to the path
+with both a scope and a line.
+
+	PATH		absolute path, scope as `::NAME`, line as `:LINE`
+	PATH (CWD)	path relative to the current directory
+	FILENAME	base name of the file
+	URI		file URI, line as `#L`, no scope suffix
+
+For an absolute path, the four variants look like this:
+
+	/Users/me/project/src/api.lua
+	/Users/me/project/src/api.lua::M.build
+	/Users/me/project/src/api.lua:42
+	/Users/me/project/src/api.lua::M.build:42
+
+A visual selection replaces the single line with a range, for example
+`/Users/me/project/src/api.lua:12-15`.
+
+Module items follow the path items when a language server answers
+`textDocument/documentSymbol`. Layouts exist for python, lua, rust, typescript,
+zig, c, and cpp. MODULE emits a dotted or qualified module path. IMPORT emits
+an import line in the language's own syntax. C and cpp emit only an `#include`
+and only for header files. A language without a module layout adds no items.
+
+=============================================================================
+DIFF COPY					*copy-diff*
+
+:CopyDiff reads every diff-mode window in the current tab. Put at least two
+buffers in diff mode with `:windo diffthis` first. It pairs the distinct buffers
+and copies the unified diff of each pair into the `+` register.
+
+It marks changed regions at word granularity. Deleted words get a mark in the
+left buffer, added words in the right buffer. Lines without a counterpart get a
+whole-line mark. With more than two buffers, a `--- left vs right` label
+precedes each pair in the clipboard text.
+
+:CopyDiff clears earlier marks on every run, even when it finds no difference.
+It leaves marks untouched when fewer than two diff buffers are open.
+
+The highlight groups are CopyDiffDel and CopyDiffAdd. They are set when the
+plugin loads.
+
+=============================================================================
+CONFIGURATION				*copy-config*
+
+There are no options. The plugin is active in both the default and the minimal
+profile.

@@ -127,26 +127,6 @@ vim.keymap.set("n", "<leader>:bw", function()
     vim.cmd "bwipeout"
 end, { desc = "Buffer Wipeout" })
 
--- Copy Reference {{{
--- Every path, scope, and line combination for the cursor position. A visual
--- selection over more than one line turns the line number into a range.
-vim.keymap.set({ "n", "x", "v" }, "<C-y>", function()
-    require("default.config.copy_location").pick()
-end, { silent = true, desc = "Copy Reference Picker", noremap = true })
-
--- One-shot copies that skip the picker.
-vim.keymap.set("n", "<leader>cf", function()
-    require("default.config.copy_location").copy "rel"
-end, { silent = true, desc = "Copy Relative Filepath", noremap = true })
-
-vim.keymap.set("n", "<leader>cF", function()
-    require("default.config.copy_location").copy "abs"
-end, { silent = true, desc = "Copy Absolute Filepath", noremap = true })
-
-vim.keymap.set("n", "<leader>cn", function()
-    require("default.config.copy_location").copy "base"
-end, { silent = true, desc = "Copy Filename", noremap = true })
--- }}}
 -- }}}
 
 -- NetRW Keymaps {{{

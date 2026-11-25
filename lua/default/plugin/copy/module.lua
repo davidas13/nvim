@@ -260,7 +260,7 @@ end
 
 ---Module reference items for the current buffer, empty when the language has
 ---no module layout or no server answers.
----@param ctx table result of copy_location.capture
+---@param ctx table result of copy.location.capture
 ---@return table[]
 function M.items(ctx)
     local spec = specs[ctx.filetype]

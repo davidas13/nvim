@@ -12,4 +12,5 @@ require "default.plugin.grugfar"
 require "default.plugin.triforce"
 require "default.plugin.lualine"
 require "default.plugin.gitsigns"
+require "default.plugin.copy"
 -- }}}

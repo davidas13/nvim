@@ -203,7 +203,7 @@ function M.pick()
     local items = build_items(ctx)
     -- Module references come after the path items. They cost one bounded LSP
     -- request and stay empty on any language without a module layout.
-    local ok_module, copy_module = pcall(require, "default.config.copy_module")
+    local ok_module, copy_module = pcall(require, "default.plugin.copy.module")
     if ok_module then
         vim.list_extend(items, copy_module.items(ctx))
     end
