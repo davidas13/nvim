@@ -153,4 +153,81 @@ function M.status(file, vcs)
     return parse_status(vcs, text, root)
 end
 
+function M.at_rev(file, vcs, rev)
+    local rel = M.relative(file, vcs)
+    local root = M.root(file, vcs)
+    if not rel or not root then
+        return ""
+    end
+    if vcs == "git" then
+        return output({ "git", "show", rev .. ":" .. rel }, root)
+    end
+    if vcs == "hg" then
+        return output({ "hg", "cat", "-r", rev, rel }, root)
+    end
+    local text, code = output({ "jj", "cat", "-r", rev, rel }, root)
+    if code ~= 0 then
+        text = output({ "jj", "file", "show", "-r", rev, rel }, root)
+    end
+    return text
+end
+
+function M.history(file, vcs)
+    local rel = M.relative(file, vcs)
+    local root = M.root(file, vcs)
+    if not rel or not root then
+        return {}
+    end
+    local entries = {}
+    if vcs == "git" then
+        local text =
+            output({ "git", "log", "--oneline", "--follow", "--", rel }, root)
+        for line in vim.gsplit(text, "\n", { plain = true }) do
+            local rev, desc = line:match "^(%S+)%s+(.+)$"
+            if rev then
+                table.insert(entries, {
+                    file = file,
+                    rev = rev,
+                    status = rev:sub(1, 7),
+                    label = rev:sub(1, 7) .. "  " .. desc,
+                })
+            end
+        end
+    elseif vcs == "hg" then
+        local text = output(
+            { "hg", "log", "-f", rel, "--template", "{rev}:{desc}\\n" },
+            root
+        )
+        for line in vim.gsplit(text, "\n", { plain = true }) do
+            local rev, desc = line:match "^([^:]+):(.+)$"
+            if rev then
+                table.insert(entries, {
+                    file = file,
+                    rev = rev,
+                    status = rev,
+                    label = rev .. "  " .. desc,
+                })
+            end
+        end
+    else
+        local text = output({ "jj", "log", "--no-graph", "--", rel }, root)
+        local lines = vim.split(text, "\n", { plain = true })
+        local index = 1
+        while index < #lines do
+            local rev = lines[index]:match "^(%S+)"
+            local desc = lines[index + 1]
+            if rev and desc and desc ~= "" then
+                table.insert(entries, {
+                    file = file,
+                    rev = rev,
+                    status = rev:sub(1, 8),
+                    label = rev:sub(1, 8) .. "  " .. desc,
+                })
+            end
+            index = index + 2
+        end
+    end
+    return entries
+end
+
 return M

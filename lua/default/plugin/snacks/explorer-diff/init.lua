@@ -28,6 +28,7 @@ local config = {
     listing_style = "list",
     panel_width = 40,
     tab_title = "DiffExplorer",
+    history_tab_title = "DiffExplorerHistory",
     redirect_commands = {},
 }
 
@@ -39,6 +40,8 @@ function M.setup(opts)
     config.listing_style = opts.listing_style or config.listing_style
     config.panel_width = opts.panel_width or config.panel_width
     config.tab_title = opts.tab_title or config.tab_title
+    config.history_tab_title = opts.history_tab_title
+        or config.history_tab_title
     config.redirect_commands = vim.tbl_deep_extend(
         "force",
         DEFAULT_REDIRECTS,
@@ -251,6 +254,63 @@ function M.open(args)
     return session.panel
 end
 
+function M.file_history(args)
+    apply_project_config()
+    local file = vim.trim(tostring(args or ""))
+    if file == "" then
+        file = api.nvim_buf_get_name(api.nvim_get_current_buf())
+    end
+    if file == "" or vim.fn.filereadable(file) ~= 1 then
+        vim.notify("DiffExplorer: file not found", vim.log.levels.WARN)
+        return
+    end
+    local vcs = sources.detect_vcs(file)
+    if not vcs then
+        vim.notify("DiffExplorer: no repository", vim.log.levels.WARN)
+        return
+    end
+    local pane = diff.create_pane()
+    local session = {
+        tab = pane.tab,
+        pane = pane,
+        state = {
+            name = "working",
+            profile = { before = { vcs = "head" }, after = "worktree" },
+        },
+        panel = nil,
+    }
+    local function show(entry)
+        local before = entry
+                and entry.rev
+                and sources.at_rev(file, vcs, entry.rev)
+            or ""
+        diff.show_file(pane, file, before)
+        mark_no_lsp(pane.base_buf)
+    end
+    api.nvim_set_current_win(pane.base_win)
+    session.panel = panel_module.create(
+        sources.history(file, vcs),
+        function(_, entry)
+            pcall(show, entry)
+        end,
+        nil,
+        {
+            listing_style = "list",
+            width = config.panel_width,
+            cwd = vim.fn.getcwd(),
+        }
+    )
+    mark_no_lsp(session.panel.buf)
+    if session.panel.entries[1] then
+        pcall(show, session.panel.entries[1])
+    end
+    diff.equalize_wins(pane.base_win, pane.work_win, config.panel_width)
+    set_tab_title(pane.tab, config.history_tab_title)
+    views[pane.tab] = session
+    api.nvim_set_current_win(session.panel.win)
+    return session.panel
+end
+
 function M.close()
     local tab, view = current_view()
     if not view then
@@ -371,6 +431,9 @@ end, {
         return vim.tbl_keys(config.profiles)
     end,
 })
+vim.api.nvim_create_user_command("DiffExplorerFileHistory", function(opts)
+    M.file_history(opts.args)
+end, { nargs = "?", complete = "file" })
 vim.api.nvim_create_user_command("DiffExplorerClose", function()
     M.close()
 end, { nargs = 0, bang = true })

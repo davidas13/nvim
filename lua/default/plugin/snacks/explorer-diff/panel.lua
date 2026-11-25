@@ -42,6 +42,7 @@ local function flatten(node, depth, out)
         table.insert(out, {
             kind = "file",
             file = entry.file,
+            entry = entry,
             label = string.rep("  ", depth) .. entry.status .. "  " .. name,
         })
     end
@@ -88,9 +89,11 @@ function M.create(entries, on_select, on_cycle, opts)
                 table.insert(panel.view_items, {
                     kind = "file",
                     file = entry.file,
-                    label = entry.status
-                        .. "  "
-                        .. vim.fn.fnamemodify(entry.file, ":~:."),
+                    entry = entry,
+                    label = entry.label
+                        or entry.status
+                            .. "  "
+                            .. vim.fn.fnamemodify(entry.file, ":~:."),
                 })
             end
         end
@@ -119,7 +122,7 @@ function M.create(entries, on_select, on_cycle, opts)
             local row = api.nvim_win_get_cursor(win)[1]
             local item = panel.view_items[row]
             if item and item.kind == "file" and on_select then
-                on_select(item.file)
+                on_select(item.file, item.entry)
             end
         end,
     })
@@ -162,7 +165,7 @@ function M.create(entries, on_select, on_cycle, opts)
         api.nvim_win_set_cursor(win, { row, 0 })
         local item = panel.view_items[row]
         if item and item.kind == "file" and on_select then
-            on_select(item.file)
+            on_select(item.file, item.entry)
         end
     end
 

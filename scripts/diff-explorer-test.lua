@@ -60,6 +60,17 @@ local prod = base .. "/prod"
 vim.fn.mkdir(prod .. "/sub", "p")
 write(prod .. "/sub/nested.txt", "prod nested\n")
 
+local hist_dir = base .. "/hist"
+vim.fn.mkdir(hist_dir, "p")
+write(hist_dir .. "/file.txt", "h1\n")
+run(
+    "git init -q && git config user.email t@example.com && git config user.name t && git add . && git commit -qm one",
+    hist_dir
+)
+write(hist_dir .. "/file.txt", "h2\n")
+run("git add . && git commit -qm two", hist_dir)
+write(hist_dir .. "/file.txt", "h3\n")
+
 eq(sources.detect_vcs(git_dir .. "/file.txt"), "git", "detect git")
 eq(sources.detect_vcs(hg_dir .. "/file.txt"), "hg", "detect hg")
 eq(sources.detect_vcs(jj_dir .. "/file.txt"), "jj", "detect jj")
@@ -123,6 +134,18 @@ local hg_status = sources.status(hg_dir .. "/file.txt", "hg")
 assert(has_file(hg_status, "/file.txt"), "hg status: modified file")
 local jj_status = sources.status(jj_dir .. "/file.txt", "jj")
 assert(has_file(jj_status, "/file.txt"), "jj status: modified file")
+
+local git_history = sources.history(hist_dir .. "/file.txt", "git")
+assert(#git_history >= 2, "git history: commits listed")
+eq(
+    sources.at_rev(hist_dir .. "/file.txt", "git", git_history[2].rev),
+    "h1\n",
+    "git at rev"
+)
+local hg_history = sources.history(hg_dir .. "/file.txt", "hg")
+assert(#hg_history >= 1, "hg history: commits listed")
+local jj_history = sources.history(jj_dir .. "/file.txt", "jj")
+assert(#jj_history >= 1, "jj history: commits listed")
 
 local parsed = explorer_diff.parse_args "staged"
 eq(parsed.profile, "staged", "parse named profile")
@@ -360,6 +383,33 @@ eq(
     "project config: tab title"
 )
 vim.secure.read = real_secure_read
+explorer_diff.close()
+
+vim.cmd.cd(hist_dir)
+local history_panel = explorer_diff.file_history(hist_dir .. "/file.txt")
+local history_tab = vim.api.nvim_get_current_tabpage()
+eq(
+    vim.fn.gettabvar(
+        vim.api.nvim_tabpage_get_number(history_tab),
+        "diffexplorer_title",
+        ""
+    ),
+    "DiffExplorerHistory",
+    "history: tab title"
+)
+assert(#history_panel.entries >= 2, "history: panel entries")
+local history_wins = {}
+for _, win in ipairs(vim.api.nvim_tabpage_list_wins(history_tab)) do
+    if vim.api.nvim_win_get_option(win, "diff") then
+        history_wins[#history_wins + 1] = win
+    end
+end
+local history_base = vim.api.nvim_win_get_buf(history_wins[1])
+eq(
+    table.concat(vim.api.nvim_buf_get_lines(history_base, 0, -1, false), "\n"),
+    "h2\n",
+    "history: baseline at selected rev"
+)
 explorer_diff.close()
 
 print "DIFF EXPLORER TEST OK"
