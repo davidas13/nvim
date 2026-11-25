@@ -489,6 +489,14 @@ eq(
     "<C-u>tabedit! foo.txt<CR>",
     "redirect: bang preserved"
 )
+eq(explorer_diff.redirect_cmdline "w", "<CR>", "lock: write allowed")
+eq(
+    explorer_diff.redirect_cmdline "DiffExplorerRefresh",
+    "<CR>",
+    "lock: own commands allowed"
+)
+eq(explorer_diff.redirect_cmdline "bd", "<C-u>", "lock: buffer delete blocked")
+eq(explorer_diff.redirect_cmdline "set number", "<C-u>", "lock: set blocked")
 explorer_diff.close()
 
 vim.cmd.cd(hist_dir)

@@ -471,22 +471,39 @@ function M.prev()
     navigate(-1)
 end
 
+local SAFE_COMMANDS = {
+    w = true,
+    write = true,
+    diffget = true,
+    diffput = true,
+    ["do"] = true,
+    dp = true,
+    diffupdate = true,
+}
+
 function M.redirect_cmdline(line)
     if not is_diffexplorer_tab() then
         return "<CR>"
     end
     local cmd, bang, args =
         tostring(line or ""):match "^%s*(%a+)(!?)%s*(.-)%s*$"
-    local target = cmd and config.redirect_commands[cmd]
-    if not target then
+    if not cmd then
         return "<CR>"
     end
-    args = args or ""
+    if cmd:match "^DiffExplorer" or SAFE_COMMANDS[cmd] then
+        return "<CR>"
+    end
+    local target = config.redirect_commands[cmd]
+    if target then
+        args = args or ""
+        return "<C-u>"
+            .. target
+            .. bang
+            .. (args == "" and "" or " " .. args)
+            .. "<CR>"
+    end
+    vim.notify("DiffExplorer: command blocked in this tab", vim.log.levels.WARN)
     return "<C-u>"
-        .. target
-        .. bang
-        .. (args == "" and "" or " " .. args)
-        .. "<CR>"
 end
 
 M.setup()
