@@ -841,27 +841,52 @@ explorer_diff.setup { page_size = 100 }
 
 local jump_file = base .. "/jump_target.py"
 write(jump_file, "jump\n")
-local picker_config = require "default.plugin.snacks.picker"
-assert(
-    picker_config.actions and picker_config.actions.jump,
-    "picker guard: jump overridden"
-)
-local guard_tab = vim.api.nvim_get_current_tabpage()
-local tabs_before = vim.fn.tabpagenr "$"
-vim.api.nvim_tabpage_set_var(guard_tab, "diffexplorer_title", "Diff")
-local fake_picker = {
+local picker_actions = require "snacks.picker.actions"
+local direct_tab = vim.api.nvim_get_current_tabpage()
+local direct_tabs = vim.fn.tabpagenr "$"
+vim.api.nvim_tabpage_set_var(direct_tab, "diffexplorer_title", "Diff")
+local direct_picker = {
+    opts = { jump = { close = true } },
     selected = function()
         return { { file = jump_file, pos = { 1, 0 } } }
     end,
     close = function() end,
 }
-picker_config.actions.jump(fake_picker, nil, {})
-eq(vim.fn.tabpagenr "$", tabs_before + 1, "picker guard: opens new tab")
+local ok_direct, err_direct = pcall(picker_actions.jump, direct_picker, nil, {})
+assert(ok_direct, "picker guard: no error: " .. tostring(err_direct))
+eq(vim.fn.tabpagenr "$", direct_tabs + 1, "picker guard: opens new tab")
 assert(
     vim.endswith(vim.api.nvim_buf_get_name(0), "/jump_target.py"),
     "picker guard: new tab holds file"
 )
-vim.api.nvim_tabpage_set_var(guard_tab, "diffexplorer_title", "")
+vim.api.nvim_tabpage_set_var(direct_tab, "diffexplorer_title", "")
+vim.cmd(("tabclose %d"):format(vim.fn.tabpagenr()))
+
+local explorer_actions = require "snacks.explorer.actions"
+local explorer_tab = vim.api.nvim_get_current_tabpage()
+local explorer_tabs = vim.fn.tabpagenr "$"
+vim.api.nvim_tabpage_set_var(explorer_tab, "diffexplorer_title", "Diff")
+local explorer_picker = {
+    opts = { jump = { close = true } },
+    input = { filter = { meta = { searching = false } } },
+    selected = function()
+        return { { file = jump_file, pos = { 1, 0 } } }
+    end,
+    close = function() end,
+}
+local ok_confirm, err_confirm = pcall(
+    explorer_actions.actions.confirm,
+    explorer_picker,
+    { file = jump_file },
+    {}
+)
+assert(ok_confirm, "explorer guard: no error: " .. tostring(err_confirm))
+eq(vim.fn.tabpagenr "$", explorer_tabs + 1, "explorer guard: opens new tab")
+assert(
+    vim.endswith(vim.api.nvim_buf_get_name(0), "/jump_target.py"),
+    "explorer guard: new tab holds file"
+)
+vim.api.nvim_tabpage_set_var(explorer_tab, "diffexplorer_title", "")
 vim.cmd(("tabclose %d"):format(vim.fn.tabpagenr()))
 
 print "DIFF EXPLORER TEST OK"

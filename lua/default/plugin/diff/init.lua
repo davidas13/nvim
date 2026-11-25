@@ -4,8 +4,42 @@ local diff = require "default.plugin.diff.diff"
 local panel_module = require "default.plugin.diff.panel"
 local merge_module = require "default.plugin.diff.merge"
 local compare_module = require "default.plugin.diff.compare"
+local picker_actions = require "snacks.picker.actions"
 
 local M = {}
+
+local original_picker_jump = picker_actions.jump
+
+local function in_diff_tab()
+    local tab = api.nvim_get_current_tabpage()
+    return vim.fn.gettabvar(
+        api.nvim_tabpage_get_number(tab),
+        "diffexplorer_title",
+        ""
+    ) ~= ""
+end
+
+local function guarded_picker_jump(picker, item, action)
+    if not in_diff_tab() then
+        return original_picker_jump(picker, item, action)
+    end
+    local items = picker:selected { fallback = true }
+    if #items == 0 then
+        return
+    end
+    local selected = items[1]
+    if not selected.file or selected.file == "" then
+        return
+    end
+    picker:close()
+    vim.cmd(("tabedit %s"):format(vim.fn.fnameescape(selected.file)))
+    local pos = selected.pos
+    if pos and pos[1] > 0 then
+        api.nvim_win_set_cursor(0, { pos[1], pos[2] or 0 })
+    end
+end
+
+picker_actions.jump = guarded_picker_jump
 
 local DEFAULT_PROFILES = {
     working = { before = { vcs = "head" }, after = "worktree" },
