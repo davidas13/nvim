@@ -1,5 +1,5 @@
 local api = vim.api
-local panel_module = require "default.plugin.snacks.explorer-diff.panel"
+local panel_module = require "default.plugin.diff.panel"
 
 local M = {}
 

@@ -1,7 +1,7 @@
-local sources = require "default.plugin.snacks.explorer-diff.sources"
-local diff = require "default.plugin.snacks.explorer-diff.diff"
-local panel_module = require "default.plugin.snacks.explorer-diff.panel"
-local explorer_diff = require "default.plugin.snacks.explorer-diff"
+local sources = require "default.plugin.diff.sources"
+local diff = require "default.plugin.diff.diff"
+local panel_module = require "default.plugin.diff.panel"
+local explorer_diff = require "default.plugin.diff"
 
 local function run(cmd, cwd)
     return vim.system({ "sh", "-c", cmd }, { cwd = cwd, text = true }):wait()

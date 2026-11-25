@@ -1,9 +1,9 @@
 local api = vim.api
-local sources = require "default.plugin.snacks.explorer-diff.sources"
-local diff = require "default.plugin.snacks.explorer-diff.diff"
-local panel_module = require "default.plugin.snacks.explorer-diff.panel"
-local merge_module = require "default.plugin.snacks.explorer-diff.merge"
-local compare_module = require "default.plugin.snacks.explorer-diff.compare"
+local sources = require "default.plugin.diff.sources"
+local diff = require "default.plugin.diff.diff"
+local panel_module = require "default.plugin.diff.panel"
+local merge_module = require "default.plugin.diff.merge"
+local compare_module = require "default.plugin.diff.compare"
 
 local M = {}
 

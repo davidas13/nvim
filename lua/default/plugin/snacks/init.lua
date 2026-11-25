@@ -23,5 +23,4 @@ snacks.setup {
 }
 
 require "default.plugin.snacks.keymaps"
-require "default.plugin.snacks.explorer-diff"
 -- }}}
