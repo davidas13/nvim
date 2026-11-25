@@ -1,7 +1,7 @@
-*diff-explorer.txt*	Show file diffs in a dedicated tab for Neovim.
+*diff.txt*	Show file diffs in a dedicated tab for Neovim.
 
 ==============================================================================
-INTRODUCTION					*diff-explorer*
+INTRODUCTION					*diff*
 
 Diff Explorer opens a new tab with a file panel and two diff buffers. It reads
 git, hg, and jj repositories. The panel lists changed files. Moving the cursor
@@ -11,7 +11,7 @@ Both sides use Neovim diff mode, so `diffget`, `diffput`, and `:w` work.
 The baseline buffer is read-only. The working buffer is a real file buffer.
 
 ==============================================================================
-COMMANDS					*diff-explorer-commands*
+COMMANDS					*diff-commands*
 
 :Diff [rev] [-- paths]			Open the diff view. Without a rev, compare
 					working tree against HEAD, parent, or @-.
@@ -50,7 +50,7 @@ Diff layout stays intact. `:w`, `diffget`, `diffput`, `do`, `dp`, and
 `diffupdate` still run. All `Diff*` commands are allowed.
 
 ==============================================================================
-PROFILES					*diff-explorer-profiles*
+PROFILES
 
 working				Baseline is HEAD for git, parent for hg, @- for jj.
 staged				Git only. Compare HEAD with the index.
@@ -66,7 +66,7 @@ Press `<Tab>` in the panel to cycle profiles. You can also pass specs to
 The `@/` form maps the current relative file path under another root.
 
 ==============================================================================
-CONFIGURATION				*diff-explorer-config*
+CONFIGURATION				*diff-config*
 
 Call `require("default.plugin.diff").setup{}` in your config. A trusted
 `.nvim.lua` in the project root can call `Diff.setup{}` to override values for
@@ -87,7 +87,7 @@ Tab titles include the command arguments. For example, `:Diff HEAD~2 -- sub`
 shows `Diff HEAD~2 -- sub` in the tabline.
 
 ==============================================================================
-LIMITATIONS				*diff-explorer-limitations*
+LIMITATIONS
 
 The tree style lists changed files only, not the whole working tree. File
 history uses the left panel, not a bottom log panel. Merge mode has three
