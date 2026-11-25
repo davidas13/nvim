@@ -3,6 +3,7 @@ local sources = require "default.plugin.snacks.explorer-diff.sources"
 local diff = require "default.plugin.snacks.explorer-diff.diff"
 local panel_module = require "default.plugin.snacks.explorer-diff.panel"
 local merge_module = require "default.plugin.snacks.explorer-diff.merge"
+local compare_module = require "default.plugin.snacks.explorer-diff.compare"
 
 local M = {}
 
@@ -31,6 +32,8 @@ local config = {
     tab_title = "DiffExplorer",
     history_tab_title = "DiffExplorerHistory",
     merge_tab_title = "DiffExplorerMerge",
+    diff_files_tab_title = "DiffExplorerDiffFiles",
+    diff_dirs_tab_title = "DiffExplorerDiffDirs",
     redirect_commands = {},
 }
 
@@ -45,6 +48,10 @@ function M.setup(opts)
     config.history_tab_title = opts.history_tab_title
         or config.history_tab_title
     config.merge_tab_title = opts.merge_tab_title or config.merge_tab_title
+    config.diff_files_tab_title = opts.diff_files_tab_title
+        or config.diff_files_tab_title
+    config.diff_dirs_tab_title = opts.diff_dirs_tab_title
+        or config.diff_dirs_tab_title
     config.redirect_commands = vim.tbl_deep_extend(
         "force",
         DEFAULT_REDIRECTS,
@@ -418,6 +425,55 @@ function M.merge(args)
     return session.panel
 end
 
+local function two_args(args)
+    local left, right = tostring(args or ""):match "^(%S+)%s+(%S+)$"
+    return left, right
+end
+
+function M.diff_files(args)
+    local config_snapshot = apply_project_config()
+    local left, right = two_args(args)
+    if not left or not right then
+        vim.notify("DiffExplorer: expected two files", vim.log.levels.WARN)
+        config = config_snapshot
+        return
+    end
+    local session = compare_module.files(left, right)
+    compare_module.equalize(session, 0)
+    set_tab_title(session.tab, config.diff_files_tab_title)
+    views[session.tab] = {
+        tab = session.tab,
+        compare = session,
+        state = { name = "files", profile = nil },
+    }
+    config = config_snapshot
+    return session
+end
+
+function M.diff_dirs(args)
+    local config_snapshot = apply_project_config()
+    local left, right = two_args(args)
+    if not left or not right then
+        vim.notify(
+            "DiffExplorer: expected two directories",
+            vim.log.levels.WARN
+        )
+        config = config_snapshot
+        return
+    end
+    local session = compare_module.dirs(left, right, config.panel_width)
+    compare_module.equalize(session, config.panel_width)
+    set_tab_title(session.tab, config.diff_dirs_tab_title)
+    views[session.tab] = {
+        tab = session.tab,
+        compare = session,
+        panel = session.panel,
+        state = { name = "dirs", profile = nil },
+    }
+    config = config_snapshot
+    return session.panel
+end
+
 function M.close()
     local tab, view = current_view()
     if not view then
@@ -569,6 +625,15 @@ vim.api.nvim_create_user_command("DiffExplorerFileHistory", function(opts)
 end, { nargs = "?", complete = "file" })
 vim.api.nvim_create_user_command("DiffExplorerMerge", function()
     M.merge()
+end, { nargs = 0, bang = true })
+vim.api.nvim_create_user_command("DiffExplorerDiffFiles", function(opts)
+    M.diff_files(opts.args)
+end, { nargs = "*", complete = "file" })
+vim.api.nvim_create_user_command("DiffExplorerDiffDirs", function(opts)
+    M.diff_dirs(opts.args)
+end, { nargs = "*", complete = "dir" })
+vim.api.nvim_create_user_command("DiffExplorerToggle", function()
+    M.toggle_files()
 end, { nargs = 0, bang = true })
 vim.api.nvim_create_user_command("DiffExplorerClose", function()
     M.close()

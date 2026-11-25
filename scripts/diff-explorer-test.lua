@@ -570,4 +570,57 @@ eq(
 )
 explorer_diff.close()
 
+local left_file = base .. "/left.txt"
+local right_file = base .. "/right.txt"
+write(left_file, "left\n")
+write(right_file, "right\n")
+local file_session = explorer_diff.diff_files(left_file .. " " .. right_file)
+local file_tab = vim.api.nvim_get_current_tabpage()
+eq(
+    vim.fn.gettabvar(
+        vim.api.nvim_tabpage_get_number(file_tab),
+        "diffexplorer_title",
+        ""
+    ),
+    "DiffExplorerDiffFiles",
+    "diff files: tab title"
+)
+local file_diff_wins = 0
+for _, win in ipairs(vim.api.nvim_tabpage_list_wins(file_tab)) do
+    if vim.api.nvim_win_get_option(win, "diff") then
+        file_diff_wins = file_diff_wins + 1
+    end
+end
+eq(file_diff_wins, 2, "diff files: two diff windows")
+explorer_diff.close()
+
+local dir_left = base .. "/dl"
+local dir_right = base .. "/dr"
+vim.fn.mkdir(dir_left, "p")
+vim.fn.mkdir(dir_right, "p")
+write(dir_left .. "/a.txt", "a1\n")
+write(dir_right .. "/a.txt", "a2\n")
+write(dir_left .. "/only.txt", "only\n")
+local dir_panel = explorer_diff.diff_dirs(dir_left .. " " .. dir_right)
+local dir_tab = vim.api.nvim_get_current_tabpage()
+eq(
+    vim.fn.gettabvar(
+        vim.api.nvim_tabpage_get_number(dir_tab),
+        "diffexplorer_title",
+        ""
+    ),
+    "DiffExplorerDiffDirs",
+    "diff dirs: tab title"
+)
+assert(#dir_panel.entries >= 2, "diff dirs: entries listed")
+local dir_diff_wins = 0
+for _, win in ipairs(vim.api.nvim_tabpage_list_wins(dir_tab)) do
+    if vim.api.nvim_win_get_option(win, "diff") then
+        dir_diff_wins = dir_diff_wins + 1
+    end
+end
+eq(dir_diff_wins, 2, "diff dirs: two diff windows")
+explorer_diff.close()
+eq(vim.fn.exists ":DiffExplorerToggle", 2, "toggle alias: exists")
+
 print "DIFF EXPLORER TEST OK"
