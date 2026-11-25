@@ -32,8 +32,9 @@ COMMANDS					*diff-commands*
 
 :DiffDirs {left} {right}		Diff two directories. The panel lists paths that
 					differ in content or existence, including hidden
-					files. Both sides are real file buffers, so :w writes
-					through to disk. The tab title is
+					files. Text sides are real file buffers, so :w writes
+					through to disk. Binary files render as placeholders
+					and are not loaded into buffers. The tab title is
 					"DiffDirs <left> <-> <right>".
 
 :DiffClose				Close the current Diff tab.
