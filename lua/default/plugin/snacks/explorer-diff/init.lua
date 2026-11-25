@@ -2,6 +2,7 @@ local api = vim.api
 local sources = require "default.plugin.snacks.explorer-diff.sources"
 local diff = require "default.plugin.snacks.explorer-diff.diff"
 local panel_module = require "default.plugin.snacks.explorer-diff.panel"
+local merge_module = require "default.plugin.snacks.explorer-diff.merge"
 
 local M = {}
 
@@ -29,6 +30,7 @@ local config = {
     panel_width = 40,
     tab_title = "DiffExplorer",
     history_tab_title = "DiffExplorerHistory",
+    merge_tab_title = "DiffExplorerMerge",
     redirect_commands = {},
 }
 
@@ -42,6 +44,7 @@ function M.setup(opts)
     config.tab_title = opts.tab_title or config.tab_title
     config.history_tab_title = opts.history_tab_title
         or config.history_tab_title
+    config.merge_tab_title = opts.merge_tab_title or config.merge_tab_title
     config.redirect_commands = vim.tbl_deep_extend(
         "force",
         DEFAULT_REDIRECTS,
@@ -311,6 +314,56 @@ function M.file_history(args)
     return session.panel
 end
 
+function M.merge(args)
+    apply_project_config()
+    local cwd = vim.fn.getcwd()
+    local probe = cwd .. "/__diff_explorer_probe__"
+    local vcs = sources.detect_vcs(probe)
+    if not vcs then
+        vim.notify("DiffExplorer: no repository", vim.log.levels.WARN)
+        return
+    end
+    local entries = sources.conflicts(probe, vcs)
+    if #entries == 0 then
+        vim.notify("DiffExplorer: no conflicts", vim.log.levels.WARN)
+        return
+    end
+    local function sides_for(file)
+        local ours, base, theirs = sources.conflict_sides(file, vcs)
+        return { ours = ours, base = base, theirs = theirs }
+    end
+    local merge =
+        merge_module.create(entries[1].file, sides_for(entries[1].file))
+    local session = {
+        tab = merge.tab,
+        merge = merge,
+        panel = nil,
+        state = { name = "merge", profile = nil },
+    }
+    api.nvim_set_current_win(merge.wins[1])
+    session.panel = panel_module.create(
+        entries,
+        function(file)
+            pcall(merge_module.show, merge, file, sides_for(file))
+        end,
+        nil,
+        {
+            listing_style = "list",
+            width = config.panel_width,
+            cwd = cwd,
+        }
+    )
+    mark_no_lsp(merge.ours_buf)
+    mark_no_lsp(merge.base_buf)
+    mark_no_lsp(merge.theirs_buf)
+    mark_no_lsp(session.panel.buf)
+    merge_module.equalize(merge, config.panel_width)
+    set_tab_title(merge.tab, config.merge_tab_title)
+    views[merge.tab] = session
+    api.nvim_set_current_win(session.panel.win)
+    return session.panel
+end
+
 function M.close()
     local tab, view = current_view()
     if not view then
@@ -350,7 +403,7 @@ function M.refresh()
     if not view then
         return
     end
-    if view.panel then
+    if view.panel and not view.merge then
         view.panel.refresh(changed_files())
         api.nvim_set_current_win(view.panel.win)
     end
@@ -434,6 +487,9 @@ end, {
 vim.api.nvim_create_user_command("DiffExplorerFileHistory", function(opts)
     M.file_history(opts.args)
 end, { nargs = "?", complete = "file" })
+vim.api.nvim_create_user_command("DiffExplorerMerge", function()
+    M.merge()
+end, { nargs = 0, bang = true })
 vim.api.nvim_create_user_command("DiffExplorerClose", function()
     M.close()
 end, { nargs = 0, bang = true })

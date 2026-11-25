@@ -230,4 +230,81 @@ function M.history(file, vcs)
     return entries
 end
 
+local function split_conflict(text)
+    local ours, base, theirs = {}, {}, {}
+    local mode
+    for line in vim.gsplit(text, "\n", { plain = true }) do
+        if line:match "^<<<<<<<" then
+            mode = "ours"
+        elseif line:match "^|||||||" or line:match "^%%%%%%%" then
+            mode = "base"
+        elseif
+            line:match "^=======$" or (line:match "^+++++++" and mode == "base")
+        then
+            mode = "theirs"
+        elseif line:match "^>>>>>>>" then
+            mode = nil
+        elseif line:match "^+++++++ Contents of side #1" then
+            mode = "ours"
+        elseif mode then
+            local target = mode == "ours" and ours
+                or mode == "base" and base
+                or theirs
+            table.insert(target, line)
+        end
+    end
+    return table.concat(ours, "\n"),
+        table.concat(base, "\n"),
+        table.concat(theirs, "\n")
+end
+
+function M.conflicts(file, vcs)
+    local root = M.root(file, vcs)
+    if not root then
+        return {}
+    end
+    local text
+    if vcs == "git" then
+        text = output({ "git", "diff", "--name-only", "--diff-filter=U" }, root)
+    elseif vcs == "hg" then
+        text = output({ "hg", "resolve", "-l" }, root)
+    else
+        text = output({ "jj", "resolve", "--list" }, root)
+    end
+    local entries = {}
+    for line in vim.gsplit(text, "\n", { plain = true }) do
+        local rel
+        if vcs == "git" then
+            rel = line
+        else
+            local code
+            code, rel = line:match "^([UCMRA?])%s+(.+)$"
+        end
+        if rel and vim.trim(rel) ~= "" then
+            rel = vim.trim(rel)
+            table.insert(entries, {
+                file = vim.fs.normalize(root .. "/" .. rel),
+                status = "C",
+                label = "C  " .. rel,
+            })
+        end
+    end
+    return entries
+end
+
+function M.conflict_sides(file, vcs)
+    local rel = M.relative(file, vcs)
+    local root = M.root(file, vcs)
+    if not rel or not root then
+        return "", "", ""
+    end
+    if vcs == "git" then
+        local ours = output({ "git", "show", ":2:" .. rel }, root)
+        local base = output({ "git", "show", ":1:" .. rel }, root)
+        local theirs = output({ "git", "show", ":3:" .. rel }, root)
+        return ours, base, theirs
+    end
+    return split_conflict(read_file(file))
+end
+
 return M

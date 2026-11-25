@@ -71,6 +71,14 @@ write(hist_dir .. "/file.txt", "h2\n")
 run("git add . && git commit -qm two", hist_dir)
 write(hist_dir .. "/file.txt", "h3\n")
 
+local conflict_dir = base .. "/conflict"
+vim.fn.mkdir(conflict_dir, "p")
+write(conflict_dir .. "/f.txt", "base\n")
+run(
+    "git init -q -b main && git config user.email t@example.com && git config user.name t && git add . && git commit -qm base && git checkout -qb feature && printf 'feature\\n' > f.txt && git add . && git commit -qm feature && git checkout -q main && printf 'main\\n' > f.txt && git add . && git commit -qm main && git merge feature --no-edit -q || true",
+    conflict_dir
+)
+
 eq(sources.detect_vcs(git_dir .. "/file.txt"), "git", "detect git")
 eq(sources.detect_vcs(hg_dir .. "/file.txt"), "hg", "detect hg")
 eq(sources.detect_vcs(jj_dir .. "/file.txt"), "jj", "detect jj")
@@ -146,6 +154,14 @@ local hg_history = sources.history(hg_dir .. "/file.txt", "hg")
 assert(#hg_history >= 1, "hg history: commits listed")
 local jj_history = sources.history(jj_dir .. "/file.txt", "jj")
 assert(#jj_history >= 1, "jj history: commits listed")
+
+local conflicts = sources.conflicts(conflict_dir .. "/f.txt", "git")
+assert(#conflicts >= 1, "conflicts: files listed")
+local ours, base_side, theirs =
+    sources.conflict_sides(conflict_dir .. "/f.txt", "git")
+eq(vim.trim(ours), "main", "conflict sides: ours")
+eq(vim.trim(base_side), "base", "conflict sides: base")
+eq(vim.trim(theirs), "feature", "conflict sides: theirs")
 
 local parsed = explorer_diff.parse_args "staged"
 eq(parsed.profile, "staged", "parse named profile")
@@ -410,6 +426,28 @@ eq(
     "h2\n",
     "history: baseline at selected rev"
 )
+explorer_diff.close()
+
+vim.cmd.cd(conflict_dir)
+local merge_panel = explorer_diff.merge()
+local merge_tab = vim.api.nvim_get_current_tabpage()
+eq(
+    vim.fn.gettabvar(
+        vim.api.nvim_tabpage_get_number(merge_tab),
+        "diffexplorer_title",
+        ""
+    ),
+    "DiffExplorerMerge",
+    "merge: tab title"
+)
+assert(#merge_panel.entries >= 1, "merge: panel entries")
+local merge_diff_wins = 0
+for _, win in ipairs(vim.api.nvim_tabpage_list_wins(merge_tab)) do
+    if vim.api.nvim_win_get_option(win, "diff") then
+        merge_diff_wins = merge_diff_wins + 1
+    end
+end
+eq(merge_diff_wins, 3, "merge: three diff windows")
 explorer_diff.close()
 
 print "DIFF EXPLORER TEST OK"
