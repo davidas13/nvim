@@ -58,8 +58,9 @@ In the panel, `]p` and `[p` move between pages. The panel winbar shows the
 current page and the page size.
 
 In a Diff tab, other commands are blocked. `:e` becomes `:tabedit`, so the
-Diff layout stays intact. `:w`, `diffget`, `diffput`, `do`, `dp`, and
-`diffupdate` still run. All `Diff*` commands are allowed.
+Diff layout stays intact. Diff windows also set `winfixbuf`, so pickers and
+other plugins cannot replace their buffers. `:w`, `diffget`, `diffput`, `do`,
+`dp`, and `diffupdate` still run. All `Diff*` commands are allowed.
 
 ==============================================================================
 PROFILES
