@@ -314,7 +314,22 @@ eq(
     vim.api.nvim_win_get_width(titled_pane[2]),
     "diff panes: equal width"
 )
+for _, win in ipairs(vim.api.nvim_tabpage_list_wins(titled_tab)) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    eq(vim.b[buf].diffexplorer_no_lsp, true, "lsp: disabled in explorer tab")
+end
+eq(
+    explorer_diff.redirect_cmdline "e foo.txt",
+    "<C-u>tabedit foo.txt<CR>",
+    "redirect: edit in explorer tab"
+)
 explorer_diff.close()
+vim.api.nvim_tabpage_set_var(
+    vim.api.nvim_get_current_tabpage(),
+    "diffexplorer_title",
+    ""
+)
+eq(explorer_diff.redirect_cmdline "e foo.txt", "<CR>", "redirect: outside tab")
 
 local cfg_dir = base .. "/cfgproj"
 vim.fn.mkdir(cfg_dir, "p")

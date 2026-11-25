@@ -11,12 +11,24 @@ local DEFAULT_PROFILES = {
     unstaged = { before = { vcs = "index" }, after = "worktree" },
 }
 
+local DEFAULT_REDIRECTS = {
+    e = "tabedit",
+    edit = "tabedit",
+    sp = "tabedit",
+    split = "tabedit",
+    vs = "tabedit",
+    vsplit = "tabedit",
+    new = "tabnew",
+    vnew = "tabnew",
+}
+
 local config = {
     default_profile = "working",
     profiles = {},
     listing_style = "list",
     panel_width = 40,
     tab_title = "DiffExplorer",
+    redirect_commands = {},
 }
 
 local views = {}
@@ -27,6 +39,11 @@ function M.setup(opts)
     config.listing_style = opts.listing_style or config.listing_style
     config.panel_width = opts.panel_width or config.panel_width
     config.tab_title = opts.tab_title or config.tab_title
+    config.redirect_commands = vim.tbl_deep_extend(
+        "force",
+        DEFAULT_REDIRECTS,
+        opts.redirect_commands or {}
+    )
     config.profiles =
         vim.tbl_deep_extend("force", DEFAULT_PROFILES, opts.profiles or {})
 end
@@ -58,6 +75,37 @@ local function set_tab_title(tab, title)
         api.nvim_tabpage_set_var(tab, "diffexplorer_title", title)
     end
 end
+
+local function is_diffexplorer_tab()
+    local tab = api.nvim_get_current_tabpage()
+    return vim.fn.gettabvar(
+        api.nvim_tabpage_get_number(tab),
+        "diffexplorer_title",
+        ""
+    ) ~= ""
+end
+
+local function mark_no_lsp(buf)
+    if not buf or not api.nvim_buf_is_valid(buf) then
+        return
+    end
+    vim.b[buf].diffexplorer_no_lsp = true
+    for _, client in ipairs(vim.lsp.get_clients { bufnr = buf }) do
+        pcall(client.stop, client)
+    end
+end
+
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(ev)
+        if not vim.b[ev.buf].diffexplorer_no_lsp then
+            return
+        end
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
+        if client then
+            pcall(client.stop, client)
+        end
+    end,
+})
 
 local function parse_spec(value)
     if
@@ -168,7 +216,8 @@ function M.open(args)
         local before = vcs
                 and sources.read_side(state.profile.before, file, vcs)
             or ""
-        diff.show_file(pane, file, before)
+        local work_buf = diff.show_file(pane, file, before)
+        mark_no_lsp(work_buf)
     end
 
     local function build_panel()
@@ -185,6 +234,8 @@ function M.open(args)
             width = config.panel_width,
             cwd = vim.fn.getcwd(),
         })
+        mark_no_lsp(pane.base_buf)
+        mark_no_lsp(session.panel.buf)
         if session.panel.entries[1] then
             pcall(show, session.panel.entries[1].file)
         end
@@ -285,7 +336,24 @@ function M.prev()
     navigate(-1)
 end
 
+function M.redirect_cmdline(line)
+    if not is_diffexplorer_tab() then
+        return "<CR>"
+    end
+    local cmd, args = tostring(line or ""):match "^%s*(%a+)%s*(.-)%s*$"
+    local target = cmd and config.redirect_commands[cmd]
+    if not target then
+        return "<CR>"
+    end
+    args = args or ""
+    return "<C-u>" .. target .. (args == "" and "" or " " .. args) .. "<CR>"
+end
+
 M.setup()
+
+vim.keymap.set("c", "<CR>", function()
+    return M.redirect_cmdline(vim.fn.getcmdline())
+end, { expr = true, noremap = true })
 
 vim.api.nvim_create_user_command("DiffExplorer", function(opts)
     M.open(opts.args)
