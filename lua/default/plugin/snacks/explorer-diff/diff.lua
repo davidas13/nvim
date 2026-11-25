@@ -73,4 +73,13 @@ function M.show_file(pane, file, before)
     return work_buf
 end
 
+function M.equalize_wins(base_win, work_win, panel_width)
+    local width =
+        math.max(20, math.floor((vim.o.columns - (panel_width or 40)) / 2))
+    vim.wo[base_win].winfixwidth = true
+    vim.wo[work_win].winfixwidth = true
+    api.nvim_win_set_width(base_win, width)
+    api.nvim_win_set_width(work_win, width)
+end
+
 return M

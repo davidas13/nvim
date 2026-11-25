@@ -15,6 +15,8 @@ local config = {
     default_profile = "working",
     profiles = {},
     listing_style = "list",
+    panel_width = 40,
+    tab_title = "DiffExplorer",
 }
 
 local views = {}
@@ -23,8 +25,38 @@ function M.setup(opts)
     opts = opts or {}
     config.default_profile = opts.default_profile or config.default_profile
     config.listing_style = opts.listing_style or config.listing_style
+    config.panel_width = opts.panel_width or config.panel_width
+    config.tab_title = opts.tab_title or config.tab_title
     config.profiles =
         vim.tbl_deep_extend("force", DEFAULT_PROFILES, opts.profiles or {})
+end
+
+local function apply_project_config()
+    local path = vim.fn.fnamemodify(vim.fn.getcwd() .. "/.nvim.lua", ":p")
+    if vim.fn.filereadable(path) ~= 1 then
+        return
+    end
+    local content = vim.secure.read(path)
+    if not content then
+        return
+    end
+    local chunk, err = load(content, path)
+    if not chunk then
+        vim.notify("DiffExplorer: " .. tostring(err), vim.log.levels.WARN)
+        return
+    end
+    _G.DiffExplorer = M
+    local ok, run_err = pcall(chunk)
+    _G.DiffExplorer = nil
+    if not ok then
+        vim.notify("DiffExplorer: " .. tostring(run_err), vim.log.levels.WARN)
+    end
+end
+
+local function set_tab_title(tab, title)
+    if api.nvim_tabpage_is_valid(tab) then
+        api.nvim_tabpage_set_var(tab, "diffexplorer_title", title)
+    end
 end
 
 local function parse_spec(value)
@@ -123,6 +155,7 @@ local function current_view()
 end
 
 function M.open(args)
+    apply_project_config()
     local parsed = M.parse_args(args)
     local name, profile = current_profile(parsed)
     local state = { name = name, profile = profile }
@@ -149,6 +182,7 @@ function M.open(args)
             end
         end, {
             listing_style = config.listing_style,
+            width = config.panel_width,
             cwd = vim.fn.getcwd(),
         })
         if session.panel.entries[1] then
@@ -160,6 +194,8 @@ function M.open(args)
     session.show = show
     session.build_panel = build_panel
     build_panel()
+    diff.equalize_wins(pane.base_win, pane.work_win, config.panel_width)
+    set_tab_title(pane.tab, config.tab_title)
     views[pane.tab] = session
     return session.panel
 end

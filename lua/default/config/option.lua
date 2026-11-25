@@ -104,8 +104,11 @@ local function tabline()
     local current = vim.fn.tabpagenr()
     for i = 1, vim.fn.tabpagenr "$" do
         if vim.api.nvim_tabpage_is_valid(i) then
+            local custom = vim.fn.gettabvar(i, "diffexplorer_title", "")
             local plain, diff = {}, {}
-            for _, win in ipairs(vim.api.nvim_tabpage_list_wins(i)) do
+            for _, win in
+                ipairs(custom == "" and vim.api.nvim_tabpage_list_wins(i) or {})
+            do
                 -- Ignore floating plugin UI and special buffers, but keep
                 -- read-only diff snapshots.
                 if vim.api.nvim_win_get_config(win).relative == "" then
@@ -127,11 +130,15 @@ local function tabline()
                 end
             end
             local names = {}
-            if #plain > 0 then
-                names[#names + 1] = table.concat(plain, ", ")
-            end
-            if #diff > 0 then
-                names[#names + 1] = table.concat(diff, " <-> ")
+            if custom ~= "" then
+                names[1] = custom
+            else
+                if #plain > 0 then
+                    names[#names + 1] = table.concat(plain, ", ")
+                end
+                if #diff > 0 then
+                    names[#names + 1] = table.concat(diff, " <-> ")
+                end
             end
             parts[#parts + 1] = ("%%#%s#%%%dT %d %s "):format(
                 i == current and "TabLineSel" or "TabLine",

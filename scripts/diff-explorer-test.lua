@@ -290,4 +290,61 @@ vim.cmd.DiffExplorerRefresh()
 vim.cmd.DiffExplorerClose()
 eq(vim.api.nvim_tabpage_is_valid(opened_tab), false, "command: close tab")
 
+vim.cmd.cd(git_dir)
+local titled_panel = explorer_diff.open()
+local titled_tab = vim.api.nvim_get_current_tabpage()
+local titled_pane = nil
+for _, win in ipairs(vim.api.nvim_tabpage_list_wins(titled_tab)) do
+    if vim.api.nvim_win_get_option(win, "diff") then
+        titled_pane = titled_pane or {}
+        titled_pane[#titled_pane + 1] = win
+    end
+end
+eq(
+    vim.fn.gettabvar(
+        vim.api.nvim_tabpage_get_number(titled_tab),
+        "diffexplorer_title",
+        ""
+    ),
+    "DiffExplorer",
+    "tab title: default"
+)
+eq(
+    vim.api.nvim_win_get_width(titled_pane[1]),
+    vim.api.nvim_win_get_width(titled_pane[2]),
+    "diff panes: equal width"
+)
+explorer_diff.close()
+
+local cfg_dir = base .. "/cfgproj"
+vim.fn.mkdir(cfg_dir, "p")
+write(
+    cfg_dir .. "/.nvim.lua",
+    "DiffExplorer.setup { tab_title = \"CustomTab\" }\n"
+)
+local real_secure_read = vim.secure.read
+vim.secure.read = function(path)
+    local handle = io.open(path, "r")
+    if not handle then
+        return nil
+    end
+    local content = handle:read "*a"
+    handle:close()
+    return content
+end
+vim.cmd.cd(cfg_dir)
+local custom_panel = explorer_diff.open()
+local custom_tab = vim.api.nvim_get_current_tabpage()
+eq(
+    vim.fn.gettabvar(
+        vim.api.nvim_tabpage_get_number(custom_tab),
+        "diffexplorer_title",
+        ""
+    ),
+    "CustomTab",
+    "project config: tab title"
+)
+vim.secure.read = real_secure_read
+explorer_diff.close()
+
 print "DIFF EXPLORER TEST OK"
