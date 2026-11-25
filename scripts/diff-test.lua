@@ -318,6 +318,24 @@ local change_hl = vim.api.nvim_win_call(ft_pane.work_win, function()
 end)
 assert(change_hl ~= 0, "diff sync: hunk appears")
 
+eq(vim.wo[ft_pane.base_win].winfixbuf, true, "lock: base window fixed")
+eq(vim.wo[ft_pane.work_win].winfixbuf, true, "lock: work window fixed")
+local stray_buf = vim.api.nvim_create_buf(false, true)
+local ok_swap, err_swap =
+    pcall(vim.api.nvim_win_set_buf, ft_pane.work_win, stray_buf)
+assert(
+    not ok_swap and tostring(err_swap):find("E1513", 1, true),
+    "lock: external buffer swap blocked"
+)
+local other_file = base .. "/other.py"
+write(other_file, "other\n")
+local swapped = diff.show_file(ft_pane, other_file, "base\n")
+assert(swapped, "lock: own swap succeeds")
+assert(
+    vim.endswith(vim.api.nvim_buf_get_name(swapped), "/other.py"),
+    "lock: own swap lands in work window"
+)
+
 vim.api.nvim_set_current_win(pane.base_win)
 local selected
 local panel = panel_module.create({
@@ -330,6 +348,7 @@ assert(vim.api.nvim_win_is_valid(panel.win), "panel: valid window")
 eq(vim.bo[panel.buf].readonly, true, "panel: readonly")
 eq(vim.bo[panel.buf].modifiable, false, "panel: not modifiable")
 eq(vim.api.nvim_win_get_option(panel.win, "diff"), false, "panel: not in diff")
+eq(vim.wo[panel.win].winfixbuf, true, "panel: window fixed")
 assert(
     vim.api.nvim_win_get_position(panel.win)[2]
         < vim.api.nvim_win_get_position(pane.base_win)[2],

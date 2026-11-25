@@ -1,4 +1,5 @@
 local api = vim.api
+local diff = require "default.plugin.diff.diff"
 
 local M = {}
 
@@ -44,18 +45,18 @@ function M.create(file, sides)
     local ours_buf = vim.fn.bufadd(file)
     vim.fn.bufload(ours_buf)
     vim.bo[ours_buf].bufhidden = "hide"
-    api.nvim_win_set_buf(ours_win, ours_buf)
+    diff.set_win_buf(ours_win, ours_buf)
     set_lines(ours_buf, sides.ours)
 
     vim.cmd.vsplit()
     local base_win = api.nvim_get_current_win()
     local base_buf = snapshot(sides.base)
-    api.nvim_win_set_buf(base_win, base_buf)
+    diff.set_win_buf(base_win, base_buf)
 
     vim.cmd.vsplit()
     local theirs_win = api.nvim_get_current_win()
     local theirs_buf = snapshot(sides.theirs)
-    api.nvim_win_set_buf(theirs_win, theirs_buf)
+    diff.set_win_buf(theirs_win, theirs_buf)
 
     local merge = {
         tab = tab,
@@ -64,6 +65,7 @@ function M.create(file, sides)
         base_buf = base_buf,
         theirs_buf = theirs_buf,
     }
+    diff.lock_wins(merge.wins)
     apply_diff(merge.wins)
     return merge
 end

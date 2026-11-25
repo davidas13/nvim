@@ -1,6 +1,7 @@
 local api = vim.api
 local uv = vim.uv
 local panel_module = require "default.plugin.diff.panel"
+local diff = require "default.plugin.diff.diff"
 
 local M = {}
 
@@ -67,11 +68,12 @@ function M.files(left, right)
     vim.cmd.tabnew()
     local tab = api.nvim_get_current_tabpage()
     local left_win = api.nvim_get_current_win()
-    api.nvim_win_set_buf(left_win, left_buf)
+    diff.set_win_buf(left_win, left_buf)
     vim.cmd.vsplit()
     local right_win = api.nvim_get_current_win()
-    api.nvim_win_set_buf(right_win, right_buf)
+    diff.set_win_buf(right_win, right_buf)
     local wins = { left_win, right_win }
+    diff.lock_wins(wins)
     enable_diff(wins)
     return { tab = tab, wins = wins, left_buf = left_buf, right_buf = right_buf }
 end
@@ -206,11 +208,11 @@ function M.dirs(left, right, width, page_size)
     local tab = api.nvim_get_current_tabpage()
     local right_win = api.nvim_get_current_win()
     local right_buf = scratch ""
-    api.nvim_win_set_buf(right_win, right_buf)
+    diff.set_win_buf(right_win, right_buf)
     vim.cmd.vsplit()
     local left_win = api.nvim_get_current_win()
     local left_buf = scratch ""
-    api.nvim_win_set_buf(left_win, left_buf)
+    diff.set_win_buf(left_win, left_buf)
 
     local session = {
         tab = tab,
@@ -222,6 +224,7 @@ function M.dirs(left, right, width, page_size)
         current_rel = nil,
         panel = nil,
     }
+    diff.lock_wins(session.wins)
     local pending = 0
     api.nvim_set_current_win(left_win)
     session.panel = panel_module.create(
@@ -291,10 +294,10 @@ function M.show_dir(session, rel)
         end)
     end
     if api.nvim_win_is_valid(session.wins[1]) then
-        api.nvim_win_set_buf(session.wins[1], left_buf)
+        diff.set_win_buf(session.wins[1], left_buf)
     end
     if api.nvim_win_is_valid(session.wins[2]) then
-        api.nvim_win_set_buf(session.wins[2], right_buf)
+        diff.set_win_buf(session.wins[2], right_buf)
     end
     enable_diff(session.wins)
     session.current_rel = rel

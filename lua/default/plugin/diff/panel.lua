@@ -54,6 +54,7 @@ function M.create(entries, on_select, on_cycle, opts)
     local win = api.nvim_get_current_win()
     local buf = api.nvim_create_buf(false, true)
     api.nvim_win_set_buf(win, buf)
+    vim.wo[win].winfixbuf = true
     vim.wo[win].diff = false
     vim.wo[win].scrollbind = false
     vim.wo[win].cursorbind = false

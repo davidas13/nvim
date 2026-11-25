@@ -2,6 +2,24 @@ local api = vim.api
 
 local M = {}
 
+function M.set_win_buf(win, buf)
+    if not api.nvim_win_is_valid(win) then
+        return
+    end
+    local fixed = vim.wo[win].winfixbuf
+    vim.wo[win].winfixbuf = false
+    api.nvim_win_set_buf(win, buf)
+    vim.wo[win].winfixbuf = fixed
+end
+
+function M.lock_wins(wins)
+    for _, win in ipairs(wins) do
+        if api.nvim_win_is_valid(win) then
+            vim.wo[win].winfixbuf = true
+        end
+    end
+end
+
 function M.apply_diff(wins)
     for _, win in ipairs(wins) do
         if api.nvim_win_is_valid(win) then
@@ -36,13 +54,14 @@ function M.create_pane()
     local tab = api.nvim_get_current_tabpage()
     local base_win = api.nvim_get_current_win()
     local base_buf = api.nvim_create_buf(false, true)
-    api.nvim_win_set_buf(base_win, base_buf)
+    M.set_win_buf(base_win, base_buf)
     vim.cmd.vsplit()
     local work_win = api.nvim_get_current_win()
     local work_buf = api.nvim_create_buf(false, true)
-    api.nvim_win_set_buf(work_win, work_buf)
+    M.set_win_buf(work_win, work_buf)
     vim.bo[base_buf].modifiable = false
     vim.bo[base_buf].readonly = true
+    M.lock_wins { base_win, work_win }
     M.apply_diff { base_win, work_win }
     return {
         tab = tab,
@@ -65,9 +84,7 @@ function M.show_file(pane, file, before)
         return nil
     end
     vim.bo[work_buf].bufhidden = "hide"
-    if api.nvim_win_is_valid(pane.work_win) then
-        api.nvim_win_set_buf(pane.work_win, work_buf)
-    end
+    M.set_win_buf(pane.work_win, work_buf)
     set_base_lines(pane.base_buf, before)
     local ft = vim.bo[work_buf].filetype
     if ft == "" then
