@@ -839,4 +839,29 @@ eq(config_panel.page, 2, "pagination: goto page command")
 explorer_diff.close()
 explorer_diff.setup { page_size = 100 }
 
+local jump_file = base .. "/jump_target.py"
+write(jump_file, "jump\n")
+local picker_config = require "default.plugin.snacks.picker"
+assert(
+    picker_config.actions and picker_config.actions.jump,
+    "picker guard: jump overridden"
+)
+local guard_tab = vim.api.nvim_get_current_tabpage()
+local tabs_before = vim.fn.tabpagenr "$"
+vim.api.nvim_tabpage_set_var(guard_tab, "diffexplorer_title", "Diff")
+local fake_picker = {
+    selected = function()
+        return { { file = jump_file, pos = { 1, 0 } } }
+    end,
+    close = function() end,
+}
+picker_config.actions.jump(fake_picker, nil, {})
+eq(vim.fn.tabpagenr "$", tabs_before + 1, "picker guard: opens new tab")
+assert(
+    vim.endswith(vim.api.nvim_buf_get_name(0), "/jump_target.py"),
+    "picker guard: new tab holds file"
+)
+vim.api.nvim_tabpage_set_var(guard_tab, "diffexplorer_title", "")
+vim.cmd(("tabclose %d"):format(vim.fn.tabpagenr()))
+
 print "DIFF EXPLORER TEST OK"

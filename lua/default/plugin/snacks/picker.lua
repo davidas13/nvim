@@ -1,6 +1,38 @@
 -- Setup ------------------------------------------------------------------- {{{
 -- snacks.picker config: custom layout, explorer source, custom actions.
 
+local picker_actions = require "snacks.picker.actions"
+local original_jump = picker_actions.jump
+
+local function in_diff_tab()
+    local tab = vim.api.nvim_get_current_tabpage()
+    return vim.fn.gettabvar(
+        vim.api.nvim_tabpage_get_number(tab),
+        "diffexplorer_title",
+        ""
+    ) ~= ""
+end
+
+local function guarded_jump(picker, item, action)
+    if not in_diff_tab() then
+        return original_jump(picker, item, action)
+    end
+    local items = picker:selected { fallback = true }
+    if #items == 0 then
+        return
+    end
+    local selected = items[1]
+    if not selected.file or selected.file == "" then
+        return
+    end
+    picker:close()
+    vim.cmd(("tabedit %s"):format(vim.fn.fnameescape(selected.file)))
+    local pos = selected.pos
+    if pos and pos[1] > 0 then
+        vim.api.nvim_win_set_cursor(0, { pos[1], pos[2] or 0 })
+    end
+end
+
 -- Opens ": <path>" with the cursor right after ":" (via <C-b>), so an Ex
 -- command can be typed in front of the path.
 local function start_cmdline(path)
@@ -73,6 +105,7 @@ return {
         },
     },
     actions = {
+        jump = guarded_jump,
         start_cmd = {
             action = function(picker, item)
                 if not item or not item.file then
