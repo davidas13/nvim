@@ -1,46 +1,76 @@
+local api = vim.api
+
 local M = {}
 
-function M.unified(before, after, before_label, after_label)
-    local result =
-        vim.diff(before, after, { result_type = "unified", ctxlen = 3 })
-    local lines = {
-        "--- " .. (before_label or "before"),
-        "+++ " .. (after_label or "after"),
-    }
-    if type(result) == "string" then
-        table.insert(lines, result)
-    else
-        vim.list_extend(lines, result or {})
+function M.apply_diff(wins)
+    for _, win in ipairs(wins) do
+        if api.nvim_win_is_valid(win) then
+            api.nvim_win_call(win, function()
+                vim.cmd "diffoff!"
+            end)
+        end
     end
-    return table.concat(lines, "\n")
+    for _, win in ipairs(wins) do
+        if api.nvim_win_is_valid(win) then
+            api.nvim_win_call(win, function()
+                vim.cmd.diffthis()
+            end)
+        end
+    end
 end
 
-function M.open_vimdiff(before, after)
-    vim.cmd "tabnew"
-    local tab = vim.api.nvim_get_current_tabpage()
-    local left = vim.api.nvim_create_buf(false, true)
-    local right = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_buf_set_lines(
-        left,
-        0,
-        -1,
-        false,
-        vim.split(before, "\n", { plain = true })
-    )
-    vim.api.nvim_buf_set_lines(
-        right,
-        0,
-        -1,
-        false,
-        vim.split(after, "\n", { plain = true })
-    )
-    vim.api.nvim_set_current_buf(left)
-    vim.wo.diff = true
-    vim.cmd "vsplit"
-    vim.api.nvim_set_current_buf(right)
-    vim.wo.diff = true
-    vim.cmd "diffupdate"
-    return tab
+local function set_base_lines(buf, text)
+    if not api.nvim_buf_is_valid(buf) then
+        return
+    end
+    vim.bo[buf].modifiable = true
+    vim.bo[buf].readonly = false
+    local lines = vim.split(text or "", "\n", { plain = true })
+    api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+    vim.bo[buf].readonly = true
+    vim.bo[buf].modifiable = false
+end
+
+function M.create_pane()
+    vim.cmd.tabnew()
+    local tab = api.nvim_get_current_tabpage()
+    local base_win = api.nvim_get_current_win()
+    local base_buf = api.nvim_create_buf(false, true)
+    api.nvim_win_set_buf(base_win, base_buf)
+    vim.cmd.vsplit()
+    local work_win = api.nvim_get_current_win()
+    local work_buf = api.nvim_create_buf(false, true)
+    api.nvim_win_set_buf(work_win, work_buf)
+    vim.bo[base_buf].modifiable = false
+    vim.bo[base_buf].readonly = true
+    M.apply_diff { base_win, work_win }
+    return {
+        tab = tab,
+        base_win = base_win,
+        work_win = work_win,
+        base_buf = base_buf,
+    }
+end
+
+function M.show_file(pane, file, before)
+    if not api.nvim_tabpage_is_valid(pane.tab) then
+        return nil
+    end
+    local work_buf = vim.fn.bufadd(file)
+    if not work_buf or work_buf == 0 then
+        return nil
+    end
+    vim.fn.bufload(work_buf)
+    if not api.nvim_buf_is_valid(work_buf) then
+        return nil
+    end
+    vim.bo[work_buf].bufhidden = "hide"
+    if api.nvim_win_is_valid(pane.work_win) then
+        api.nvim_win_set_buf(pane.work_win, work_buf)
+    end
+    set_base_lines(pane.base_buf, before)
+    M.apply_diff { pane.base_win, pane.work_win }
+    return work_buf
 end
 
 return M

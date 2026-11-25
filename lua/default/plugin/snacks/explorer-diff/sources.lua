@@ -21,7 +21,7 @@ local function read_file(path)
     return content or ""
 end
 
-local function root_dir(file, vcs)
+function M.root(file, vcs)
     local dir = vim.fs.dirname(normalize(file))
     local marker = "." .. vcs
     while dir do
@@ -53,7 +53,7 @@ function M.detect_vcs(file)
 end
 
 function M.relative(file, vcs)
-    local root = root_dir(file, vcs)
+    local root = M.root(file, vcs)
     if not root then
         return nil
     end
@@ -91,7 +91,7 @@ function M.read_side(spec, file, vcs)
     if type(spec) == "table" and spec.path then
         return read_file(normalize(spec.path .. "/" .. rel))
     end
-    local root = root_dir(file, vcs)
+    local root = M.root(file, vcs)
     if not root then
         return ""
     end
@@ -100,6 +100,57 @@ function M.read_side(spec, file, vcs)
         revision = "head"
     end
     return vcs_text(revision, file, vcs, rel, root)
+end
+
+local function parse_status(vcs, text, root)
+    local entries = {}
+    for line in vim.gsplit(text, "\n", { plain = true }) do
+        if line ~= "" then
+            local code, path
+            if vcs == "git" then
+                code = line:sub(1, 2)
+                path = line:sub(4)
+                if path:find(" -> ", 1, true) then
+                    path = vim.split(path, " -> ", { plain = true })[2]
+                end
+            elseif vcs == "hg" then
+                code = line:sub(1, 1)
+                path = line:sub(3)
+            else
+                code, path = line:match "^([MARD?C]) (.+)$"
+            end
+            if code and path then
+                code = vim.trim(code):sub(1, 1)
+                path = vim.trim(path)
+                if path ~= "" then
+                    table.insert(entries, {
+                        file = normalize(root .. "/" .. path),
+                        status = code,
+                    })
+                end
+            end
+        end
+    end
+    return entries
+end
+
+function M.status(file, vcs)
+    local root = M.root(file, vcs)
+    if not root then
+        return {}
+    end
+    local text
+    if vcs == "git" then
+        text = output(
+            { "git", "status", "--porcelain", "--untracked-files=all" },
+            root
+        )
+    elseif vcs == "hg" then
+        text = output({ "hg", "status" }, root)
+    else
+        text = output({ "jj", "status" }, root)
+    end
+    return parse_status(vcs, text, root)
 end
 
 return M

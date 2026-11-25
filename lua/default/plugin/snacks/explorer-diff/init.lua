@@ -1,6 +1,6 @@
 local sources = require "default.plugin.snacks.explorer-diff.sources"
 local diff = require "default.plugin.snacks.explorer-diff.diff"
-local preview = require "snacks.picker.preview"
+local panel_module = require "default.plugin.snacks.explorer-diff.panel"
 
 local M = {}
 
@@ -13,13 +13,13 @@ local DEFAULT_PROFILES = {
 local config = {
     default_profile = "working",
     profiles = {},
+    listing_style = "list",
 }
-
-local cache = {}
 
 function M.setup(opts)
     opts = opts or {}
     config.default_profile = opts.default_profile or config.default_profile
+    config.listing_style = opts.listing_style or config.listing_style
     config.profiles =
         vim.tbl_deep_extend("force", DEFAULT_PROFILES, opts.profiles or {})
 end
@@ -80,40 +80,7 @@ local function current_profile(parsed)
     return "custom", { before = parsed.before, after = parsed.after }
 end
 
-local function render(ctx, state)
-    local item = ctx.item
-    local text
-    if not item.file or item.dir then
-        text = "No diff for this entry"
-    else
-        local vcs = sources.detect_vcs(item.file)
-        if not vcs then
-            text = "No version control repository"
-        else
-            local key = item.file
-                .. "|"
-                .. state.name
-                .. "|"
-                .. vim.fn.getftime(item.file)
-            text = cache[key]
-            if not text then
-                local before =
-                    sources.read_side(state.profile.before, item.file, vcs)
-                local after =
-                    sources.read_side(state.profile.after, item.file, vcs)
-                text = diff.unified(before, after, "before", "after")
-                if vim.tbl_count(cache) > 200 then
-                    cache = {}
-                end
-                cache[key] = text
-            end
-        end
-    end
-    item.preview = { text = text, ft = "diff", loc = false }
-    return preview.preview(ctx)
-end
-
-local function cycle(picker, state)
+local function cycle(state)
     local names = vim.tbl_keys(config.profiles)
     table.sort(names)
     if #names == 0 then
@@ -128,54 +95,60 @@ local function cycle(picker, state)
     end
     state.name = names[index % #names + 1]
     state.profile = named_profile(state.name)
-    picker:show_preview()
 end
 
 function M.open(args)
     local parsed = M.parse_args(args)
     local name, profile = current_profile(parsed)
     local state = { name = name, profile = profile }
+    local pane = diff.create_pane()
 
-    return require("snacks").picker.explorer {
-        title = "Diff Explorer",
-        layout = "custom",
-        focus = "list",
-        preview = function(ctx)
-            return render(ctx, state)
+    local function changed_files()
+        local probe = vim.fn.getcwd() .. "/__diff_explorer_probe__"
+        local vcs = sources.detect_vcs(probe)
+        if not vcs then
+            return {}
+        end
+        return sources.status(probe, vcs)
+    end
+
+    local function show(file)
+        state.file = file
+        local vcs = sources.detect_vcs(file)
+        local before = vcs
+                and sources.read_side(state.profile.before, file, vcs)
+            or ""
+        diff.show_file(pane, file, before)
+    end
+
+    local function refresh()
+        if state.file then
+            show(state.file)
+        end
+    end
+
+    local function cycle_profile()
+        cycle(state)
+        pcall(refresh)
+    end
+
+    vim.api.nvim_set_current_win(pane.base_win)
+    local file_panel = panel_module.create(
+        changed_files(),
+        function(file)
+            pcall(show, file)
         end,
-        actions = {
-            diff_profile_next = {
-                action = function(picker)
-                    cycle(picker, state)
-                end,
-            },
-            diff_open_vimdiff = {
-                action = function(picker)
-                    local item = picker:current()
-                    if not item or not item.file or item.dir then
-                        return
-                    end
-                    local vcs = sources.detect_vcs(item.file)
-                    if not vcs then
-                        return
-                    end
-                    local before =
-                        sources.read_side(state.profile.before, item.file, vcs)
-                    local after =
-                        sources.read_side(state.profile.after, item.file, vcs)
-                    diff.open_vimdiff(before, after)
-                end,
-            },
-        },
-        win = {
-            list = {
-                keys = {
-                    ["<Tab>"] = "diff_profile_next",
-                    ["<C-v>"] = "diff_open_vimdiff",
-                },
-            },
-        },
-    }
+        cycle_profile,
+        {
+            listing_style = config.listing_style,
+            cwd = vim.fn.getcwd(),
+        }
+    )
+    if file_panel.entries[1] then
+        show(file_panel.entries[1].file)
+    end
+    vim.api.nvim_set_current_win(file_panel.win)
+    return file_panel
 end
 
 M.setup()
