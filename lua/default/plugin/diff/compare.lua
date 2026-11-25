@@ -1,7 +1,10 @@
 local api = vim.api
+local uv = vim.uv
 local panel_module = require "default.plugin.diff.panel"
 
 local M = {}
+
+local FILES_EQUAL_CHUNK = 65536
 
 local function read(path)
     local handle = io.open(path, "rb")
@@ -23,77 +26,140 @@ local function set_lines(buf, text)
     )
 end
 
-local function file_buffer(path)
-    local buf = vim.fn.bufadd(path)
-    vim.fn.bufload(buf)
+local function file_buffer(path, writable, ft)
+    local buf
+    if vim.fn.filereadable(path) == 1 then
+        buf = vim.fn.bufadd(path)
+        vim.fn.bufload(buf)
+    else
+        buf = api.nvim_create_buf(false, true)
+        set_lines(buf, "")
+    end
+    if not buf or buf == 0 or not api.nvim_buf_is_valid(buf) then
+        return nil
+    end
     vim.bo[buf].bufhidden = "hide"
-    vim.bo[buf].readonly = true
-    vim.bo[buf].modifiable = false
+    vim.bo[buf].modifiable = writable
+    vim.bo[buf].readonly = not writable
+    if ft ~= "" and vim.bo[buf].filetype == "" then
+        vim.bo[buf].filetype = ft
+    end
     return buf
 end
 
-local function snapshot(text)
-    local buf = api.nvim_create_buf(false, true)
-    set_lines(buf, text)
-    vim.bo[buf].readonly = true
-    vim.bo[buf].modifiable = false
-    return buf
-end
-
-local function apply_diff(wins)
+local function enable_diff(wins)
     for _, win in ipairs(wins) do
-        api.nvim_win_call(win, function()
-            vim.cmd "diffoff!"
-        end)
+        if api.nvim_win_is_valid(win) and not vim.wo[win].diff then
+            api.nvim_win_call(win, function()
+                vim.cmd.diffthis()
+            end)
+        end
     end
-    for _, win in ipairs(wins) do
-        api.nvim_win_call(win, function()
-            vim.cmd.diffthis()
-        end)
-    end
-end
-
-local function update(buf, text)
-    if not api.nvim_buf_is_valid(buf) then
-        return
-    end
-    vim.bo[buf].modifiable = true
-    vim.bo[buf].readonly = false
-    set_lines(buf, text)
-    vim.bo[buf].readonly = true
-    vim.bo[buf].modifiable = false
 end
 
 function M.files(left, right)
+    local ft = vim.filetype.match { filename = left } or ""
+    local left_buf = file_buffer(left, false, ft)
+    local right_buf = file_buffer(right, false, ft)
+    if not left_buf or not right_buf then
+        return nil
+    end
     vim.cmd.tabnew()
     local tab = api.nvim_get_current_tabpage()
     local left_win = api.nvim_get_current_win()
-    local left_buf = file_buffer(left)
     api.nvim_win_set_buf(left_win, left_buf)
     vim.cmd.vsplit()
     local right_win = api.nvim_get_current_win()
-    local right_buf = file_buffer(right)
     api.nvim_win_set_buf(right_win, right_buf)
     local wins = { left_win, right_win }
-    apply_diff(wins)
+    enable_diff(wins)
     return { tab = tab, wins = wins, left_buf = left_buf, right_buf = right_buf }
 end
 
-local function dir_entries(left, right)
-    local paths = {}
-    for _, root in ipairs { left, right } do
-        for _, path in ipairs(vim.fn.glob(root .. "/**/*", true, true)) do
-            if vim.fn.filereadable(path) == 1 then
-                local rel = vim.fs.relpath(root, path)
-                if rel then
-                    paths[rel] = true
-                end
+local function files_under(root)
+    local found = {}
+    local function walk(dir, prefix)
+        local handle = uv.fs_scandir(dir)
+        if not handle then
+            return
+        end
+        while true do
+            local name, kind = uv.fs_scandir_next(handle)
+            if not name then
+                break
+            end
+            local path = dir .. "/" .. name
+            local rel = prefix == "" and name or prefix .. "/" .. name
+            local stat = uv.fs_stat(path)
+            if stat and stat.type == "directory" then
+                walk(path, rel)
+            elseif stat and (stat.type == "file" or stat.type == "link") then
+                found[rel] = true
+            elseif kind == "file" then
+                found[rel] = true
             end
         end
     end
+    walk(root, "")
+    return found
+end
+
+local function files_equal(a, b)
+    local stat_a = uv.fs_stat(a)
+    local stat_b = uv.fs_stat(b)
+    if stat_a and stat_b and stat_a.size ~= stat_b.size then
+        return false
+    end
+    local fd_a = uv.fs_open(a, "r", 0)
+    if not fd_a then
+        return false
+    end
+    local fd_b = uv.fs_open(b, "r", 0)
+    if not fd_b then
+        uv.fs_close(fd_a)
+        return false
+    end
+    local equal = true
+    while true do
+        local chunk_a = uv.fs_read(fd_a, FILES_EQUAL_CHUNK) or ""
+        local chunk_b = uv.fs_read(fd_b, FILES_EQUAL_CHUNK) or ""
+        if chunk_a ~= chunk_b then
+            equal = false
+            break
+        end
+        if chunk_a == "" then
+            break
+        end
+    end
+    uv.fs_close(fd_a)
+    uv.fs_close(fd_b)
+    return equal
+end
+
+local function dir_entries(left, right)
+    local left_set = files_under(left)
+    local right_set = files_under(right)
+    local diffs = {}
+    for rel in pairs(left_set) do
+        if right_set[rel] then
+            if not files_equal(left .. "/" .. rel, right .. "/" .. rel) then
+                diffs[rel] = "M"
+            end
+        else
+            diffs[rel] = "D"
+        end
+    end
+    for rel in pairs(right_set) do
+        if not left_set[rel] then
+            diffs[rel] = "A"
+        end
+    end
     local entries = {}
-    for rel in pairs(paths) do
-        table.insert(entries, { file = rel, status = "D", label = rel })
+    for rel, status in pairs(diffs) do
+        table.insert(
+            entries,
+            { file = rel, status = status, label = status .. "  " .. rel }
+        )
     end
     table.sort(entries, function(a, b)
         return a.file < b.file
@@ -101,46 +167,98 @@ local function dir_entries(left, right)
     return entries
 end
 
+local function scratch(text)
+    local buf = api.nvim_create_buf(false, true)
+    set_lines(buf, text)
+    vim.bo[buf].readonly = true
+    vim.bo[buf].modifiable = false
+    return buf
+end
+
 function M.dirs(left, right, width)
+    local abs_left = vim.fn.fnamemodify(left, ":p")
+    local abs_right = vim.fn.fnamemodify(right, ":p")
+    local entries = dir_entries(abs_left, abs_right)
+    if #entries == 0 then
+        vim.notify(
+            "Diff: no differences between directories",
+            vim.log.levels.INFO
+        )
+        return nil
+    end
+
     vim.cmd.tabnew()
     local tab = api.nvim_get_current_tabpage()
     local right_win = api.nvim_get_current_win()
-    local right_buf = snapshot ""
+    local right_buf = scratch ""
     api.nvim_win_set_buf(right_win, right_buf)
     vim.cmd.vsplit()
     local left_win = api.nvim_get_current_win()
-    local left_buf = snapshot ""
+    local left_buf = scratch ""
     api.nvim_win_set_buf(left_win, left_buf)
 
     local session = {
         tab = tab,
         wins = { left_win, right_win },
-        left_buf = left_buf,
-        right_buf = right_buf,
-        left = left,
-        right = right,
+        left = abs_left,
+        right = abs_right,
+        left_bufs = {},
+        right_bufs = {},
+        current_rel = nil,
+        panel = nil,
     }
+    local pending = 0
     api.nvim_set_current_win(left_win)
-    session.panel = panel_module.create(
-        dir_entries(left, right),
-        function(_, entry)
-            M.show_dir(session, entry.file)
-        end,
-        nil,
-        { listing_style = "list", width = width or 40, cwd = left }
-    )
-    if session.panel.entries[1] then
-        M.show_dir(session, session.panel.entries[1].file)
-    end
-    apply_diff(session.wins)
+    session.panel = panel_module.create(entries, function(_, entry)
+        pending = pending + 1
+        local token = pending
+        vim.defer_fn(function()
+            if token == pending and api.nvim_tabpage_is_valid(tab) then
+                M.show_dir(session, entry.file)
+            end
+        end, 60)
+    end, nil, { listing_style = "list", width = width or 40, cwd = abs_left })
+    session.panel.session = session
+    M.show_dir(session, entries[1].file)
     api.nvim_set_current_win(session.panel.win)
     return session
 end
 
 function M.show_dir(session, rel)
-    update(session.left_buf, read(session.left .. "/" .. rel))
-    update(session.right_buf, read(session.right .. "/" .. rel))
-    apply_diff(session.wins)
+    if not rel or rel == session.current_rel then
+        return
+    end
+    if not api.nvim_tabpage_is_valid(session.tab) then
+        return
+    end
+    local left_path = session.left .. "/" .. rel
+    local right_path = session.right .. "/" .. rel
+    local ft = vim.filetype.match { filename = left_path }
+        or vim.filetype.match { filename = right_path }
+        or ""
+
+    local left_buf = session.left_bufs[rel]
+    if not left_buf or not api.nvim_buf_is_valid(left_buf) then
+        left_buf = file_buffer(left_path, true, ft)
+        session.left_bufs[rel] = left_buf
+    end
+    local right_buf = session.right_bufs[rel]
+    if not right_buf or not api.nvim_buf_is_valid(right_buf) then
+        right_buf = file_buffer(right_path, true, ft)
+        session.right_bufs[rel] = right_buf
+    end
+    if not left_buf or not right_buf then
+        return
+    end
+
+    if api.nvim_win_is_valid(session.wins[1]) then
+        api.nvim_win_set_buf(session.wins[1], left_buf)
+    end
+    if api.nvim_win_is_valid(session.wins[2]) then
+        api.nvim_win_set_buf(session.wins[2], right_buf)
+    end
+    enable_diff(session.wins)
+    session.current_rel = rel
 end
 
 function M.equalize(session, panel_width)

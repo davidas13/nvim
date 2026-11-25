@@ -641,6 +641,10 @@ vim.fn.mkdir(dir_right, "p")
 write(dir_left .. "/a.txt", "a1\n")
 write(dir_right .. "/a.txt", "a2\n")
 write(dir_left .. "/only.txt", "only\n")
+write(dir_left .. "/same.txt", "same\n")
+write(dir_right .. "/same.txt", "same\n")
+write(dir_left .. "/.hidden.txt", "hidden-left\n")
+write(dir_right .. "/.hidden.txt", "hidden-right\n")
 local dir_panel = explorer_diff.diff_dirs(dir_left .. " " .. dir_right)
 local dir_tab = vim.api.nvim_get_current_tabpage()
 local dirs_title = vim.fn.gettabvar(
@@ -648,8 +652,30 @@ local dirs_title = vim.fn.gettabvar(
     "diffexplorer_title",
     ""
 )
-assert(vim.startswith(dirs_title, "DiffDirs "), "diff dirs: tab title")
-assert(#dir_panel.entries >= 2, "diff dirs: entries listed")
+eq(
+    dirs_title,
+    "DiffDirs " .. dir_left .. " <-> " .. dir_right,
+    "diff dirs: tab title"
+)
+eq(#dir_panel.entries, 3, "diff dirs: only differing entries")
+local has_hidden, has_same = false, false
+for _, entry in ipairs(dir_panel.entries) do
+    if entry.file == ".hidden.txt" then
+        has_hidden = true
+    end
+    if entry.file == "same.txt" then
+        has_same = true
+    end
+end
+assert(has_hidden, "diff dirs: hidden file listed")
+assert(not has_same, "diff dirs: identical file excluded")
+local dir_session = dir_panel.session
+assert(dir_session, "diff dirs: session exposed")
+eq(
+    vim.bo[vim.api.nvim_win_get_buf(dir_session.wins[1])].buftype,
+    "",
+    "diff dirs: left buffer file-backed"
+)
 local dir_diff_wins = 0
 for _, win in ipairs(vim.api.nvim_tabpage_list_wins(dir_tab)) do
     if vim.api.nvim_win_get_option(win, "diff") then
@@ -657,6 +683,34 @@ for _, win in ipairs(vim.api.nvim_tabpage_list_wins(dir_tab)) do
     end
 end
 eq(dir_diff_wins, 2, "diff dirs: two diff windows")
+local only_row
+for i, item in ipairs(dir_panel.view_items) do
+    if item.file == "only.txt" then
+        only_row = i
+    end
+end
+assert(only_row, "diff dirs: only.txt row")
+dir_panel.select_index(only_row)
+vim.wait(120)
+local selected_buf = vim.api.nvim_win_get_buf(dir_session.wins[1])
+assert(
+    vim.endswith(vim.api.nvim_buf_get_name(selected_buf), "/dl/only.txt"),
+    "diff dirs: debounced selection"
+)
+for _, win in ipairs(dir_session.wins) do
+    eq(
+        vim.api.nvim_win_get_option(win, "diff"),
+        true,
+        "diff dirs: diff after selection"
+    )
+end
+vim.api.nvim_set_current_win(dir_session.wins[1])
+vim.api.nvim_buf_set_lines(selected_buf, 0, -1, false, { "written" })
+vim.cmd.write()
+local written = io.open(dir_left .. "/only.txt", "r")
+assert(written, "diff dirs: write target exists")
+eq(written:read "*a", "written\n", "diff dirs: write through")
+written:close()
 explorer_diff.close()
 eq(vim.fn.exists ":DiffToggle", 2, "toggle alias: exists")
 eq(vim.fn.exists ":Diff", 2, "rename: Diff exists")

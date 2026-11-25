@@ -466,8 +466,15 @@ function M.diff_dirs(args)
         return
     end
     local session = compare_module.dirs(left, right, config.panel_width)
+    if not session then
+        config = config_snapshot
+        return
+    end
     compare_module.equalize(session, config.panel_width)
-    set_tab_title(session.tab, titled(config.diff_dirs_tab_title, args))
+    set_tab_title(
+        session.tab,
+        titled(config.diff_dirs_tab_title, left .. " <-> " .. right)
+    )
     views[session.tab] = {
         tab = session.tab,
         compare = session,
