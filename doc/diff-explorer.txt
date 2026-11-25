@@ -47,7 +47,15 @@ COMMANDS					*diff-commands*
 
 :DiffRefresh				Reload the panel entries.
 
-:DiffNext / :DiffPrev			Move to the next or previous file.
+:DiffNext / :DiffPrev			Move to the next or previous file. Crosses a
+					page boundary when needed.
+
+:DiffNextPage / :DiffPrevPage	Move to the next or previous panel page.
+
+:DiffGotoPage {n}			Jump to panel page {n}.
+
+In the panel, `]p` and `[p` move between pages. The panel winbar shows the
+current page and the page size.
 
 In a Diff tab, other commands are blocked. `:e` becomes `:tabedit`, so the
 Diff layout stays intact. `:w`, `diffget`, `diffput`, `do`, `dp`, and
@@ -79,6 +87,7 @@ that project only.
 	default_profile		"working"
 	profiles		table of before and after specs
 	listing_style		"list" or "tree"
+	page_size		100
 	panel_width		40
 	tab_title		"Diff"
 	history_tab_title	"DiffHistory"
@@ -86,6 +95,10 @@ that project only.
 	diff_files_tab_title	"DiffFiles"
 	diff_dirs_tab_title	"DiffDirs"
 	redirect_commands	table mapping command names to tab-safe commands
+
+Set `page_size` to 0 to show every entry again. Pagination keeps only one page
+in the panel buffer. Directory scanning still walks every file before the view
+opens.
 
 Tab titles include the command arguments. For example, `:Diff HEAD~2 -- sub`
 shows `Diff HEAD~2 -- sub` in the tabline.
