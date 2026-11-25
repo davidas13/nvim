@@ -29,11 +29,11 @@ local config = {
     profiles = {},
     listing_style = "list",
     panel_width = 40,
-    tab_title = "DiffExplorer",
-    history_tab_title = "DiffExplorerHistory",
-    merge_tab_title = "DiffExplorerMerge",
-    diff_files_tab_title = "DiffExplorerDiffFiles",
-    diff_dirs_tab_title = "DiffExplorerDiffDirs",
+    tab_title = "Diff",
+    history_tab_title = "DiffHistory",
+    merge_tab_title = "DiffMerge",
+    diff_files_tab_title = "DiffFiles",
+    diff_dirs_tab_title = "DiffDirs",
     redirect_commands = {},
 }
 
@@ -73,14 +73,14 @@ local function apply_project_config()
     end
     local chunk, err = load(content, path)
     if not chunk then
-        vim.notify("DiffExplorer: " .. tostring(err), vim.log.levels.WARN)
+        vim.notify("Diff: " .. tostring(err), vim.log.levels.WARN)
         return
     end
-    _G.DiffExplorer = M
+    _G.Diff = M
     local ok, run_err = pcall(chunk)
-    _G.DiffExplorer = nil
+    _G.Diff = nil
     if not ok then
-        vim.notify("DiffExplorer: " .. tostring(run_err), vim.log.levels.WARN)
+        vim.notify("Diff: " .. tostring(run_err), vim.log.levels.WARN)
     end
     return snapshot
 end
@@ -89,6 +89,13 @@ local function set_tab_title(tab, title)
     if api.nvim_tabpage_is_valid(tab) then
         api.nvim_tabpage_set_var(tab, "diffexplorer_title", title)
     end
+end
+
+local function titled(base, args)
+    if not args or args == "" then
+        return base
+    end
+    return base .. " " .. args
 end
 
 local function is_diffexplorer_tab()
@@ -306,7 +313,7 @@ function M.open(args)
     end
     build_panel()
     diff.equalize_wins(pane.base_win, pane.work_win, config.panel_width)
-    set_tab_title(pane.tab, config.tab_title)
+    set_tab_title(pane.tab, titled(config.tab_title, args))
     views[pane.tab] = session
     config = config_snapshot
     return session.panel
@@ -319,13 +326,13 @@ function M.file_history(args)
         file = api.nvim_buf_get_name(api.nvim_get_current_buf())
     end
     if file == "" or vim.fn.filereadable(file) ~= 1 then
-        vim.notify("DiffExplorer: file not found", vim.log.levels.WARN)
+        vim.notify("Diff: file not found", vim.log.levels.WARN)
         config = config_snapshot
         return
     end
     local vcs = sources.detect_vcs(file)
     if not vcs then
-        vim.notify("DiffExplorer: no repository", vim.log.levels.WARN)
+        vim.notify("Diff: no repository", vim.log.levels.WARN)
         config = config_snapshot
         return
     end
@@ -365,7 +372,7 @@ function M.file_history(args)
         pcall(show, session.panel.entries[1])
     end
     diff.equalize_wins(pane.base_win, pane.work_win, config.panel_width)
-    set_tab_title(pane.tab, config.history_tab_title)
+    set_tab_title(pane.tab, titled(config.history_tab_title, args))
     views[pane.tab] = session
     api.nvim_set_current_win(session.panel.win)
     config = config_snapshot
@@ -378,13 +385,13 @@ function M.merge(args)
     local probe = cwd .. "/__diff_explorer_probe__"
     local vcs = sources.detect_vcs(probe)
     if not vcs then
-        vim.notify("DiffExplorer: no repository", vim.log.levels.WARN)
+        vim.notify("Diff: no repository", vim.log.levels.WARN)
         config = config_snapshot
         return
     end
     local entries = sources.conflicts(probe, vcs)
     if #entries == 0 then
-        vim.notify("DiffExplorer: no conflicts", vim.log.levels.WARN)
+        vim.notify("Diff: no conflicts", vim.log.levels.WARN)
         config = config_snapshot
         return
     end
@@ -434,13 +441,13 @@ function M.diff_files(args)
     local config_snapshot = apply_project_config()
     local left, right = two_args(args)
     if not left or not right then
-        vim.notify("DiffExplorer: expected two files", vim.log.levels.WARN)
+        vim.notify("Diff: expected two files", vim.log.levels.WARN)
         config = config_snapshot
         return
     end
     local session = compare_module.files(left, right)
     compare_module.equalize(session, 0)
-    set_tab_title(session.tab, config.diff_files_tab_title)
+    set_tab_title(session.tab, titled(config.diff_files_tab_title, args))
     views[session.tab] = {
         tab = session.tab,
         compare = session,
@@ -454,16 +461,13 @@ function M.diff_dirs(args)
     local config_snapshot = apply_project_config()
     local left, right = two_args(args)
     if not left or not right then
-        vim.notify(
-            "DiffExplorer: expected two directories",
-            vim.log.levels.WARN
-        )
+        vim.notify("Diff: expected two directories", vim.log.levels.WARN)
         config = config_snapshot
         return
     end
     local session = compare_module.dirs(left, right, config.panel_width)
     compare_module.equalize(session, config.panel_width)
-    set_tab_title(session.tab, config.diff_dirs_tab_title)
+    set_tab_title(session.tab, titled(config.diff_dirs_tab_title, args))
     views[session.tab] = {
         tab = session.tab,
         compare = session,
@@ -506,10 +510,7 @@ function M.toggle_files()
     elseif view.build_panel then
         view.build_panel()
     else
-        vim.notify(
-            "DiffExplorer: panel cannot be reopened",
-            vim.log.levels.WARN
-        )
+        vim.notify("Diff: panel cannot be reopened", vim.log.levels.WARN)
     end
 end
 
@@ -582,7 +583,7 @@ function M.redirect_cmdline(line)
     if not cmd then
         return "<CR>"
     end
-    if cmd:match "^DiffExplorer" or SAFE_COMMANDS[cmd] then
+    if cmd:match "^Diff" or SAFE_COMMANDS[cmd] then
         return "<CR>"
     end
     local target = config.redirect_commands[cmd]
@@ -594,7 +595,7 @@ function M.redirect_cmdline(line)
             .. (args == "" and "" or " " .. args)
             .. "<CR>"
     end
-    vim.notify("DiffExplorer: command blocked in this tab", vim.log.levels.WARN)
+    vim.notify("Diff: command blocked in this tab", vim.log.levels.WARN)
     return "<C-u>"
 end
 
@@ -604,7 +605,7 @@ vim.keymap.set("c", "<CR>", function()
     return M.redirect_cmdline(vim.fn.getcmdline())
 end, { expr = true, noremap = true })
 
-vim.api.nvim_create_user_command("DiffExplorer", function(opts)
+vim.api.nvim_create_user_command("Diff", function(opts)
     M.open(opts.args)
 end, {
     nargs = "?",
@@ -612,7 +613,7 @@ end, {
         return vim.tbl_keys(config.profiles)
     end,
 })
-vim.api.nvim_create_user_command("DiffExplorerOpen", function(opts)
+vim.api.nvim_create_user_command("DiffOpen", function(opts)
     M.open(opts.args)
 end, {
     nargs = "?",
@@ -620,37 +621,37 @@ end, {
         return vim.tbl_keys(config.profiles)
     end,
 })
-vim.api.nvim_create_user_command("DiffExplorerFileHistory", function(opts)
+vim.api.nvim_create_user_command("DiffHistory", function(opts)
     M.file_history(opts.args)
 end, { nargs = "?", complete = "file" })
-vim.api.nvim_create_user_command("DiffExplorerMerge", function()
+vim.api.nvim_create_user_command("DiffMerge", function()
     M.merge()
 end, { nargs = 0, bang = true })
-vim.api.nvim_create_user_command("DiffExplorerDiffFiles", function(opts)
+vim.api.nvim_create_user_command("DiffFiles", function(opts)
     M.diff_files(opts.args)
 end, { nargs = "*", complete = "file" })
-vim.api.nvim_create_user_command("DiffExplorerDiffDirs", function(opts)
+vim.api.nvim_create_user_command("DiffDirs", function(opts)
     M.diff_dirs(opts.args)
 end, { nargs = "*", complete = "dir" })
-vim.api.nvim_create_user_command("DiffExplorerToggle", function()
+vim.api.nvim_create_user_command("DiffToggle", function()
     M.toggle_files()
 end, { nargs = 0, bang = true })
-vim.api.nvim_create_user_command("DiffExplorerClose", function()
+vim.api.nvim_create_user_command("DiffClose", function()
     M.close()
 end, { nargs = 0, bang = true })
-vim.api.nvim_create_user_command("DiffExplorerFocusFiles", function()
+vim.api.nvim_create_user_command("DiffFocusFiles", function()
     M.focus_files()
 end, { nargs = 0, bang = true })
-vim.api.nvim_create_user_command("DiffExplorerToggleFiles", function()
+vim.api.nvim_create_user_command("DiffToggleFiles", function()
     M.toggle_files()
 end, { nargs = 0, bang = true })
-vim.api.nvim_create_user_command("DiffExplorerRefresh", function()
+vim.api.nvim_create_user_command("DiffRefresh", function()
     M.refresh()
 end, { nargs = 0, bang = true })
-vim.api.nvim_create_user_command("DiffExplorerNext", function()
+vim.api.nvim_create_user_command("DiffNext", function()
     M.next()
 end, { nargs = 0 })
-vim.api.nvim_create_user_command("DiffExplorerPrev", function()
+vim.api.nvim_create_user_command("DiffPrev", function()
     M.prev()
 end, { nargs = 0 })
 

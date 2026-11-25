@@ -330,16 +330,16 @@ tree.close()
 vim.cmd.cd(git_dir)
 local opened_panel = explorer_diff.open()
 local opened_tab = vim.api.nvim_get_current_tabpage()
-vim.cmd.DiffExplorerFocusFiles()
+vim.cmd.DiffFocusFiles()
 eq(vim.api.nvim_get_current_win(), opened_panel.win, "command: focus files")
-vim.cmd.DiffExplorerNext()
-vim.cmd.DiffExplorerToggleFiles()
+vim.cmd.DiffNext()
+vim.cmd.DiffToggleFiles()
 eq(
     vim.api.nvim_win_is_valid(opened_panel.win),
     false,
     "command: toggle closes panel"
 )
-vim.cmd.DiffExplorerToggleFiles()
+vim.cmd.DiffToggleFiles()
 local reopened = vim.api.nvim_get_current_win()
 eq(
     vim.api.nvim_win_get_option(reopened, "diff"),
@@ -351,8 +351,8 @@ eq(
     true,
     "command: reopened panel readonly"
 )
-vim.cmd.DiffExplorerRefresh()
-vim.cmd.DiffExplorerClose()
+vim.cmd.DiffRefresh()
+vim.cmd.DiffClose()
 eq(vim.api.nvim_tabpage_is_valid(opened_tab), false, "command: close tab")
 
 vim.cmd.cd(git_dir)
@@ -371,7 +371,7 @@ eq(
         "diffexplorer_title",
         ""
     ),
-    "DiffExplorer",
+    "Diff",
     "tab title: default"
 )
 eq(
@@ -404,10 +404,7 @@ eq(explorer_diff.redirect_cmdline "e foo.txt", "<CR>", "redirect: outside tab")
 
 local cfg_dir = base .. "/cfgproj"
 vim.fn.mkdir(cfg_dir, "p")
-write(
-    cfg_dir .. "/.nvim.lua",
-    "DiffExplorer.setup { tab_title = \"CustomTab\" }\n"
-)
+write(cfg_dir .. "/.nvim.lua", "Diff.setup { tab_title = \"CustomTab\" }\n")
 local real_secure_read = vim.secure.read
 vim.secure.read = function(path)
     local handle = io.open(path, "r")
@@ -436,15 +433,12 @@ explorer_diff.close()
 vim.cmd.cd(hist_dir)
 local history_panel = explorer_diff.file_history(hist_dir .. "/file.txt")
 local history_tab = vim.api.nvim_get_current_tabpage()
-eq(
-    vim.fn.gettabvar(
-        vim.api.nvim_tabpage_get_number(history_tab),
-        "diffexplorer_title",
-        ""
-    ),
-    "DiffExplorerHistory",
-    "history: tab title"
+local history_title = vim.fn.gettabvar(
+    vim.api.nvim_tabpage_get_number(history_tab),
+    "diffexplorer_title",
+    ""
 )
+assert(vim.startswith(history_title, "DiffHistory "), "history: tab title")
 assert(#history_panel.entries >= 2, "history: panel entries")
 local history_wins = {}
 for _, win in ipairs(vim.api.nvim_tabpage_list_wins(history_tab)) do
@@ -469,7 +463,7 @@ eq(
         "diffexplorer_title",
         ""
     ),
-    "DiffExplorerMerge",
+    "DiffMerge",
     "merge: tab title"
 )
 assert(#merge_panel.entries >= 1, "merge: panel entries")
@@ -480,7 +474,7 @@ for _, win in ipairs(vim.api.nvim_tabpage_list_wins(merge_tab)) do
     end
 end
 eq(merge_diff_wins, 3, "merge: three diff windows")
-local ok_merge_toggle, err_merge_toggle = pcall(vim.cmd.DiffExplorerToggleFiles)
+local ok_merge_toggle, err_merge_toggle = pcall(vim.cmd.DiffToggleFiles)
 assert(ok_merge_toggle, "merge toggle: " .. tostring(err_merge_toggle))
 explorer_diff.close()
 
@@ -493,7 +487,7 @@ eq(
         "diffexplorer_title",
         ""
     ),
-    "DiffExplorer",
+    "Diff",
     "project config: reset for next project"
 )
 local reset_work_buf
@@ -517,7 +511,7 @@ eq(
 )
 eq(explorer_diff.redirect_cmdline "w", "<CR>", "lock: write allowed")
 eq(
-    explorer_diff.redirect_cmdline "DiffExplorerRefresh",
+    explorer_diff.redirect_cmdline "DiffRefresh",
     "<CR>",
     "lock: own commands allowed"
 )
@@ -536,10 +530,9 @@ explorer_diff.close()
 vim.cmd.cd(hist_dir)
 local history_re_panel = explorer_diff.file_history(hist_dir .. "/file.txt")
 local history_count = #history_re_panel.entries
-vim.cmd.DiffExplorerRefresh()
+vim.cmd.DiffRefresh()
 eq(#history_re_panel.entries, history_count, "history refresh: entries kept")
-local ok_history_toggle, err_history_toggle =
-    pcall(vim.cmd.DiffExplorerToggleFiles)
+local ok_history_toggle, err_history_toggle = pcall(vim.cmd.DiffToggleFiles)
 assert(ok_history_toggle, "history toggle: " .. tostring(err_history_toggle))
 explorer_diff.close()
 
@@ -565,7 +558,7 @@ eq(
         "diffexplorer_title",
         ""
     ),
-    "DiffExplorer",
+    "Diff",
     "project config: merge early return restores"
 )
 explorer_diff.close()
@@ -576,15 +569,12 @@ write(left_file, "left\n")
 write(right_file, "right\n")
 local file_session = explorer_diff.diff_files(left_file .. " " .. right_file)
 local file_tab = vim.api.nvim_get_current_tabpage()
-eq(
-    vim.fn.gettabvar(
-        vim.api.nvim_tabpage_get_number(file_tab),
-        "diffexplorer_title",
-        ""
-    ),
-    "DiffExplorerDiffFiles",
-    "diff files: tab title"
+local files_title = vim.fn.gettabvar(
+    vim.api.nvim_tabpage_get_number(file_tab),
+    "diffexplorer_title",
+    ""
 )
+assert(vim.startswith(files_title, "DiffFiles "), "diff files: tab title")
 local file_diff_wins = 0
 for _, win in ipairs(vim.api.nvim_tabpage_list_wins(file_tab)) do
     if vim.api.nvim_win_get_option(win, "diff") then
@@ -603,15 +593,12 @@ write(dir_right .. "/a.txt", "a2\n")
 write(dir_left .. "/only.txt", "only\n")
 local dir_panel = explorer_diff.diff_dirs(dir_left .. " " .. dir_right)
 local dir_tab = vim.api.nvim_get_current_tabpage()
-eq(
-    vim.fn.gettabvar(
-        vim.api.nvim_tabpage_get_number(dir_tab),
-        "diffexplorer_title",
-        ""
-    ),
-    "DiffExplorerDiffDirs",
-    "diff dirs: tab title"
+local dirs_title = vim.fn.gettabvar(
+    vim.api.nvim_tabpage_get_number(dir_tab),
+    "diffexplorer_title",
+    ""
 )
+assert(vim.startswith(dirs_title, "DiffDirs "), "diff dirs: tab title")
 assert(#dir_panel.entries >= 2, "diff dirs: entries listed")
 local dir_diff_wins = 0
 for _, win in ipairs(vim.api.nvim_tabpage_list_wins(dir_tab)) do
@@ -621,6 +608,9 @@ for _, win in ipairs(vim.api.nvim_tabpage_list_wins(dir_tab)) do
 end
 eq(dir_diff_wins, 2, "diff dirs: two diff windows")
 explorer_diff.close()
-eq(vim.fn.exists ":DiffExplorerToggle", 2, "toggle alias: exists")
+eq(vim.fn.exists ":DiffToggle", 2, "toggle alias: exists")
+eq(vim.fn.exists ":Diff", 2, "rename: Diff exists")
+eq(vim.fn.exists ":DiffHistory", 2, "rename: DiffHistory exists")
+eq(vim.fn.exists ":DiffExplorer", 0, "rename: old command gone")
 
 print "DIFF EXPLORER TEST OK"
