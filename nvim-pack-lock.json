@@ -54,10 +54,6 @@
       "rev": "798cc7d26db27906526345af65d900887b9d4160",
       "src": "https://github.com/girishji/devdocs.vim"
     },
-    "diffview.nvim": {
-      "rev": "4516612fe98ff56ae0415a259ff6361a89419b0a",
-      "src": "https://github.com/sindrets/diffview.nvim"
-    },
     "everforest-nvim": {
       "rev": "d235ca0aa6a29546e661a020e2618612acbbffbe",
       "src": "https://github.com/neanias/everforest-nvim"

@@ -77,9 +77,6 @@ local M = {
         src = "https://github.com/mfussenegger/nvim-dap",
         version = "master",
     },
-    ["diffview.nvim"] = {
-        src = "https://github.com/sindrets/diffview.nvim",
-    },
     ["fidget.nvim"] = {
         src = "https://github.com/j-hui/fidget.nvim",
         version = "v1.6.1",
