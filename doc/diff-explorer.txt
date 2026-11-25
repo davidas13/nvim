@@ -30,8 +30,11 @@ COMMANDS					*diff-commands*
 
 :DiffFiles {left} {right}		Diff two arbitrary files in a new tab.
 
-:DiffDirs {left} {right}		Diff two directories. The panel lists files
-					found in either directory.
+:DiffDirs {left} {right}		Diff two directories. The panel lists paths that
+					differ in content or existence, including hidden
+					files. Both sides are real file buffers, so :w writes
+					through to disk. The tab title is
+					"DiffDirs <left> <-> <right>".
 
 :DiffClose				Close the current Diff tab.
 
