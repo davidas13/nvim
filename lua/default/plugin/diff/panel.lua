@@ -66,37 +66,46 @@ function M.create(entries, on_select, on_cycle, opts)
         win = win,
         buf = buf,
         entries = {},
+        all_items = {},
         view_items = {},
         tree = nil,
         autocmd = nil,
         style = opts.listing_style or "list",
         cwd = opts.cwd or vim.fn.getcwd(),
+        page_size = opts.page_size or 100,
+        page = 1,
+        page_count = 1,
     }
 
-    local function refresh(new_entries)
-        local reuse_tree = panel.style == "tree"
-            and panel.tree
-            and new_entries == panel.entries
-        panel.entries = new_entries or {}
-        panel.view_items = {}
-        if panel.style == "tree" then
-            if not reuse_tree then
-                panel.tree = build_tree(panel.entries, panel.cwd)
-            end
-            flatten(panel.tree, 0, panel.view_items)
-        else
-            for _, entry in ipairs(panel.entries) do
-                table.insert(panel.view_items, {
-                    kind = "file",
-                    file = entry.file,
-                    entry = entry,
-                    label = entry.label
-                        or entry.status
-                            .. "  "
-                            .. vim.fn.fnamemodify(entry.file, ":~:."),
-                })
-            end
+    local function select_item(item)
+        if item and item.kind == "file" and on_select then
+            on_select(item.file, item.entry)
         end
+    end
+
+    local function render_page()
+        local all = panel.all_items
+        if panel.page_size > 0 then
+            panel.page_count = math.max(1, math.ceil(#all / panel.page_size))
+            panel.page = math.min(math.max(1, panel.page), panel.page_count)
+            local start = (panel.page - 1) * panel.page_size + 1
+            local finish = math.min(start + panel.page_size - 1, #all)
+            panel.view_items = {}
+            for i = start, finish do
+                table.insert(panel.view_items, all[i])
+            end
+            vim.wo[win].winbar = (" Page %d/%d (%d per page)"):format(
+                panel.page,
+                panel.page_count,
+                panel.page_size
+            )
+        else
+            panel.page_count = 1
+            panel.page = 1
+            panel.view_items = all
+            vim.wo[win].winbar = ""
+        end
+
         local lines = {}
         for _, item in ipairs(panel.view_items) do
             table.insert(lines, item.label)
@@ -111,6 +120,101 @@ function M.create(entries, on_select, on_cycle, opts)
         vim.bo[buf].modifiable = false
     end
 
+    local function refresh(new_entries)
+        local reuse_tree = panel.style == "tree"
+            and panel.tree
+            and new_entries == panel.entries
+        panel.entries = new_entries or {}
+        panel.all_items = {}
+        if panel.style == "tree" then
+            if not reuse_tree then
+                panel.tree = build_tree(panel.entries, panel.cwd)
+            end
+            flatten(panel.tree, 0, panel.all_items)
+        else
+            for _, entry in ipairs(panel.entries) do
+                table.insert(panel.all_items, {
+                    kind = "file",
+                    file = entry.file,
+                    entry = entry,
+                    label = entry.label
+                        or entry.status
+                            .. "  "
+                            .. vim.fn.fnamemodify(entry.file, ":~:."),
+                })
+            end
+        end
+        render_page()
+    end
+
+    local function set_page(page, suppress_select)
+        if panel.page_size <= 0 then
+            return
+        end
+        panel.page = math.min(math.max(1, page), panel.page_count)
+        render_page()
+        if api.nvim_win_is_valid(win) then
+            api.nvim_win_set_cursor(win, { 1, 0 })
+        end
+        if not suppress_select then
+            for _, item in ipairs(panel.view_items) do
+                if item.kind == "file" then
+                    select_item(item)
+                    break
+                end
+            end
+        end
+    end
+
+    local function global_index()
+        if not api.nvim_win_is_valid(win) then
+            return 1
+        end
+        local row = api.nvim_win_get_cursor(win)[1]
+        if panel.page_size <= 0 then
+            return row
+        end
+        return (panel.page - 1) * panel.page_size + row
+    end
+
+    local function select_global(index)
+        local total = #panel.all_items
+        if total == 0 then
+            return
+        end
+        index = ((index - 1) % total) + 1
+        local item = panel.all_items[index]
+        local target_page, row
+        if panel.page_size <= 0 then
+            target_page, row = 1, index
+        else
+            target_page = math.floor((index - 1) / panel.page_size) + 1
+            row = ((index - 1) % panel.page_size) + 1
+        end
+        if target_page ~= panel.page then
+            set_page(target_page, true)
+        end
+        if api.nvim_win_is_valid(win) then
+            api.nvim_win_set_cursor(win, { row, 0 })
+        end
+        select_item(item)
+    end
+
+    local function step_file(step)
+        local total = #panel.all_items
+        if total == 0 then
+            return
+        end
+        local index = global_index()
+        for offset = 1, total do
+            local candidate = ((index + step * offset - 1) % total) + 1
+            if panel.all_items[candidate].kind == "file" then
+                select_global(candidate)
+                return
+            end
+        end
+    end
+
     refresh(entries)
 
     panel.autocmd = api.nvim_create_autocmd("CursorMoved", {
@@ -120,10 +224,7 @@ function M.create(entries, on_select, on_cycle, opts)
                 return
             end
             local row = api.nvim_win_get_cursor(win)[1]
-            local item = panel.view_items[row]
-            if item and item.kind == "file" and on_select then
-                on_select(item.file, item.entry)
-            end
+            select_item(panel.view_items[row])
         end,
     })
 
@@ -145,14 +246,33 @@ function M.create(entries, on_select, on_cycle, opts)
                 if item and item.kind == "dir" then
                     item.node.open = not item.node.open
                     refresh(panel.entries)
+                    panel.page = 1
+                    render_page()
                 end
             end,
             desc = "Toggle folder",
         })
     end
 
+    api.nvim_buf_set_keymap(buf, "n", "]p", "", {
+        callback = function()
+            set_page(panel.page + 1)
+        end,
+        desc = "Next page",
+    })
+    api.nvim_buf_set_keymap(buf, "n", "[p", "", {
+        callback = function()
+            set_page(panel.page - 1)
+        end,
+        desc = "Previous page",
+    })
+
     function panel.refresh(new_entries)
         refresh(new_entries)
+    end
+
+    function panel.set_page(page)
+        set_page(page)
     end
 
     function panel.select_index(row)
@@ -163,10 +283,15 @@ function M.create(entries, on_select, on_cycle, opts)
             return
         end
         api.nvim_win_set_cursor(win, { row, 0 })
-        local item = panel.view_items[row]
-        if item and item.kind == "file" and on_select then
-            on_select(item.file, item.entry)
-        end
+        select_item(panel.view_items[row])
+    end
+
+    function panel.next_entry()
+        step_file(1)
+    end
+
+    function panel.prev_entry()
+        step_file(-1)
     end
 
     function panel.close()

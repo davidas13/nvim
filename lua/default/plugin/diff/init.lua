@@ -28,6 +28,7 @@ local config = {
     default_profile = "working",
     profiles = {},
     listing_style = "list",
+    page_size = 100,
     panel_width = 40,
     tab_title = "Diff",
     history_tab_title = "DiffHistory",
@@ -43,6 +44,7 @@ function M.setup(opts)
     opts = opts or {}
     config.default_profile = opts.default_profile or config.default_profile
     config.listing_style = opts.listing_style or config.listing_style
+    config.page_size = opts.page_size or config.page_size
     config.panel_width = opts.panel_width or config.panel_width
     config.tab_title = opts.tab_title or config.tab_title
     config.history_tab_title = opts.history_tab_title
@@ -292,6 +294,7 @@ function M.open(args)
             {
                 listing_style = config.listing_style,
                 width = config.panel_width,
+                page_size = config.page_size,
                 cwd = vim.fn.getcwd(),
             }
         )
@@ -364,6 +367,7 @@ function M.file_history(args)
         {
             listing_style = "list",
             width = config.panel_width,
+            page_size = config.page_size,
             cwd = vim.fn.getcwd(),
         }
     )
@@ -417,6 +421,7 @@ function M.merge(args)
         {
             listing_style = "list",
             width = config.panel_width,
+            page_size = config.page_size,
             cwd = cwd,
         }
     )
@@ -465,7 +470,8 @@ function M.diff_dirs(args)
         config = config_snapshot
         return
     end
-    local session = compare_module.dirs(left, right, config.panel_width)
+    local session =
+        compare_module.dirs(left, right, config.panel_width, config.page_size)
     if not session then
         config = config_snapshot
         return
@@ -543,23 +549,10 @@ local function navigate(step)
     if not api.nvim_win_is_valid(panel.win) then
         return
     end
-    local count = #panel.view_items
-    if count == 0 then
-        return
-    end
-    local row = api.nvim_win_get_cursor(panel.win)[1]
-    local index = row
-    for _ = 1, count do
-        index = index + step
-        if index < 1 then
-            index = count
-        elseif index > count then
-            index = 1
-        end
-        if panel.view_items[index].kind == "file" then
-            panel.select_index(index)
-            return
-        end
+    if step > 0 then
+        panel.next_entry()
+    else
+        panel.prev_entry()
     end
 end
 
@@ -569,6 +562,34 @@ end
 
 function M.prev()
     navigate(-1)
+end
+
+local function page(step)
+    local _, view = current_view()
+    if not view or not view.panel or not view.panel.set_page then
+        return
+    end
+    view.panel.set_page((view.panel.page or 1) + step)
+end
+
+function M.next_page()
+    page(1)
+end
+
+function M.prev_page()
+    page(-1)
+end
+
+function M.goto_page(target)
+    local _, view = current_view()
+    if not view or not view.panel or not view.panel.set_page then
+        return
+    end
+    local number = tonumber(target)
+    if not number then
+        return
+    end
+    view.panel.set_page(number)
 end
 
 local SAFE_COMMANDS = {
@@ -661,6 +682,15 @@ end, { nargs = 0 })
 vim.api.nvim_create_user_command("DiffPrev", function()
     M.prev()
 end, { nargs = 0 })
+vim.api.nvim_create_user_command("DiffNextPage", function()
+    M.next_page()
+end, { nargs = 0 })
+vim.api.nvim_create_user_command("DiffPrevPage", function()
+    M.prev_page()
+end, { nargs = 0 })
+vim.api.nvim_create_user_command("DiffGotoPage", function(opts)
+    M.goto_page(opts.args)
+end, { nargs = 1 })
 
 vim.keymap.set("n", "<leader>vd", function()
     M.open ""

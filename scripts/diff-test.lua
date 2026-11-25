@@ -378,6 +378,55 @@ end
 assert(#tree.view_items < tree_count, "tree: folder collapses")
 tree.close()
 
+vim.api.nvim_set_current_win(pane.base_win)
+local page_entries = {}
+for i = 1, 25 do
+    table.insert(page_entries, {
+        file = git_dir .. "/page" .. i .. ".txt",
+        status = "M",
+        label = "page" .. i,
+    })
+end
+local page_selected
+local page_panel = panel_module.create(
+    page_entries,
+    function(file)
+        page_selected = file
+    end,
+    nil,
+    {
+        listing_style = "list",
+        width = 40,
+        page_size = 10,
+        cwd = git_dir,
+    }
+)
+eq(
+    #vim.api.nvim_buf_get_lines(page_panel.buf, 0, -1, false),
+    10,
+    "pagination: buffer holds one page"
+)
+eq(page_panel.page_count, 3, "pagination: page count")
+page_panel.set_page(2)
+eq(page_panel.view_items[1].file, page_entries[11].file, "pagination: page two")
+page_panel.select_index(2)
+eq(page_selected, page_entries[12].file, "pagination: selection on page two")
+page_panel.select_index(10)
+page_panel.next_entry()
+eq(page_panel.page, 3, "pagination: next crosses page")
+eq(page_selected, page_entries[21].file, "pagination: next selects page three")
+page_panel.prev_entry()
+eq(page_panel.page, 2, "pagination: prev crosses page")
+eq(page_selected, page_entries[20].file, "pagination: prev selects last item")
+local has_page_key = false
+for _, mapping in ipairs(vim.api.nvim_buf_get_keymap(page_panel.buf, "n")) do
+    if mapping.lhs == "]p" then
+        has_page_key = true
+    end
+end
+assert(has_page_key, "pagination: page key mapped")
+page_panel.close()
+
 vim.cmd.cd(git_dir)
 local opened_panel = explorer_diff.open()
 local opened_tab = vim.api.nvim_get_current_tabpage()
@@ -744,5 +793,31 @@ eq(vim.fn.exists ":DiffToggle", 2, "toggle alias: exists")
 eq(vim.fn.exists ":Diff", 2, "rename: Diff exists")
 eq(vim.fn.exists ":DiffHistory", 2, "rename: DiffHistory exists")
 eq(vim.fn.exists ":DiffExplorer", 0, "rename: old command gone")
+eq(vim.fn.exists ":DiffNextPage", 2, "pagination: next page command")
+eq(vim.fn.exists ":DiffPrevPage", 2, "pagination: prev page command")
+eq(vim.fn.exists ":DiffGotoPage", 2, "pagination: goto page command")
+
+local page_dir_left = base .. "/page-left"
+local page_dir_right = base .. "/page-right"
+vim.fn.mkdir(page_dir_left, "p")
+vim.fn.mkdir(page_dir_right, "p")
+for i = 1, 15 do
+    write(page_dir_left .. "/f" .. i .. ".txt", "left" .. i .. "\n")
+    write(page_dir_right .. "/f" .. i .. ".txt", "right" .. i .. "\n")
+end
+explorer_diff.setup { page_size = 7 }
+vim.cmd.cd(page_dir_left)
+local config_panel =
+    explorer_diff.diff_dirs(page_dir_left .. " " .. page_dir_right)
+eq(
+    #vim.api.nvim_buf_get_lines(config_panel.buf, 0, -1, false),
+    7,
+    "pagination: config page size"
+)
+eq(config_panel.page_count, 3, "pagination: config page count")
+vim.cmd "DiffGotoPage 2"
+eq(config_panel.page, 2, "pagination: goto page command")
+explorer_diff.close()
+explorer_diff.setup { page_size = 100 }
 
 print "DIFF EXPLORER TEST OK"

@@ -190,7 +190,7 @@ local function scratch(text, ft)
     return buf
 end
 
-function M.dirs(left, right, width)
+function M.dirs(left, right, width, page_size)
     local abs_left = vim.fn.fnamemodify(left, ":p")
     local abs_right = vim.fn.fnamemodify(right, ":p")
     local entries = dir_entries(abs_left, abs_right)
@@ -224,15 +224,25 @@ function M.dirs(left, right, width)
     }
     local pending = 0
     api.nvim_set_current_win(left_win)
-    session.panel = panel_module.create(entries, function(_, entry)
-        pending = pending + 1
-        local token = pending
-        vim.defer_fn(function()
-            if token == pending and api.nvim_tabpage_is_valid(tab) then
-                M.show_dir(session, entry.file)
-            end
-        end, 30)
-    end, nil, { listing_style = "list", width = width or 40, cwd = abs_left })
+    session.panel = panel_module.create(
+        entries,
+        function(_, entry)
+            pending = pending + 1
+            local token = pending
+            vim.defer_fn(function()
+                if token == pending and api.nvim_tabpage_is_valid(tab) then
+                    M.show_dir(session, entry.file)
+                end
+            end, 30)
+        end,
+        nil,
+        {
+            listing_style = "list",
+            width = width or 40,
+            page_size = page_size or 100,
+            cwd = abs_left,
+        }
+    )
     session.panel.session = session
     M.show_dir(session, entries[1].file)
     api.nvim_set_current_win(session.panel.win)
