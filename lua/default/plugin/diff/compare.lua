@@ -252,6 +252,11 @@ function M.show_dir(session, rel)
     end
 
     if api.nvim_win_is_valid(session.wins[1]) then
+        api.nvim_win_call(session.wins[1], function()
+            vim.cmd "diffoff!"
+        end)
+    end
+    if api.nvim_win_is_valid(session.wins[1]) then
         api.nvim_win_set_buf(session.wins[1], left_buf)
     end
     if api.nvim_win_is_valid(session.wins[2]) then

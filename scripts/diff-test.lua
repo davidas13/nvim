@@ -1,6 +1,7 @@
 local sources = require "default.plugin.diff.sources"
 local diff = require "default.plugin.diff.diff"
 local panel_module = require "default.plugin.diff.panel"
+local compare = require "default.plugin.diff.compare"
 local explorer_diff = require "default.plugin.diff"
 
 local function run(cmd, cwd)
@@ -711,6 +712,15 @@ local written = io.open(dir_left .. "/only.txt", "r")
 assert(written, "diff dirs: write target exists")
 eq(written:read "*a", "written\n", "diff dirs: write through")
 written:close()
+
+for i = 1, 12 do
+    local rel = "switch" .. i .. ".txt"
+    write(dir_left .. "/" .. rel, "left" .. i .. "\n")
+    write(dir_right .. "/" .. rel, "right" .. i .. "\n")
+    dir_session.current_rel = nil
+    local ok, err = pcall(compare.show_dir, dir_session, rel)
+    assert(ok, "diff dirs switch " .. i .. ": " .. tostring(err))
+end
 explorer_diff.close()
 eq(vim.fn.exists ":DiffToggle", 2, "toggle alias: exists")
 eq(vim.fn.exists ":Diff", 2, "rename: Diff exists")
