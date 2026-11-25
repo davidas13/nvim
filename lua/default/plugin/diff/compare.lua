@@ -90,18 +90,29 @@ local function files_under(root)
             end
             local path = dir .. "/" .. name
             local rel = prefix == "" and name or prefix .. "/" .. name
-            local stat = uv.fs_stat(path)
-            if stat and stat.type == "directory" then
+            if not kind then
+                local stat = uv.fs_stat(path)
+                kind = stat and stat.type
+            end
+            if kind == "directory" then
                 walk(path, rel)
-            elseif stat and (stat.type == "file" or stat.type == "link") then
-                found[rel] = true
-            elseif kind == "file" then
+            elseif kind == "file" or kind == "link" then
                 found[rel] = true
             end
         end
     end
     walk(root, "")
     return found
+end
+
+local function is_binary(path)
+    local fd = uv.fs_open(path, "r", 0)
+    if not fd then
+        return false
+    end
+    local chunk = uv.fs_read(fd, 8192) or ""
+    uv.fs_close(fd)
+    return chunk:find("\0", 1, true) ~= nil
 end
 
 local function files_equal(a, b)
@@ -167,11 +178,15 @@ local function dir_entries(left, right)
     return entries
 end
 
-local function scratch(text)
+local function scratch(text, ft)
     local buf = api.nvim_create_buf(false, true)
     set_lines(buf, text)
+    vim.bo[buf].bufhidden = "hide"
     vim.bo[buf].readonly = true
     vim.bo[buf].modifiable = false
+    if ft and ft ~= "" then
+        vim.bo[buf].filetype = ft
+    end
     return buf
 end
 
@@ -216,7 +231,7 @@ function M.dirs(left, right, width)
             if token == pending and api.nvim_tabpage_is_valid(tab) then
                 M.show_dir(session, entry.file)
             end
-        end, 60)
+        end, 30)
     end, nil, { listing_style = "list", width = width or 40, cwd = abs_left })
     session.panel.session = session
     M.show_dir(session, entries[1].file)
@@ -237,14 +252,23 @@ function M.show_dir(session, rel)
         or vim.filetype.match { filename = right_path }
         or ""
 
+    local binary = is_binary(left_path) or is_binary(right_path)
     local left_buf = session.left_bufs[rel]
     if not left_buf or not api.nvim_buf_is_valid(left_buf) then
-        left_buf = file_buffer(left_path, true, ft)
+        if binary then
+            left_buf = scratch("[binary] " .. rel .. " (left)", ft)
+        else
+            left_buf = file_buffer(left_path, true, ft)
+        end
         session.left_bufs[rel] = left_buf
     end
     local right_buf = session.right_bufs[rel]
     if not right_buf or not api.nvim_buf_is_valid(right_buf) then
-        right_buf = file_buffer(right_path, true, ft)
+        if binary then
+            right_buf = scratch("[binary] " .. rel .. " (right)", ft)
+        else
+            right_buf = file_buffer(right_path, true, ft)
+        end
         session.right_bufs[rel] = right_buf
     end
     if not left_buf or not right_buf then

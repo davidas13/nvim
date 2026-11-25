@@ -721,6 +721,24 @@ for i = 1, 12 do
     local ok, err = pcall(compare.show_dir, dir_session, rel)
     assert(ok, "diff dirs switch " .. i .. ": " .. tostring(err))
 end
+
+local binary_rel = "bin.dat"
+write(
+    dir_left .. "/" .. binary_rel,
+    string.rep("A", 4096) .. "\0" .. string.rep("B", 4096)
+)
+write(
+    dir_right .. "/" .. binary_rel,
+    string.rep("A", 4096) .. "\0" .. string.rep("C", 4096)
+)
+dir_session.current_rel = nil
+local ok_binary, err_binary = pcall(compare.show_dir, dir_session, binary_rel)
+assert(ok_binary, "diff dirs binary: " .. tostring(err_binary))
+eq(
+    vim.bo[vim.api.nvim_win_get_buf(dir_session.wins[1])].buftype,
+    "nofile",
+    "diff dirs: binary uses placeholder"
+)
 explorer_diff.close()
 eq(vim.fn.exists ":DiffToggle", 2, "toggle alias: exists")
 eq(vim.fn.exists ":Diff", 2, "rename: Diff exists")
