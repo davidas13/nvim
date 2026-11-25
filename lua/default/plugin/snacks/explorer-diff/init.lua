@@ -55,13 +55,14 @@ function M.setup(opts)
 end
 
 local function apply_project_config()
+    local snapshot = vim.deepcopy(config)
     local path = vim.fn.fnamemodify(vim.fn.getcwd() .. "/.nvim.lua", ":p")
     if vim.fn.filereadable(path) ~= 1 then
-        return
+        return snapshot
     end
     local content = vim.secure.read(path)
     if not content then
-        return
+        return snapshot
     end
     local chunk, err = load(content, path)
     if not chunk then
@@ -74,6 +75,7 @@ local function apply_project_config()
     if not ok then
         vim.notify("DiffExplorer: " .. tostring(run_err), vim.log.levels.WARN)
     end
+    return snapshot
 end
 
 local function set_tab_title(tab, title)
@@ -95,10 +97,13 @@ local function mark_no_lsp(buf)
     if not buf or not api.nvim_buf_is_valid(buf) then
         return
     end
-    vim.b[buf].diffexplorer_no_lsp = true
-    for _, client in ipairs(vim.lsp.get_clients { bufnr = buf }) do
-        pcall(client.stop, client)
+    if vim.bo[buf].buftype == "" then
+        for _, client in ipairs(vim.lsp.get_clients { bufnr = buf }) do
+            pcall(vim.lsp.buf_detach_client, buf, client.id)
+        end
+        return
     end
+    vim.b[buf].diffexplorer_no_lsp = true
 end
 
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -108,7 +113,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         end
         local client = vim.lsp.get_client_by_id(ev.data.client_id)
         if client then
-            pcall(client.stop, client)
+            pcall(vim.lsp.buf_detach_client, ev.buf, client.id)
         end
     end,
 })
@@ -209,7 +214,7 @@ local function current_view()
 end
 
 function M.open(args)
-    apply_project_config()
+    local config_snapshot = apply_project_config()
     local parsed = M.parse_args(args)
     local name, profile = current_profile(parsed)
     local state = { name = name, profile = profile }
@@ -250,26 +255,35 @@ function M.open(args)
 
     session.show = show
     session.build_panel = build_panel
+    session.refresh_panel = function()
+        if session.panel then
+            session.panel.refresh(changed_files())
+            api.nvim_set_current_win(session.panel.win)
+        end
+    end
     build_panel()
     diff.equalize_wins(pane.base_win, pane.work_win, config.panel_width)
     set_tab_title(pane.tab, config.tab_title)
     views[pane.tab] = session
+    config = config_snapshot
     return session.panel
 end
 
 function M.file_history(args)
-    apply_project_config()
+    local config_snapshot = apply_project_config()
     local file = vim.trim(tostring(args or ""))
     if file == "" then
         file = api.nvim_buf_get_name(api.nvim_get_current_buf())
     end
     if file == "" or vim.fn.filereadable(file) ~= 1 then
         vim.notify("DiffExplorer: file not found", vim.log.levels.WARN)
+        config = config_snapshot
         return
     end
     local vcs = sources.detect_vcs(file)
     if not vcs then
         vim.notify("DiffExplorer: no repository", vim.log.levels.WARN)
+        config = config_snapshot
         return
     end
     local pane = diff.create_pane()
@@ -311,21 +325,24 @@ function M.file_history(args)
     set_tab_title(pane.tab, config.history_tab_title)
     views[pane.tab] = session
     api.nvim_set_current_win(session.panel.win)
+    config = config_snapshot
     return session.panel
 end
 
 function M.merge(args)
-    apply_project_config()
+    local config_snapshot = apply_project_config()
     local cwd = vim.fn.getcwd()
     local probe = cwd .. "/__diff_explorer_probe__"
     local vcs = sources.detect_vcs(probe)
     if not vcs then
         vim.notify("DiffExplorer: no repository", vim.log.levels.WARN)
+        config = config_snapshot
         return
     end
     local entries = sources.conflicts(probe, vcs)
     if #entries == 0 then
         vim.notify("DiffExplorer: no conflicts", vim.log.levels.WARN)
+        config = config_snapshot
         return
     end
     local function sides_for(file)
@@ -361,6 +378,7 @@ function M.merge(args)
     set_tab_title(merge.tab, config.merge_tab_title)
     views[merge.tab] = session
     api.nvim_set_current_win(session.panel.win)
+    config = config_snapshot
     return session.panel
 end
 
@@ -393,8 +411,13 @@ function M.toggle_files()
     if view.panel and api.nvim_win_is_valid(view.panel.win) then
         view.panel.close()
         view.panel = nil
-    else
+    elseif view.build_panel then
         view.build_panel()
+    else
+        vim.notify(
+            "DiffExplorer: panel cannot be reopened",
+            vim.log.levels.WARN
+        )
     end
 end
 
@@ -403,9 +426,8 @@ function M.refresh()
     if not view then
         return
     end
-    if view.panel and not view.merge then
-        view.panel.refresh(changed_files())
-        api.nvim_set_current_win(view.panel.win)
+    if view.refresh_panel then
+        view.refresh_panel()
     end
     if view.state.file then
         pcall(view.show, view.state.file)
@@ -453,13 +475,18 @@ function M.redirect_cmdline(line)
     if not is_diffexplorer_tab() then
         return "<CR>"
     end
-    local cmd, args = tostring(line or ""):match "^%s*(%a+)%s*(.-)%s*$"
+    local cmd, bang, args =
+        tostring(line or ""):match "^%s*(%a+)(!?)%s*(.-)%s*$"
     local target = cmd and config.redirect_commands[cmd]
     if not target then
         return "<CR>"
     end
     args = args or ""
-    return "<C-u>" .. target .. (args == "" and "" or " " .. args) .. "<CR>"
+    return "<C-u>"
+        .. target
+        .. bang
+        .. (args == "" and "" or " " .. args)
+        .. "<CR>"
 end
 
 M.setup()

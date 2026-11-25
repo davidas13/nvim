@@ -355,7 +355,13 @@ eq(
 )
 for _, win in ipairs(vim.api.nvim_tabpage_list_wins(titled_tab)) do
     local buf = vim.api.nvim_win_get_buf(win)
-    eq(vim.b[buf].diffexplorer_no_lsp, true, "lsp: disabled in explorer tab")
+    if vim.bo[buf].buftype ~= "" then
+        eq(
+            vim.b[buf].diffexplorer_no_lsp,
+            true,
+            "lsp: disabled in explorer tab"
+        )
+    end
 end
 eq(
     explorer_diff.redirect_cmdline "e foo.txt",
@@ -448,6 +454,78 @@ for _, win in ipairs(vim.api.nvim_tabpage_list_wins(merge_tab)) do
     end
 end
 eq(merge_diff_wins, 3, "merge: three diff windows")
+local ok_merge_toggle, err_merge_toggle = pcall(vim.cmd.DiffExplorerToggleFiles)
+assert(ok_merge_toggle, "merge toggle: " .. tostring(err_merge_toggle))
+explorer_diff.close()
+
+vim.cmd.cd(hist_dir)
+local reset_panel = explorer_diff.open()
+local reset_tab = vim.api.nvim_get_current_tabpage()
+eq(
+    vim.fn.gettabvar(
+        vim.api.nvim_tabpage_get_number(reset_tab),
+        "diffexplorer_title",
+        ""
+    ),
+    "DiffExplorer",
+    "project config: reset for next project"
+)
+local reset_work_buf
+for _, win in ipairs(vim.api.nvim_tabpage_list_wins(reset_tab)) do
+    if vim.api.nvim_win_get_option(win, "diff") then
+        local buf = vim.api.nvim_win_get_buf(win)
+        if vim.bo[buf].buftype == "" then
+            reset_work_buf = buf
+        end
+    end
+end
+eq(
+    vim.b[reset_work_buf].diffexplorer_no_lsp,
+    nil,
+    "lsp: no sticky flag on file buffer"
+)
+eq(
+    explorer_diff.redirect_cmdline "e! foo.txt",
+    "<C-u>tabedit! foo.txt<CR>",
+    "redirect: bang preserved"
+)
+explorer_diff.close()
+
+vim.cmd.cd(hist_dir)
+local history_re_panel = explorer_diff.file_history(hist_dir .. "/file.txt")
+local history_count = #history_re_panel.entries
+vim.cmd.DiffExplorerRefresh()
+eq(#history_re_panel.entries, history_count, "history refresh: entries kept")
+local ok_history_toggle, err_history_toggle =
+    pcall(vim.cmd.DiffExplorerToggleFiles)
+assert(ok_history_toggle, "history toggle: " .. tostring(err_history_toggle))
+explorer_diff.close()
+
+local merge_secure_read = vim.secure.read
+vim.secure.read = function(path)
+    local handle = io.open(path, "r")
+    if not handle then
+        return nil
+    end
+    local content = handle:read "*a"
+    handle:close()
+    return content
+end
+vim.cmd.cd(cfg_dir)
+pcall(explorer_diff.merge)
+vim.secure.read = merge_secure_read
+vim.cmd.cd(git_dir)
+local after_merge_panel = explorer_diff.open()
+local after_merge_tab = vim.api.nvim_get_current_tabpage()
+eq(
+    vim.fn.gettabvar(
+        vim.api.nvim_tabpage_get_number(after_merge_tab),
+        "diffexplorer_title",
+        ""
+    ),
+    "DiffExplorer",
+    "project config: merge early return restores"
+)
 explorer_diff.close()
 
 print "DIFF EXPLORER TEST OK"

@@ -46,7 +46,6 @@ function M.create(file, sides)
     vim.bo[ours_buf].bufhidden = "hide"
     api.nvim_win_set_buf(ours_win, ours_buf)
     set_lines(ours_buf, sides.ours)
-    vim.bo[ours_buf].modified = false
 
     vim.cmd.vsplit()
     local base_win = api.nvim_get_current_win()
@@ -74,7 +73,6 @@ function M.show(merge, file, sides)
         return
     end
     set_lines(merge.ours_buf, sides.ours)
-    vim.bo[merge.ours_buf].modified = false
     for _, item in ipairs {
         { merge.base_buf, sides.base },
         { merge.theirs_buf, sides.theirs },
