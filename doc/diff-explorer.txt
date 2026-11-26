@@ -61,7 +61,9 @@ COMMANDS					*diff-commands*
 :DiffGotoPage {n}			Jump to panel page {n}.
 
 In the panel, `]p` and `[p` move between pages. The panel winbar shows the
-current page, page size, and root path.
+current page, page size, and root path. Press `K` on a file or folder row to
+show its path relative to the panel root in a floating tooltip. The tooltip
+closes when the cursor moves or the panel loses focus.
 
 The two diff windows resize as one group. Resizing the panel redistributes the
 remaining width equally between them. Resizing one diff window applies that
@@ -103,6 +105,7 @@ that project only.
 	listing_style		"list" or "tree"
 	tree_style		"unicode" or "ascii"
 	tree_indent		{ branch = 2, vertical = 3 }
+	sticky_scroll		false
 	page_size		100
 	panel_width		40
 	tab_title		"Diff"
@@ -119,11 +122,11 @@ Set `page_size` to 0 to show every entry again. Pagination keeps only one page
 in the panel buffer. Directory scanning still walks every file before the view
 opens.
 
-In tree mode, pages that start inside a folder pin that folder chain above the
-first entry as virtual lines. The header follows the first entry of the page,
-not the cursor, and uses the `Comment` highlight. It does not change buffer
-lines, so selection and page navigation stay aligned. The header is omitted on
-the first page and for entries at the top level.
+Set `sticky_scroll` to true to pin the folder chain above the first entry of
+a tree page. The header follows the first entry, not the cursor, and uses the
+`Comment` highlight. It does not change buffer lines, so selection and page
+navigation stay aligned. The header is omitted on the first page and for
+entries at the top level.
 
 Tab titles include the command arguments. For example, `:Diff HEAD~2 -- sub`
 shows `Diff HEAD~2 -- sub` in the tabline.
