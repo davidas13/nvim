@@ -60,8 +60,10 @@ COMMANDS					*diff-commands*
 
 :DiffGotoPage {n}			Jump to panel page {n}.
 
-In the panel, `]p` and `[p` move between pages. The panel winbar shows the
-current page, page size, and root path. Press `K` on a file or folder row to
+In the panel, `N` and `P` move to the next and previous page. `]p` and `[p` do
+the same. `n` and `p` move to the next and previous file entry. The panel winbar
+shows the current page, page size, and root path. Press `K` on a file or folder
+row to
 show its path relative to the panel root in a floating tooltip. The tooltip
 closes when the cursor moves or the panel loses focus.
 

@@ -135,4 +135,46 @@ describe("diff panel", function()
         )
         vim.api.nvim_exec_autocmds("CursorMoved", { buffer = panel.buf })
     end)
+
+    it("should advance one page when N is pressed", function()
+        open_tree(3)
+        vim.cmd.normal "N"
+        assert.is_true(
+            vim.wo[panel.win].winbar:find("Page 2/3", 1, true) ~= nil,
+            "winbar page after next-page key"
+        )
+    end)
+
+    it("should return one page when P is pressed", function()
+        open_tree(3)
+        vim.cmd "DiffGotoPage 2"
+        vim.cmd.normal "P"
+        assert.is_true(
+            vim.wo[panel.win].winbar:find("Page 1/3", 1, true) ~= nil,
+            "winbar page after previous-page key"
+        )
+    end)
+
+    it("should move to the next file when n is pressed", function()
+        open_tree(3)
+        vim.cmd.normal "n"
+        local row = vim.api.nvim_win_get_cursor(panel.win)[1]
+        assert.are.equal(
+            "│       ├── M  f1.txt",
+            visible_lines()[row],
+            "line under the cursor after next-file key"
+        )
+    end)
+
+    it("should move to the previous file when p is pressed", function()
+        open_tree(3)
+        vim.cmd "DiffGotoPage 2"
+        vim.cmd.normal "p"
+        local row = vim.api.nvim_win_get_cursor(panel.win)[1]
+        assert.are.equal(
+            "│       ├── M  f1.txt",
+            visible_lines()[row],
+            "line under the cursor after previous-file key"
+        )
+    end)
 end)

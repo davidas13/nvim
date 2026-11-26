@@ -443,6 +443,31 @@ function M.create(entries, on_select, on_cycle, opts)
         desc = "Previous page",
     })
 
+    api.nvim_buf_set_keymap(buf, "n", "N", "", {
+        callback = function()
+            set_page(panel.page + 1)
+        end,
+        desc = "Next page",
+    })
+    api.nvim_buf_set_keymap(buf, "n", "P", "", {
+        callback = function()
+            set_page(panel.page - 1)
+        end,
+        desc = "Previous page",
+    })
+    api.nvim_buf_set_keymap(buf, "n", "n", "", {
+        callback = function()
+            panel.next_entry()
+        end,
+        desc = "Next diff",
+    })
+    api.nvim_buf_set_keymap(buf, "n", "p", "", {
+        callback = function()
+            panel.prev_entry()
+        end,
+        desc = "Previous diff",
+    })
+
     function panel.refresh(new_entries)
         refresh(new_entries)
     end
