@@ -513,7 +513,10 @@ function M.diff_dirs(args)
         return
     end
     local session =
-        compare_module.dirs(left, right, config.panel_width, config.page_size)
+        compare_module.dirs(left, right, config.panel_width, config.page_size, {
+            listing_style = config.listing_style,
+            tree_style = config.tree_style,
+        })
     if not session then
         config = config_snapshot
         return

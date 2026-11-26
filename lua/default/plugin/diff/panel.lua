@@ -20,7 +20,7 @@ local GLYPHS = {
 local function build_tree(entries, cwd)
     local root = { dirs = {}, files = {} }
     for _, entry in ipairs(entries) do
-        local rel = vim.fs.relpath(cwd, entry.file) or entry.file
+        local rel = entry.rel or vim.fs.relpath(cwd, entry.file) or entry.file
         local parts = vim.split(rel, "/", { plain = true })
         local node = root
         for i = 1, #parts - 1 do

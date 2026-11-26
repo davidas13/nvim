@@ -933,6 +933,52 @@ eq(config_panel.page, 2, "pagination: goto page command")
 explorer_diff.close()
 explorer_diff.setup { page_size = 100 }
 
+local tree_dirs_left = base .. "/tree-left"
+local tree_dirs_right = base .. "/tree-right"
+vim.fn.mkdir(tree_dirs_left .. "/sub", "p")
+vim.fn.mkdir(tree_dirs_right .. "/sub", "p")
+write(tree_dirs_left .. "/root.txt", "left\n")
+write(tree_dirs_right .. "/root.txt", "right\n")
+write(tree_dirs_left .. "/sub/inner.txt", "left-inner\n")
+write(tree_dirs_right .. "/sub/inner.txt", "right-inner\n")
+explorer_diff.setup {
+    listing_style = "tree",
+    tree_style = "ascii",
+    page_size = 100,
+}
+vim.cmd.cd(tree_dirs_left)
+local tree_dirs_panel =
+    explorer_diff.diff_dirs(tree_dirs_left .. " " .. tree_dirs_right)
+local tree_dirs_row
+local tree_dirs_label = ""
+for i, item in ipairs(tree_dirs_panel.view_items) do
+    if item.kind == "dir" then
+        tree_dirs_row = i
+        tree_dirs_label = item.label
+        break
+    end
+end
+assert(tree_dirs_row, "diff dirs tree: folder row")
+assert(
+    tree_dirs_label:find("+-- sub/", 1, true),
+    "diff dirs tree: ascii folder glyph"
+)
+tree_dirs_panel.select_index(tree_dirs_row)
+local tree_dirs_session = tree_dirs_panel.session
+local cleared_buf = vim.api.nvim_win_get_buf(tree_dirs_session.wins[2])
+eq(vim.bo[cleared_buf].buftype, "nofile", "diff dirs tree: folder clears work")
+eq(
+    vim.api.nvim_buf_get_name(cleared_buf),
+    "",
+    "diff dirs tree: folder opens no file"
+)
+explorer_diff.close()
+explorer_diff.setup {
+    listing_style = "tree",
+    tree_style = "unicode",
+    page_size = 100,
+}
+
 local jump_file = base .. "/jump_target.py"
 write(jump_file, "jump\n")
 local picker_actions = require "snacks.picker.actions"

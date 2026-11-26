@@ -169,10 +169,12 @@ local function dir_entries(left, right)
     end
     local entries = {}
     for rel, status in pairs(diffs) do
-        table.insert(
-            entries,
-            { file = rel, status = status, label = status .. "  " .. rel }
-        )
+        table.insert(entries, {
+            file = rel,
+            rel = rel,
+            status = status,
+            label = status .. "  " .. rel,
+        })
     end
     table.sort(entries, function(a, b)
         return a.file < b.file
@@ -192,7 +194,8 @@ local function scratch(text, ft)
     return buf
 end
 
-function M.dirs(left, right, width, page_size)
+function M.dirs(left, right, width, page_size, opts)
+    opts = opts or {}
     local abs_left = vim.fn.fnamemodify(left, ":p")
     local abs_right = vim.fn.fnamemodify(right, ":p")
     local entries = dir_entries(abs_left, abs_right)
@@ -217,6 +220,8 @@ function M.dirs(left, right, width, page_size)
     local session = {
         tab = tab,
         wins = { left_win, right_win },
+        left_buf = left_buf,
+        right_buf = right_buf,
         left = abs_left,
         right = abs_right,
         left_bufs = {},
@@ -240,10 +245,14 @@ function M.dirs(left, right, width, page_size)
         end,
         nil,
         {
-            listing_style = "list",
+            listing_style = opts.listing_style or "list",
+            tree_style = opts.tree_style or "unicode",
             width = width or 40,
             page_size = page_size or 100,
             cwd = abs_left,
+            on_dir = function()
+                M.clear(session)
+            end,
         }
     )
     session.panel.session = session
@@ -301,6 +310,21 @@ function M.show_dir(session, rel)
     end
     enable_diff(session.wins)
     session.current_rel = rel
+end
+
+function M.clear(session)
+    if not api.nvim_tabpage_is_valid(session.tab) then
+        return
+    end
+    if api.nvim_win_is_valid(session.wins[1]) then
+        api.nvim_win_call(session.wins[1], function()
+            vim.cmd "diffoff!"
+        end)
+    end
+    diff.set_win_buf(session.wins[1], session.left_buf)
+    diff.set_win_buf(session.wins[2], session.right_buf)
+    enable_diff(session.wins)
+    session.current_rel = nil
 end
 
 function M.equalize(session, panel_width)
