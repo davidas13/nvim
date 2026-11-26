@@ -11,7 +11,8 @@ is stored here.
 "Neovim: Extend snacks.nvim Explorer" at
 https://ricoberger.de/blog/posts/neovim-extend-snacks-nvim-explorer/.
 The three function bodies reproduce the post. The post has no license
-statement. Berger's dotfiles repository is MIT licensed.
+statement. Berger's dotfiles repository is MIT licensed at
+https://github.com/ricoberger/dotfiles.
 
 MIT License
 
@@ -40,7 +41,8 @@ SOFTWARE.
 `lua/default/plugin/open-selection.lua` follows the selection keymaps and
 seditor write-back approach of yode-nvim by Stefan Gojan. I scanned the 43
 upstream Lua files for identifiers used here and found no matches, so this
-implementation is separate. yode-nvim is MIT licensed.
+implementation is separate. yode-nvim is MIT licensed at
+https://github.com/hoschi/yode-nvim.
 
 MIT License
 
@@ -64,8 +66,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-diffview.nvim and diffview-plus.nvim are GPL-3.0-or-later. The command layout
-in `lua/default/plugin/diff/` follows diffview.nvim, and its DiffDirs
+diffview.nvim (https://github.com/sindrets/diffview.nvim) and
+diffview-plus.nvim (https://github.com/mister-choo/diffview-plus.nvim) are
+GPL-3.0-or-later. The command layout in `lua/default/plugin/diff/` follows
+diffview.nvim, and its DiffDirs
 behavior follows diffview-plus.nvim. I scanned the 78 upstream Lua files
 from diffview.nvim and found none of the identifiers used here, so the
 explorer is a separate implementation.
