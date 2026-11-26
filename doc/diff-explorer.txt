@@ -39,6 +39,10 @@ COMMANDS					*diff-commands*
 					clears the diff side. The tab title is
 					"DiffDirs <left> <-> <right>".
 
+:DiffDirsSwap			Swap the two directories in the active DiffDirs view.
+					The panel root, status letters, tab title, and diff
+					follow the new order. `s` in the panel does the same.
+
 :DiffClose				Close the current Diff tab.
 
 :DiffToggleFiles			Hide or show the file panel.
