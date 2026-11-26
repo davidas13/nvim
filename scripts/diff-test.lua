@@ -1003,6 +1003,53 @@ explorer_diff.setup {
     page_size = 100,
 }
 
+local sticky_left = base .. "/sticky-left"
+local sticky_right = base .. "/sticky-right"
+vim.fn.mkdir(sticky_left .. "/alpha/beta", "p")
+vim.fn.mkdir(sticky_right .. "/alpha/beta", "p")
+for i = 1, 4 do
+    write(sticky_left .. "/alpha/beta/f" .. i .. ".txt", "left\n")
+    write(sticky_right .. "/alpha/beta/f" .. i .. ".txt", "right\n")
+end
+write(sticky_left .. "/z.txt", "left\n")
+write(sticky_right .. "/z.txt", "right\n")
+explorer_diff.setup {
+    listing_style = "tree",
+    tree_style = "unicode",
+    page_size = 3,
+}
+vim.cmd.cd(sticky_left)
+local sticky_panel = explorer_diff.diff_dirs(sticky_left .. " " .. sticky_right)
+local sticky_ns = vim.api.nvim_create_namespace "diff_sticky"
+local function sticky_texts()
+    local marks = vim.api.nvim_buf_get_extmarks(
+        sticky_panel.buf,
+        sticky_ns,
+        0,
+        -1,
+        { details = true }
+    )
+    if #marks == 0 then
+        return {}
+    end
+    local texts = {}
+    for _, chunk in ipairs(marks[1][4].virt_lines or {}) do
+        table.insert(texts, chunk[1][1])
+    end
+    return texts
+end
+eq(#sticky_texts(), 0, "sticky: no header on first page")
+vim.cmd "DiffGotoPage 2"
+eq(sticky_panel.page, 2, "sticky: second page")
+local sticky_lines = sticky_texts()
+eq(#sticky_lines, 2, "sticky: two ancestors")
+eq(sticky_lines[1], "├── alpha/", "sticky: outer folder row")
+eq(sticky_lines[2], "│   └── beta/", "sticky: inner folder row")
+vim.cmd "DiffNextPage"
+eq(#sticky_texts(), 0, "sticky: header cleared at top-level page")
+explorer_diff.close()
+explorer_diff.setup { page_size = 100 }
+
 local jump_file = base .. "/jump_target.py"
 write(jump_file, "jump\n")
 local picker_actions = require "snacks.picker.actions"

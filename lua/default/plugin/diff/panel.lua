@@ -2,6 +2,8 @@ local api = vim.api
 
 local M = {}
 
+local STICKY_NS = api.nvim_create_namespace "diff_sticky"
+
 local GLYPHS = {
     unicode = {
         branch_char = "├",
@@ -47,7 +49,8 @@ local function build_tree(entries, cwd)
     return root
 end
 
-local function flatten(node, prefix, glyphs, out)
+local function flatten(node, prefix, glyphs, out, ancestors)
+    ancestors = ancestors or {}
     local children = {}
     for name, child in pairs(node.dirs) do
         table.insert(children, { name = name, kind = "dir", node = child })
@@ -66,15 +69,19 @@ local function flatten(node, prefix, glyphs, out)
         local is_last = i == #children
         local connector = is_last and glyphs.last or glyphs.branch
         if child.kind == "dir" then
+            local label = prefix .. connector .. child.name .. "/"
             table.insert(out, {
                 kind = "dir",
                 node = child.node,
-                label = prefix .. connector .. child.name .. "/",
+                label = label,
+                ancestors = ancestors,
             })
             if child.node.open then
                 local child_prefix = prefix
                     .. (is_last and glyphs.blank or glyphs.vertical)
-                flatten(child.node, child_prefix, glyphs, out)
+                local child_ancestors = vim.list_extend({}, ancestors)
+                table.insert(child_ancestors, label)
+                flatten(child.node, child_prefix, glyphs, out, child_ancestors)
             end
         else
             table.insert(out, {
@@ -86,6 +93,7 @@ local function flatten(node, prefix, glyphs, out)
                     .. child.entry.status
                     .. "  "
                     .. child.name,
+                ancestors = ancestors,
             })
         end
     end
@@ -178,6 +186,25 @@ function M.create(entries, on_select, on_cycle, opts)
         api.nvim_buf_set_lines(buf, 0, -1, false, lines)
         vim.bo[buf].readonly = true
         vim.bo[buf].modifiable = false
+
+        api.nvim_buf_clear_namespace(buf, STICKY_NS, 0, -1)
+        local first = panel.view_items[1]
+        if
+            panel.style == "tree"
+            and panel.page_size > 0
+            and first
+            and first.ancestors
+            and #first.ancestors > 0
+        then
+            local virt_lines = {}
+            for _, label in ipairs(first.ancestors) do
+                table.insert(virt_lines, { { label, "Comment" } })
+            end
+            api.nvim_buf_set_extmark(buf, STICKY_NS, 0, 0, {
+                virt_lines = virt_lines,
+                virt_lines_above = true,
+            })
+        end
     end
 
     local function refresh(new_entries)
