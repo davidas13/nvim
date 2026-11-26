@@ -34,7 +34,9 @@ COMMANDS					*diff-commands*
 					differ in content or existence, including hidden
 					files. Text sides are real file buffers, so :w writes
 					through to disk. Binary files render as placeholders
-					and are not loaded into buffers. The tab title is
+					and are not loaded into buffers. The panel follows
+					`listing_style` and `tree_style`. Selecting a folder
+					clears the diff side. The tab title is
 					"DiffDirs <left> <-> <right>".
 
 :DiffClose				Close the current Diff tab.
@@ -90,6 +92,7 @@ that project only.
 	default_profile		"working"
 	profiles		table of before and after specs
 	listing_style		"list" or "tree"
+	tree_style		"unicode" or "ascii"
 	page_size		100
 	panel_width		40
 	tab_title		"Diff"
