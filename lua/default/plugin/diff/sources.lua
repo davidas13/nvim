@@ -21,12 +21,12 @@ local function read_file(path)
     return content or ""
 end
 
-function M.root(file, vcs)
+local function nearest_ancestor(file, match)
     local dir = vim.fs.dirname(normalize(file))
-    local marker = "." .. vcs
     while dir do
-        if vim.fn.isdirectory(dir .. "/" .. marker) == 1 then
-            return dir
+        local found = match(dir)
+        if found then
+            return found
         end
         local parent = vim.fs.dirname(dir)
         if parent == dir then
@@ -36,20 +36,23 @@ function M.root(file, vcs)
     end
 end
 
+function M.root(file, vcs)
+    local marker = "." .. vcs
+    return nearest_ancestor(file, function(dir)
+        if vim.fn.isdirectory(dir .. "/" .. marker) == 1 then
+            return dir
+        end
+    end)
+end
+
 function M.detect_vcs(file)
-    local dir = vim.fs.dirname(normalize(file))
-    while dir do
+    return nearest_ancestor(file, function(dir)
         for _, mark in ipairs(MARKS) do
             if vim.fn.isdirectory(dir .. "/" .. mark) == 1 then
                 return mark:sub(2)
             end
         end
-        local parent = vim.fs.dirname(dir)
-        if parent == dir then
-            return nil
-        end
-        dir = parent
-    end
+    end)
 end
 
 function M.relative(file, vcs)
