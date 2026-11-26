@@ -81,8 +81,13 @@ function M.setup(opts)
     config.default_profile = opts.default_profile or config.default_profile
     config.listing_style = opts.listing_style or config.listing_style
     config.tree_style = opts.tree_style or config.tree_style
-    config.tree_indent =
-        vim.tbl_deep_extend("force", config.tree_indent, opts.tree_indent or {})
+    config.tree_indent = opts.tree_indent
+            and vim.tbl_deep_extend(
+                "force",
+                { branch = 2, vertical = 3 },
+                opts.tree_indent
+            )
+        or config.tree_indent
     config.page_size = opts.page_size or config.page_size
     config.panel_width = opts.panel_width or config.panel_width
     config.tab_title = opts.tab_title or config.tab_title
@@ -413,19 +418,6 @@ vim.api.nvim_create_autocmd("WinResized", {
     end,
 })
 
-local function current_view()
-    local tab = api.nvim_get_current_tabpage()
-    if views[tab] then
-        return tab, views[tab]
-    end
-    for candidate, view in pairs(views) do
-        if api.nvim_tabpage_is_valid(candidate) then
-            return candidate, view
-        end
-    end
-    return nil, nil
-end
-
 function M.open(args)
     local config_snapshot = apply_project_config()
     local parsed = M.parse_args(args)
@@ -680,8 +672,20 @@ function M.diff_dirs(args)
     return session.panel
 end
 
+local function focused_view()
+    local tab = api.nvim_get_current_tabpage()
+    if not api.nvim_tabpage_is_valid(tab) then
+        return nil, nil
+    end
+    local view = views[tab]
+    if not view then
+        return nil, nil
+    end
+    return tab, view
+end
+
 function M.close()
-    local tab, view = current_view()
+    local tab, view = focused_view()
     if not view then
         return
     end
@@ -695,14 +699,14 @@ function M.close()
 end
 
 function M.focus_files()
-    local _, view = current_view()
+    local _, view = focused_view()
     if view and view.panel and api.nvim_win_is_valid(view.panel.win) then
         api.nvim_set_current_win(view.panel.win)
     end
 end
 
 function M.toggle_files()
-    local _, view = current_view()
+    local _, view = focused_view()
     if not view then
         return
     end
@@ -717,7 +721,7 @@ function M.toggle_files()
 end
 
 function M.refresh()
-    local _, view = current_view()
+    local _, view = focused_view()
     if not view then
         return
     end
@@ -730,7 +734,7 @@ function M.refresh()
 end
 
 local function navigate(step)
-    local _, view = current_view()
+    local _, view = focused_view()
     if not view or not view.panel then
         return
     end
@@ -754,7 +758,7 @@ function M.prev()
 end
 
 local function page(step)
-    local _, view = current_view()
+    local _, view = focused_view()
     if not view or not view.panel or not view.panel.set_page then
         return
     end
@@ -770,7 +774,7 @@ function M.prev_page()
 end
 
 function M.goto_page(target)
-    local _, view = current_view()
+    local _, view = focused_view()
     if not view or not view.panel or not view.panel.set_page then
         return
     end
@@ -782,7 +786,7 @@ function M.goto_page(target)
 end
 
 function M.swap_dirs()
-    local _, view = current_view()
+    local _, view = focused_view()
     if not view or not view.compare or view.state.name ~= "dirs" then
         return
     end

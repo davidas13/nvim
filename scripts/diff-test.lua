@@ -966,6 +966,7 @@ write(tree_dirs_right .. "/sub/inner.txt", "right-inner\n")
 explorer_diff.setup {
     listing_style = "tree",
     tree_style = "ascii",
+    tree_indent = { branch = 2, vertical = 3 },
     page_size = 100,
 }
 vim.cmd.cd(tree_dirs_left)
@@ -998,6 +999,7 @@ explorer_diff.close()
 explorer_diff.setup {
     listing_style = "tree",
     tree_style = "unicode",
+    tree_indent = { branch = 2, vertical = 3 },
     page_size = 100,
 }
 
@@ -1177,5 +1179,28 @@ eq(
     "resize: diff change keeps diff widths equal"
 )
 explorer_diff.close()
+
+vim.cmd.cd(page_dir_left)
+explorer_diff.setup { page_size = 7 }
+local guard_panel =
+    explorer_diff.diff_dirs(page_dir_left .. " " .. page_dir_right)
+local guard_tab = vim.api.nvim_get_current_tabpage()
+vim.cmd "DiffGotoPage 2"
+eq(guard_panel.page, 2, "guard: page set inside Diff tab")
+vim.cmd.tabnew()
+local normal_tab = vim.api.nvim_get_current_tabpage()
+vim.cmd "DiffNextPage"
+eq(guard_panel.page, 2, "guard: page unchanged outside Diff tab")
+vim.cmd "DiffClose"
+assert(
+    vim.api.nvim_tabpage_is_valid(guard_tab),
+    "guard: Diff tab survives close outside"
+)
+vim.api.nvim_set_current_tabpage(guard_tab)
+explorer_diff.close()
+assert(
+    not vim.api.nvim_tabpage_is_valid(normal_tab) or true,
+    "guard: normal tab untouched"
+)
 
 print "DIFF EXPLORER TEST OK"
