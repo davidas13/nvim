@@ -1016,6 +1016,7 @@ write(sticky_right .. "/z.txt", "right\n")
 explorer_diff.setup {
     listing_style = "tree",
     tree_style = "unicode",
+    sticky_scroll = false,
     page_size = 3,
 }
 vim.cmd.cd(sticky_left)
@@ -1038,6 +1039,12 @@ local function sticky_texts()
     end
     return texts
 end
+vim.cmd "DiffGotoPage 2"
+eq(#sticky_texts(), 0, "sticky: disabled by default")
+explorer_diff.close()
+
+explorer_diff.setup { sticky_scroll = true }
+sticky_panel = explorer_diff.diff_dirs(sticky_left .. " " .. sticky_right)
 eq(#sticky_texts(), 0, "sticky: no header on first page")
 vim.cmd "DiffGotoPage 2"
 eq(sticky_panel.page, 2, "sticky: second page")
@@ -1045,10 +1052,44 @@ local sticky_lines = sticky_texts()
 eq(#sticky_lines, 2, "sticky: two ancestors")
 eq(sticky_lines[1], "├── alpha/", "sticky: outer folder row")
 eq(sticky_lines[2], "│   └── beta/", "sticky: inner folder row")
-vim.cmd "DiffNextPage"
+
+local function tooltip_win()
+    for _, candidate in ipairs(vim.api.nvim_list_wins()) do
+        if vim.api.nvim_win_get_config(candidate).relative ~= "" then
+            return candidate
+        end
+    end
+    return nil
+end
+vim.cmd.normal "K"
+local tip = tooltip_win()
+assert(tip, "tooltip: K opens float")
+eq(
+    vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(tip), 0, -1, false)[1],
+    "alpha/beta/f2.txt",
+    "tooltip: focused file path"
+)
+vim.api.nvim_exec_autocmds("CursorMoved", { buffer = sticky_panel.buf })
+assert(
+    not tip or not vim.api.nvim_win_is_valid(tip),
+    "tooltip: closes on cursor move"
+)
+vim.cmd "DiffGotoPage 1"
+vim.api.nvim_win_set_cursor(sticky_panel.win, { 1, 0 })
+vim.cmd.normal "K"
+tip = tooltip_win()
+assert(tip, "tooltip: K opens on folder")
+eq(
+    vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(tip), 0, -1, false)[1],
+    "alpha",
+    "tooltip: focused folder path"
+)
+vim.api.nvim_exec_autocmds("CursorMoved", { buffer = sticky_panel.buf })
+
+vim.cmd "DiffGotoPage 3"
 eq(#sticky_texts(), 0, "sticky: header cleared at top-level page")
 explorer_diff.close()
-explorer_diff.setup { page_size = 100 }
+explorer_diff.setup { sticky_scroll = false, page_size = 100 }
 
 local jump_file = base .. "/jump_target.py"
 write(jump_file, "jump\n")

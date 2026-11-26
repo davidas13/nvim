@@ -49,8 +49,9 @@ local function build_tree(entries, cwd)
     return root
 end
 
-local function flatten(node, prefix, glyphs, out, ancestors)
+local function flatten(node, prefix, glyphs, out, ancestors, rel_prefix)
     ancestors = ancestors or {}
+    rel_prefix = rel_prefix or ""
     local children = {}
     for name, child in pairs(node.dirs) do
         table.insert(children, { name = name, kind = "dir", node = child })
@@ -68,12 +69,15 @@ local function flatten(node, prefix, glyphs, out, ancestors)
     for i, child in ipairs(children) do
         local is_last = i == #children
         local connector = is_last and glyphs.last or glyphs.branch
+        local rel = rel_prefix == "" and child.name
+            or rel_prefix .. "/" .. child.name
         if child.kind == "dir" then
             local label = prefix .. connector .. child.name .. "/"
             table.insert(out, {
                 kind = "dir",
                 node = child.node,
                 label = label,
+                rel = rel,
                 ancestors = ancestors,
             })
             if child.node.open then
@@ -81,7 +85,14 @@ local function flatten(node, prefix, glyphs, out, ancestors)
                     .. (is_last and glyphs.blank or glyphs.vertical)
                 local child_ancestors = vim.list_extend({}, ancestors)
                 table.insert(child_ancestors, label)
-                flatten(child.node, child_prefix, glyphs, out, child_ancestors)
+                flatten(
+                    child.node,
+                    child_prefix,
+                    glyphs,
+                    out,
+                    child_ancestors,
+                    rel
+                )
             end
         else
             table.insert(out, {
@@ -93,6 +104,7 @@ local function flatten(node, prefix, glyphs, out, ancestors)
                     .. child.entry.status
                     .. "  "
                     .. child.name,
+                rel = rel,
                 ancestors = ancestors,
             })
         end
@@ -122,6 +134,8 @@ function M.create(entries, on_select, on_cycle, opts)
         view_items = {},
         tree = nil,
         autocmd = nil,
+        tooltip_win = nil,
+        sticky_scroll = opts.sticky_scroll == true,
         style = opts.listing_style or "list",
         tree_style = opts.tree_style or "unicode",
         tree_indent = vim.tbl_deep_extend(
@@ -148,6 +162,39 @@ function M.create(entries, on_select, on_cycle, opts)
         if on_select then
             on_select(item.file, item.entry)
         end
+    end
+
+    local function close_tooltip()
+        if panel.tooltip_win and api.nvim_win_is_valid(panel.tooltip_win) then
+            api.nvim_win_close(panel.tooltip_win, true)
+        end
+        panel.tooltip_win = nil
+    end
+
+    local function show_path_tooltip()
+        if not api.nvim_win_is_valid(win) then
+            return
+        end
+        local row = api.nvim_win_get_cursor(win)[1]
+        local item = panel.view_items[row]
+        if not item or not item.rel then
+            return
+        end
+        close_tooltip()
+        local tip_buf = api.nvim_create_buf(false, true)
+        api.nvim_buf_set_lines(tip_buf, 0, -1, false, { item.rel })
+        vim.bo[tip_buf].bufhidden = "wipe"
+        vim.bo[tip_buf].modifiable = false
+        panel.tooltip_win = api.nvim_open_win(tip_buf, false, {
+            relative = "cursor",
+            row = 1,
+            col = 0,
+            width = math.max(#item.rel, 1),
+            height = 1,
+            border = "rounded",
+            focusable = false,
+            style = "minimal",
+        })
     end
 
     local function render_page()
@@ -190,7 +237,8 @@ function M.create(entries, on_select, on_cycle, opts)
         api.nvim_buf_clear_namespace(buf, STICKY_NS, 0, -1)
         local first = panel.view_items[1]
         if
-            panel.style == "tree"
+            panel.sticky_scroll
+            and panel.style == "tree"
             and panel.page_size > 0
             and first
             and first.ancestors
@@ -221,7 +269,9 @@ function M.create(entries, on_select, on_cycle, opts)
                 panel.tree,
                 "",
                 make_glyphs(panel.tree_style, panel.tree_indent),
-                panel.all_items
+                panel.all_items,
+                {},
+                ""
             )
         else
             for _, entry in ipairs(panel.entries) do
@@ -229,6 +279,9 @@ function M.create(entries, on_select, on_cycle, opts)
                     kind = "file",
                     file = entry.file,
                     entry = entry,
+                    rel = entry.rel
+                        or vim.fs.relpath(panel.cwd, entry.file)
+                        or entry.file,
                     label = entry.label
                         or entry.status
                             .. "  "
@@ -309,15 +362,27 @@ function M.create(entries, on_select, on_cycle, opts)
 
     refresh(entries)
 
-    panel.autocmd = api.nvim_create_autocmd("CursorMoved", {
-        buffer = buf,
-        callback = function()
-            if not api.nvim_win_is_valid(win) then
-                return
-            end
-            local row = api.nvim_win_get_cursor(win)[1]
-            select_item(panel.view_items[row])
-        end,
+    panel.autocmd = api.nvim_create_autocmd(
+        { "CursorMoved", "BufLeave", "WinLeave" },
+        {
+            buffer = buf,
+            callback = function(ev)
+                close_tooltip()
+                if ev.event ~= "CursorMoved" then
+                    return
+                end
+                if not api.nvim_win_is_valid(win) then
+                    return
+                end
+                local row = api.nvim_win_get_cursor(win)[1]
+                select_item(panel.view_items[row])
+            end,
+        }
+    )
+
+    api.nvim_buf_set_keymap(buf, "n", "K", "", {
+        callback = show_path_tooltip,
+        desc = "Show focused path",
     })
 
     if on_cycle then
@@ -402,6 +467,7 @@ function M.create(entries, on_select, on_cycle, opts)
     end
 
     function panel.close()
+        close_tooltip()
         if panel.autocmd then
             api.nvim_del_autocmd(panel.autocmd)
             panel.autocmd = nil
