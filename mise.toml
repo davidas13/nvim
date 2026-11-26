@@ -14,6 +14,10 @@ run = "nvim --headless '+luafile scripts/tabline-test.lua' +qa"
 description = "Check Diff resolvers, rendering, and commands"
 run = "nvim --headless '+luafile scripts/diff-test.lua' +qa!"
 
+[tasks.test-plenary]
+description = "Run plenary unit specs in headless Neovim"
+run = "nvim --headless -c 'PlenaryBustedDirectory tests/plenary/' -c 'qa!'"
+
 [tasks.smoke]
 description = "Load every plugin config module headless and fail on load errors"
 run = """
