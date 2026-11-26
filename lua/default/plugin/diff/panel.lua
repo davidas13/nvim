@@ -2,6 +2,8 @@ local api = vim.api
 
 local M = {}
 
+local HEADER_NS = api.nvim_create_namespace "diff_sticky"
+
 local GLYPHS = {
     unicode = {
         branch_char = "├",
@@ -130,6 +132,7 @@ function M.create(entries, on_select, on_cycle, opts)
         entries = {},
         all_items = {},
         view_items = {},
+        header_count = 0,
         tree = nil,
         autocmd = nil,
         tooltip_win = nil,
@@ -146,6 +149,14 @@ function M.create(entries, on_select, on_cycle, opts)
         page = 1,
         page_count = 1,
     }
+
+    local function item_row(row)
+        return row - panel.header_count
+    end
+
+    local function row_for_item(row)
+        return row + panel.header_count
+    end
 
     local function select_item(item)
         if not item then
@@ -174,7 +185,7 @@ function M.create(entries, on_select, on_cycle, opts)
             return
         end
         local row = api.nvim_win_get_cursor(win)[1]
-        local item = panel.view_items[row]
+        local item = panel.view_items[item_row(row)]
         if not item or not item.rel then
             return
         end
@@ -206,23 +217,11 @@ function M.create(entries, on_select, on_cycle, opts)
             for i = start, finish do
                 table.insert(panel.view_items, all[i])
             end
-            local first = panel.view_items[1]
-            local breadcrumb = ""
-            if
-                panel.sticky_scroll
-                and panel.style == "tree"
-                and first
-                and first.ancestors
-                and #first.ancestors > 0
-            then
-                breadcrumb = " | " .. table.concat(first.ancestors, " ")
-            end
-            vim.wo[win].winbar = (" Page %d/%d (%d per page) | root: %s%s"):format(
+            vim.wo[win].winbar = (" Page %d/%d (%d per page) | root: %s"):format(
                 panel.page,
                 panel.page_count,
                 panel.page_size,
-                vim.fn.fnamemodify(panel.cwd, ":~:."),
-                breadcrumb
+                vim.fn.fnamemodify(panel.cwd, ":~:.")
             )
         else
             panel.page_count = 1
@@ -231,7 +230,24 @@ function M.create(entries, on_select, on_cycle, opts)
             vim.wo[win].winbar = ""
         end
 
+        local header_labels = {}
+        local first = panel.view_items[1]
+        if
+            panel.sticky_scroll
+            and panel.style == "tree"
+            and panel.page_size > 0
+            and first
+            and first.ancestors
+            and #first.ancestors > 0
+        then
+            header_labels = first.ancestors
+        end
+        panel.header_count = #header_labels
+
         local lines = {}
+        for _, label in ipairs(header_labels) do
+            table.insert(lines, label)
+        end
         for _, item in ipairs(panel.view_items) do
             table.insert(lines, item.label)
         end
@@ -243,6 +259,14 @@ function M.create(entries, on_select, on_cycle, opts)
         api.nvim_buf_set_lines(buf, 0, -1, false, lines)
         vim.bo[buf].readonly = true
         vim.bo[buf].modifiable = false
+
+        api.nvim_buf_clear_namespace(buf, HEADER_NS, 0, -1)
+        for index, label in ipairs(header_labels) do
+            api.nvim_buf_set_extmark(buf, HEADER_NS, index - 1, 0, {
+                end_col = #label,
+                hl_group = "Comment",
+            })
+        end
     end
 
     local function refresh(new_entries)
@@ -289,7 +313,7 @@ function M.create(entries, on_select, on_cycle, opts)
         panel.page = math.min(math.max(1, page), panel.page_count)
         render_page()
         if api.nvim_win_is_valid(win) then
-            api.nvim_win_set_cursor(win, { 1, 0 })
+            api.nvim_win_set_cursor(win, { row_for_item(1), 0 })
         end
         if not suppress_select then
             for _, item in ipairs(panel.view_items) do
@@ -309,7 +333,7 @@ function M.create(entries, on_select, on_cycle, opts)
         if panel.page_size <= 0 then
             return row
         end
-        return (panel.page - 1) * panel.page_size + row
+        return (panel.page - 1) * panel.page_size + item_row(row)
     end
 
     local function select_global(index)
@@ -330,7 +354,7 @@ function M.create(entries, on_select, on_cycle, opts)
             set_page(target_page, true)
         end
         if api.nvim_win_is_valid(win) then
-            api.nvim_win_set_cursor(win, { row, 0 })
+            api.nvim_win_set_cursor(win, { row_for_item(row), 0 })
         end
         select_item(item)
     end
@@ -365,7 +389,7 @@ function M.create(entries, on_select, on_cycle, opts)
                     return
                 end
                 local row = api.nvim_win_get_cursor(win)[1]
-                select_item(panel.view_items[row])
+                select_item(panel.view_items[item_row(row)])
             end,
         }
     )
@@ -389,7 +413,7 @@ function M.create(entries, on_select, on_cycle, opts)
                     return
                 end
                 local row = api.nvim_win_get_cursor(win)[1]
-                local item = panel.view_items[row]
+                local item = panel.view_items[item_row(row)]
                 if item and item.kind == "dir" then
                     item.node.open = not item.node.open
                     refresh(panel.entries)
@@ -444,7 +468,7 @@ function M.create(entries, on_select, on_cycle, opts)
         if row < 1 or row > #panel.view_items then
             return
         end
-        api.nvim_win_set_cursor(win, { row, 0 })
+        api.nvim_win_set_cursor(win, { row_for_item(row), 0 })
         select_item(panel.view_items[row])
     end
 

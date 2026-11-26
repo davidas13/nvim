@@ -1021,24 +1021,31 @@ explorer_diff.setup {
 }
 vim.cmd.cd(sticky_left)
 local sticky_panel = explorer_diff.diff_dirs(sticky_left .. " " .. sticky_right)
-local function sticky_bar()
-    return vim.wo[sticky_panel.win].winbar
-end
-local function has_breadcrumb()
-    return sticky_bar():find("alpha/", 1, true) ~= nil
+local function header_lines()
+    local lines = vim.api.nvim_buf_get_lines(sticky_panel.buf, 0, -1, false)
+    local result = {}
+    for i = 1, sticky_panel.header_count do
+        table.insert(result, lines[i])
+    end
+    return result
 end
 vim.cmd "DiffGotoPage 2"
-assert(not has_breadcrumb(), "sticky: disabled by default")
+eq(#header_lines(), 0, "sticky: disabled by default")
 explorer_diff.close()
 
 explorer_diff.setup { sticky_scroll = true }
 sticky_panel = explorer_diff.diff_dirs(sticky_left .. " " .. sticky_right)
-assert(not has_breadcrumb(), "sticky: no breadcrumb on first page")
+eq(#header_lines(), 0, "sticky: no header on first page")
 vim.cmd "DiffGotoPage 2"
 eq(sticky_panel.page, 2, "sticky: second page")
-assert(
-    sticky_bar():find("├── alpha/ │   └── beta/", 1, true),
-    "sticky: breadcrumb shows folder chain"
+local sticky_lines = header_lines()
+eq(#sticky_lines, 2, "sticky: two header lines")
+eq(sticky_lines[1], "├── alpha/", "sticky: outer folder row")
+eq(sticky_lines[2], "│   └── beta/", "sticky: inner folder row")
+eq(
+    vim.api.nvim_win_get_cursor(sticky_panel.win)[1],
+    3,
+    "sticky: cursor starts on first real entry"
 )
 
 local function tooltip_win()
@@ -1075,7 +1082,7 @@ eq(
 vim.api.nvim_exec_autocmds("CursorMoved", { buffer = sticky_panel.buf })
 
 vim.cmd "DiffGotoPage 3"
-assert(not has_breadcrumb(), "sticky: breadcrumb cleared at top-level page")
+eq(#header_lines(), 0, "sticky: header cleared at top-level page")
 explorer_diff.close()
 explorer_diff.setup { sticky_scroll = false, page_size = 100 }
 

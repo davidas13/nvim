@@ -122,12 +122,11 @@ Set `page_size` to 0 to show every entry again. Pagination keeps only one page
 in the panel buffer. Directory scanning still walks every file before the view
 opens.
 
-Set `sticky_scroll` to true to show the folder chain of the first entry in the
-panel winbar. The breadcrumb follows the first entry, not the cursor, and is
-omitted on the first page and for entries at the top level. It does not change
-buffer lines, so selection and page navigation stay aligned. Neovim does not
-render virtual lines above the first buffer line when it sits at the top of the
-window, so the chain is shown in the winbar instead.
+Set `sticky_scroll` to true to pin the folder chain of the first entry as real
+lines above the entries in the panel buffer. The header follows the first entry,
+not the cursor, and is omitted on the first page and for entries at the top
+level. Header lines are highlighted with `Comment` and are skipped by file
+selection, so page navigation and cursor movement still address real entries.
 
 Tab titles include the command arguments. For example, `:Diff HEAD~2 -- sub`
 shows `Diff HEAD~2 -- sub` in the tabline.
