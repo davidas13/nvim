@@ -61,7 +61,11 @@ COMMANDS					*diff-commands*
 :DiffGotoPage {n}			Jump to panel page {n}.
 
 In the panel, `]p` and `[p` move between pages. The panel winbar shows the
-current page and the page size.
+current page, page size, and root path.
+
+The two diff windows resize as one group. Resizing the panel redistributes the
+remaining width equally between them. Resizing one diff window applies that
+width to both. Merge mode keeps its own three-window layout.
 
 In a Diff tab, other commands are blocked. `:e` becomes `:tabedit`, so the
 Diff layout stays intact. Diff windows also set `winfixbuf`, so pickers and
