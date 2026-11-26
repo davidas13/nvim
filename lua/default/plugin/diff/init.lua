@@ -61,7 +61,8 @@ local DEFAULT_REDIRECTS = {
 local config = {
     default_profile = "working",
     profiles = {},
-    listing_style = "list",
+    listing_style = "tree", -- or list
+    tree_style = "unicode", -- or ascii
     page_size = 100,
     panel_width = 40,
     tab_title = "Diff",
@@ -78,6 +79,7 @@ function M.setup(opts)
     opts = opts or {}
     config.default_profile = opts.default_profile or config.default_profile
     config.listing_style = opts.listing_style or config.listing_style
+    config.tree_style = opts.tree_style or config.tree_style
     config.page_size = opts.page_size or config.page_size
     config.panel_width = opts.panel_width or config.panel_width
     config.tab_title = opts.tab_title or config.tab_title
@@ -327,9 +329,13 @@ function M.open(args)
             end,
             {
                 listing_style = config.listing_style,
+                tree_style = config.tree_style,
                 width = config.panel_width,
                 page_size = config.page_size,
                 cwd = vim.fn.getcwd(),
+                on_dir = function()
+                    diff.clear(pane)
+                end,
             }
         )
         mark_no_lsp(pane.base_buf)
@@ -400,6 +406,7 @@ function M.file_history(args)
         nil,
         {
             listing_style = "list",
+            tree_style = config.tree_style,
             width = config.panel_width,
             page_size = config.page_size,
             cwd = vim.fn.getcwd(),
@@ -454,6 +461,7 @@ function M.merge(args)
         nil,
         {
             listing_style = "list",
+            tree_style = config.tree_style,
             width = config.panel_width,
             page_size = config.page_size,
             cwd = cwd,

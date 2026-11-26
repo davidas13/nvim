@@ -398,6 +398,100 @@ assert(#tree.view_items < tree_count, "tree: folder collapses")
 tree.close()
 
 vim.api.nvim_set_current_win(pane.base_win)
+local unicode_entries = {
+    { file = git_dir .. "/file.txt", status = "M" },
+    { file = git_dir .. "/sub/a.txt", status = "?" },
+    { file = git_dir .. "/sub/deep/b.txt", status = "M" },
+}
+local dir_hit = false
+local unicode_panel = panel_module.create(
+    unicode_entries,
+    function() end,
+    nil,
+    {
+        listing_style = "tree",
+        tree_style = "unicode",
+        cwd = git_dir,
+        on_dir = function()
+            dir_hit = true
+        end,
+    }
+)
+local unicode_labels = {}
+for _, item in ipairs(unicode_panel.view_items) do
+    table.insert(unicode_labels, item.label)
+end
+local joined_unicode = table.concat(unicode_labels, "\n")
+assert(
+    joined_unicode:find("├── sub/", 1, true),
+    "tree: unicode branch folder"
+)
+assert(
+    joined_unicode:find("│   ├── deep/", 1, true),
+    "tree: unicode continuation"
+)
+assert(
+    joined_unicode:find("└── M  file%.txt", 1, false),
+    "tree: unicode last file"
+)
+vim.api.nvim_set_current_win(unicode_panel.win)
+local unicode_dir_row
+for i, item in ipairs(unicode_panel.view_items) do
+    if item.kind == "dir" then
+        unicode_dir_row = i
+        break
+    end
+end
+unicode_panel.select_index(unicode_dir_row)
+assert(dir_hit, "tree: dir callback fires")
+unicode_panel.close()
+
+local ascii_panel = panel_module.create(unicode_entries, function() end, nil, {
+    listing_style = "tree",
+    tree_style = "ascii",
+    cwd = git_dir,
+})
+local ascii_labels = {}
+for _, item in ipairs(ascii_panel.view_items) do
+    table.insert(ascii_labels, item.label)
+end
+local joined_ascii = table.concat(ascii_labels, "\n")
+assert(joined_ascii:find("+-- sub/", 1, true), "tree: ascii branch folder")
+assert(
+    joined_ascii:find("`%-%- M  file%.txt", 1, false),
+    "tree: ascii last file"
+)
+ascii_panel.close()
+
+vim.cmd.cd(git_dir)
+write(git_dir .. "/sub/nested.txt", "nested-changed\n")
+local tree_session_panel = explorer_diff.open()
+local tree_session_tab = vim.api.nvim_get_current_tabpage()
+local tree_dir_row
+for i, item in ipairs(tree_session_panel.view_items) do
+    if item.kind == "dir" then
+        tree_dir_row = i
+        break
+    end
+end
+assert(tree_dir_row, "tree session: folder row")
+tree_session_panel.select_index(tree_dir_row)
+local tree_diff_wins = {}
+for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tree_session_tab)) do
+    if vim.api.nvim_win_get_option(win, "diff") then
+        table.insert(tree_diff_wins, win)
+    end
+end
+table.sort(tree_diff_wins, function(a, b)
+    return vim.api.nvim_win_get_position(a)[2]
+        < vim.api.nvim_win_get_position(b)[2]
+end)
+local cleared_buf = vim.api.nvim_win_get_buf(tree_diff_wins[2])
+eq(vim.bo[cleared_buf].buftype, "nofile", "tree session: folder clears work")
+eq(vim.api.nvim_buf_get_name(cleared_buf), "", "tree session: no file opened")
+explorer_diff.close()
+
+vim.api.nvim_set_current_win(pane.base_win)
 local page_entries = {}
 for i = 1, 25 do
     table.insert(page_entries, {

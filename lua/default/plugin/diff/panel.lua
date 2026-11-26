@@ -2,6 +2,21 @@ local api = vim.api
 
 local M = {}
 
+local GLYPHS = {
+    unicode = {
+        branch = "├── ",
+        last = "└── ",
+        vertical = "│   ",
+        blank = "    ",
+    },
+    ascii = {
+        branch = "+-- ",
+        last = "`-- ",
+        vertical = "|   ",
+        blank = "    ",
+    },
+}
+
 local function build_tree(entries, cwd)
     local root = { dirs = {}, files = {} }
     for _, entry in ipairs(entries) do
@@ -19,32 +34,47 @@ local function build_tree(entries, cwd)
     return root
 end
 
-local function flatten(node, depth, out)
-    local dirs = vim.tbl_keys(node.dirs)
-    table.sort(dirs)
-    for _, name in ipairs(dirs) do
-        local child = node.dirs[name]
-        table.insert(out, {
-            kind = "dir",
-            node = child,
-            label = string.rep("  ", depth)
-                .. (child.open and "- " or "+ ")
-                .. name,
-        })
-        if child.open then
-            flatten(child, depth + 1, out)
-        end
+local function flatten(node, prefix, glyphs, out)
+    local children = {}
+    for name, child in pairs(node.dirs) do
+        table.insert(children, { name = name, kind = "dir", node = child })
     end
-    local files = vim.tbl_keys(node.files)
-    table.sort(files)
-    for _, name in ipairs(files) do
-        local entry = node.files[name]
-        table.insert(out, {
-            kind = "file",
-            file = entry.file,
-            entry = entry,
-            label = string.rep("  ", depth) .. entry.status .. "  " .. name,
-        })
+    for name, entry in pairs(node.files) do
+        table.insert(children, { name = name, kind = "file", entry = entry })
+    end
+    table.sort(children, function(a, b)
+        if a.kind ~= b.kind then
+            return a.kind == "dir"
+        end
+        return a.name < b.name
+    end)
+
+    for i, child in ipairs(children) do
+        local is_last = i == #children
+        local connector = is_last and glyphs.last or glyphs.branch
+        if child.kind == "dir" then
+            table.insert(out, {
+                kind = "dir",
+                node = child.node,
+                label = prefix .. connector .. child.name .. "/",
+            })
+            if child.node.open then
+                local child_prefix = prefix
+                    .. (is_last and glyphs.blank or glyphs.vertical)
+                flatten(child.node, child_prefix, glyphs, out)
+            end
+        else
+            table.insert(out, {
+                kind = "file",
+                file = child.entry.file,
+                entry = child.entry,
+                label = prefix
+                    .. connector
+                    .. child.entry.status
+                    .. "  "
+                    .. child.name,
+            })
+        end
     end
 end
 
@@ -72,6 +102,7 @@ function M.create(entries, on_select, on_cycle, opts)
         tree = nil,
         autocmd = nil,
         style = opts.listing_style or "list",
+        tree_style = opts.tree_style or "unicode",
         cwd = opts.cwd or vim.fn.getcwd(),
         page_size = opts.page_size or 100,
         page = 1,
@@ -79,7 +110,16 @@ function M.create(entries, on_select, on_cycle, opts)
     }
 
     local function select_item(item)
-        if item and item.kind == "file" and on_select then
+        if not item then
+            return
+        end
+        if item.kind == "dir" then
+            if opts.on_dir then
+                opts.on_dir(item)
+            end
+            return
+        end
+        if on_select then
             on_select(item.file, item.entry)
         end
     end
@@ -131,7 +171,12 @@ function M.create(entries, on_select, on_cycle, opts)
             if not reuse_tree then
                 panel.tree = build_tree(panel.entries, panel.cwd)
             end
-            flatten(panel.tree, 0, panel.all_items)
+            flatten(
+                panel.tree,
+                "",
+                GLYPHS[panel.tree_style] or GLYPHS.unicode,
+                panel.all_items
+            )
         else
             for _, entry in ipairs(panel.entries) do
                 table.insert(panel.all_items, {

@@ -61,6 +61,8 @@ function M.create_pane()
     M.set_win_buf(work_win, work_buf)
     vim.bo[base_buf].modifiable = false
     vim.bo[base_buf].readonly = true
+    local empty_base_buf = api.nvim_create_buf(false, true)
+    local empty_work_buf = api.nvim_create_buf(false, true)
     M.lock_wins { base_win, work_win }
     M.apply_diff { base_win, work_win }
     return {
@@ -68,7 +70,20 @@ function M.create_pane()
         base_win = base_win,
         work_win = work_win,
         base_buf = base_buf,
+        empty_base_buf = empty_base_buf,
+        empty_work_buf = empty_work_buf,
     }
+end
+
+function M.clear(pane)
+    if not api.nvim_tabpage_is_valid(pane.tab) then
+        return
+    end
+    M.set_win_buf(pane.base_win, pane.empty_base_buf)
+    M.set_win_buf(pane.work_win, pane.empty_work_buf)
+    set_base_lines(pane.empty_base_buf, "")
+    set_base_lines(pane.empty_work_buf, "")
+    M.apply_diff { pane.base_win, pane.work_win }
 end
 
 function M.show_file(pane, file, before)
