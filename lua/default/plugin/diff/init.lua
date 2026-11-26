@@ -512,10 +512,20 @@ function M.diff_dirs(args)
         config = config_snapshot
         return
     end
-    local session =
+    local session
+    session =
         compare_module.dirs(left, right, config.panel_width, config.page_size, {
             listing_style = config.listing_style,
             tree_style = config.tree_style,
+            on_swap = function(new_left, new_right)
+                set_tab_title(
+                    session.tab,
+                    titled(
+                        config.diff_dirs_tab_title,
+                        new_left .. " <-> " .. new_right
+                    )
+                )
+            end,
         })
     if not session then
         config = config_snapshot
@@ -637,6 +647,14 @@ function M.goto_page(target)
     view.panel.set_page(number)
 end
 
+function M.swap_dirs()
+    local _, view = current_view()
+    if not view or not view.compare or view.state.name ~= "dirs" then
+        return
+    end
+    compare_module.swap(view.compare)
+end
+
 local SAFE_COMMANDS = {
     w = true,
     write = true,
@@ -736,6 +754,9 @@ end, { nargs = 0 })
 vim.api.nvim_create_user_command("DiffGotoPage", function(opts)
     M.goto_page(opts.args)
 end, { nargs = 1 })
+vim.api.nvim_create_user_command("DiffDirsSwap", function()
+    M.swap_dirs()
+end, { nargs = 0 })
 
 vim.keymap.set("n", "<leader>vd", function()
     M.open ""

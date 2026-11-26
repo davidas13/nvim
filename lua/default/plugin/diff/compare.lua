@@ -228,6 +228,7 @@ function M.dirs(left, right, width, page_size, opts)
         right_bufs = {},
         current_rel = nil,
         panel = nil,
+        on_swap = opts.on_swap,
     }
     diff.lock_wins(session.wins)
     local pending = 0
@@ -252,6 +253,9 @@ function M.dirs(left, right, width, page_size, opts)
             cwd = abs_left,
             on_dir = function()
                 M.clear(session)
+            end,
+            on_swap = function()
+                M.swap(session)
             end,
         }
     )
@@ -325,6 +329,32 @@ function M.clear(session)
     diff.set_win_buf(session.wins[2], session.right_buf)
     enable_diff(session.wins)
     session.current_rel = nil
+end
+
+function M.swap(session)
+    if not api.nvim_tabpage_is_valid(session.tab) then
+        return
+    end
+    local rel = session.current_rel
+    session.left, session.right = session.right, session.left
+    session.left_bufs = {}
+    session.right_bufs = {}
+    session.current_rel = nil
+    local entries = dir_entries(session.left, session.right)
+    if #entries == 0 then
+        vim.notify(
+            "Diff: no differences between directories",
+            vim.log.levels.INFO
+        )
+        return
+    end
+    if session.panel then
+        session.panel.set_context(entries, session.left)
+    end
+    M.show_dir(session, rel or entries[1].file)
+    if session.on_swap then
+        session.on_swap(session.left, session.right)
+    end
 end
 
 function M.equalize(session, panel_width)

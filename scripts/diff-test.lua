@@ -1029,4 +1029,94 @@ assert(
 vim.api.nvim_tabpage_set_var(explorer_tab, "diffexplorer_title", "")
 vim.cmd(("tabclose %d"):format(vim.fn.tabpagenr()))
 
+local swap_left = base .. "/swap-left"
+local swap_right = base .. "/swap-right"
+vim.fn.mkdir(swap_left, "p")
+vim.fn.mkdir(swap_right, "p")
+write(swap_left .. "/left-only.txt", "left\n")
+write(swap_right .. "/right-only.txt", "right\n")
+write(swap_left .. "/shared.txt", "left-shared\n")
+write(swap_right .. "/shared.txt", "right-shared\n")
+local swap_panel = explorer_diff.diff_dirs(swap_left .. " " .. swap_right)
+local swap_session = swap_panel.session
+local swap_tab = vim.api.nvim_get_current_tabpage()
+local swap_title_before = vim.fn.gettabvar(
+    vim.api.nvim_tabpage_get_number(swap_tab),
+    "diffexplorer_title",
+    ""
+)
+local function status_for(panel, rel)
+    for _, entry in ipairs(panel.entries) do
+        if entry.file == rel then
+            return entry.status
+        end
+    end
+    return nil
+end
+eq(
+    status_for(swap_panel, "left-only.txt"),
+    "D",
+    "swap: left only status before"
+)
+eq(
+    status_for(swap_panel, "right-only.txt"),
+    "A",
+    "swap: right only status before"
+)
+swap_session.current_rel = nil
+require("default.plugin.diff.compare").show_dir(swap_session, "shared.txt")
+local swap_work_before = vim.api.nvim_win_get_buf(swap_session.wins[2])
+local swap_key_ok = false
+for _, mapping in ipairs(vim.api.nvim_buf_get_keymap(swap_panel.buf, "n")) do
+    if mapping.lhs == "s" then
+        mapping.callback()
+        swap_key_ok = true
+        break
+    end
+end
+assert(swap_key_ok, "swap: s mapped")
+eq(
+    vim.fn.fnamemodify(swap_session.left, ":p"),
+    vim.fn.fnamemodify(swap_right, ":p"),
+    "swap: left becomes right"
+)
+eq(
+    vim.fn.fnamemodify(swap_session.right, ":p"),
+    vim.fn.fnamemodify(swap_left, ":p"),
+    "swap: right becomes left"
+)
+eq(status_for(swap_panel, "left-only.txt"), "A", "swap: left only flips to A")
+eq(status_for(swap_panel, "right-only.txt"), "D", "swap: right only flips to D")
+eq(
+    vim.fn.fnamemodify(swap_panel.cwd, ":p"),
+    vim.fn.fnamemodify(swap_right, ":p"),
+    "swap: panel root follows first dir"
+)
+assert(
+    vim.wo[swap_panel.win].winbar:find("root:", 1, true),
+    "swap: winbar shows root"
+)
+local swap_title_after = vim.fn.gettabvar(
+    vim.api.nvim_tabpage_get_number(swap_tab),
+    "diffexplorer_title",
+    ""
+)
+assert(swap_title_after ~= swap_title_before, "swap: tab title changes")
+eq(swap_session.current_rel, "shared.txt", "swap: selected file preserved")
+local swap_work_after = vim.api.nvim_win_get_buf(swap_session.wins[2])
+assert(
+    vim.endswith(
+        vim.api.nvim_buf_get_name(swap_work_after),
+        "/swap-left/shared.txt"
+    ),
+    "swap: work buffer follows swapped right"
+)
+vim.cmd "DiffDirsSwap"
+eq(
+    vim.fn.fnamemodify(swap_session.left, ":p"),
+    vim.fn.fnamemodify(swap_left, ":p"),
+    "swap: command restores left"
+)
+explorer_diff.close()
+
 print "DIFF EXPLORER TEST OK"

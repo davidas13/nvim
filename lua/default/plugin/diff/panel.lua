@@ -135,10 +135,11 @@ function M.create(entries, on_select, on_cycle, opts)
             for i = start, finish do
                 table.insert(panel.view_items, all[i])
             end
-            vim.wo[win].winbar = (" Page %d/%d (%d per page)"):format(
+            vim.wo[win].winbar = (" Page %d/%d (%d per page) | root: %s"):format(
                 panel.page,
                 panel.page_count,
-                panel.page_size
+                panel.page_size,
+                vim.fn.fnamemodify(panel.cwd, ":~:.")
             )
         else
             panel.page_count = 1
@@ -300,6 +301,13 @@ function M.create(entries, on_select, on_cycle, opts)
         })
     end
 
+    if opts.on_swap then
+        api.nvim_buf_set_keymap(buf, "n", "s", "", {
+            callback = opts.on_swap,
+            desc = "Swap compared directories",
+        })
+    end
+
     api.nvim_buf_set_keymap(buf, "n", "]p", "", {
         callback = function()
             set_page(panel.page + 1)
@@ -315,6 +323,14 @@ function M.create(entries, on_select, on_cycle, opts)
 
     function panel.refresh(new_entries)
         refresh(new_entries)
+    end
+
+    function panel.set_context(new_entries, cwd)
+        panel.cwd = cwd or panel.cwd
+        panel.tree = nil
+        refresh(new_entries)
+        panel.page = 1
+        render_page()
     end
 
     function panel.set_page(page)
