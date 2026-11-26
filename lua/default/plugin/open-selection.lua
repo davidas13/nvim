@@ -1,4 +1,6 @@
 -- Setup Keybindings ------------------------------------------------------- {{{
+-- Selection keymaps and seditor write-back follow yode-nvim by Stefan Gojan.
+-- See THIRD_PARTY_NOTICES.md for the notice.
 local seditors = {}
 local files_attached = {}
 local file_autocmds = {}

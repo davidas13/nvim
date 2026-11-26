@@ -173,7 +173,9 @@ return {
                     },
                 },
             },
+            -- These actions follow Rico Berger's snacks.nvim explorer post.
             -- source: https://ricoberger.de/blog/posts/neovim-extend-snacks-nvim-explorer/
+            -- See THIRD_PARTY_NOTICES.md for the notice.
             actions = {
                 copy_file_path = {
                     action = function(_, item)

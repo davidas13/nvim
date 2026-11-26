@@ -1,3 +1,5 @@
+-- Command layout follows diffview.nvim and DiffDirs behavior follows
+-- diffview-plus.nvim. See THIRD_PARTY_NOTICES.md for the notices.
 local api = vim.api
 local sources = require "default.plugin.diff.sources"
 local diff = require "default.plugin.diff.diff"
