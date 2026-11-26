@@ -63,6 +63,7 @@ local config = {
     profiles = {},
     listing_style = "tree", -- or list
     tree_style = "unicode", -- or ascii
+    tree_indent = { branch = 2, vertical = 3 },
     page_size = 100,
     panel_width = 50,
     tab_title = "Diff",
@@ -80,6 +81,8 @@ function M.setup(opts)
     config.default_profile = opts.default_profile or config.default_profile
     config.listing_style = opts.listing_style or config.listing_style
     config.tree_style = opts.tree_style or config.tree_style
+    config.tree_indent =
+        vim.tbl_deep_extend("force", config.tree_indent, opts.tree_indent or {})
     config.page_size = opts.page_size or config.page_size
     config.panel_width = opts.panel_width or config.panel_width
     config.tab_title = opts.tab_title or config.tab_title
@@ -457,6 +460,7 @@ function M.open(args)
             {
                 listing_style = config.listing_style,
                 tree_style = config.tree_style,
+                tree_indent = config.tree_indent,
                 width = config.panel_width,
                 page_size = config.page_size,
                 cwd = vim.fn.getcwd(),
@@ -534,6 +538,7 @@ function M.file_history(args)
         {
             listing_style = "list",
             tree_style = config.tree_style,
+            tree_indent = config.tree_indent,
             width = config.panel_width,
             page_size = config.page_size,
             cwd = vim.fn.getcwd(),
@@ -589,6 +594,7 @@ function M.merge(args)
         {
             listing_style = "list",
             tree_style = config.tree_style,
+            tree_indent = config.tree_indent,
             width = config.panel_width,
             page_size = config.page_size,
             cwd = cwd,
@@ -644,6 +650,7 @@ function M.diff_dirs(args)
         compare_module.dirs(left, right, config.panel_width, config.page_size, {
             listing_style = config.listing_style,
             tree_style = config.tree_style,
+            tree_indent = config.tree_indent,
             on_swap = function(new_left, new_right)
                 set_tab_title(
                     session.tab,

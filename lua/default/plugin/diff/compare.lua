@@ -248,6 +248,7 @@ function M.dirs(left, right, width, page_size, opts)
         {
             listing_style = opts.listing_style or "list",
             tree_style = opts.tree_style or "unicode",
+            tree_indent = opts.tree_indent,
             width = width or 40,
             page_size = page_size or 100,
             cwd = abs_left,

@@ -4,18 +4,31 @@ local M = {}
 
 local GLYPHS = {
     unicode = {
-        branch = "├── ",
-        last = "└── ",
-        vertical = "│   ",
-        blank = "    ",
+        branch_char = "├",
+        last_char = "└",
+        vertical_char = "│",
+        dash = "─",
     },
     ascii = {
-        branch = "+-- ",
-        last = "`-- ",
-        vertical = "|   ",
-        blank = "    ",
+        branch_char = "+",
+        last_char = "`",
+        vertical_char = "|",
+        dash = "-",
     },
 }
+
+local function make_glyphs(style, indent)
+    local glyph = GLYPHS[style] or GLYPHS.unicode
+    local branch = math.max(1, indent.branch or 2)
+    local vertical = math.max(1, indent.vertical or 3)
+    local line = string.rep(glyph.dash, branch)
+    return {
+        branch = glyph.branch_char .. line .. " ",
+        last = glyph.last_char .. line .. " ",
+        vertical = glyph.vertical_char .. string.rep(" ", vertical),
+        blank = string.rep(" ", vertical + 1),
+    }
+end
 
 local function build_tree(entries, cwd)
     local root = { dirs = {}, files = {} }
@@ -103,6 +116,11 @@ function M.create(entries, on_select, on_cycle, opts)
         autocmd = nil,
         style = opts.listing_style or "list",
         tree_style = opts.tree_style or "unicode",
+        tree_indent = vim.tbl_deep_extend(
+            "force",
+            { branch = 2, vertical = 3 },
+            opts.tree_indent or {}
+        ),
         cwd = opts.cwd or vim.fn.getcwd(),
         page_size = opts.page_size or 100,
         page = 1,
@@ -175,7 +193,7 @@ function M.create(entries, on_select, on_cycle, opts)
             flatten(
                 panel.tree,
                 "",
-                GLYPHS[panel.tree_style] or GLYPHS.unicode,
+                make_glyphs(panel.tree_style, panel.tree_indent),
                 panel.all_items
             )
         else

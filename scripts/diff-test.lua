@@ -463,6 +463,28 @@ assert(
 )
 ascii_panel.close()
 
+local indent_panel = panel_module.create(unicode_entries, function() end, nil, {
+    listing_style = "tree",
+    tree_style = "unicode",
+    tree_indent = { branch = 1, vertical = 2 },
+    cwd = git_dir,
+})
+local indent_labels = {}
+for _, item in ipairs(indent_panel.view_items) do
+    table.insert(indent_labels, item.label)
+end
+local joined_indent = table.concat(indent_labels, "\n")
+assert(joined_indent:find("├─ sub/", 1, true), "tree indent: branch dashes")
+assert(
+    joined_indent:find("│  ├─ deep/", 1, true),
+    "tree indent: vertical padding"
+)
+assert(
+    joined_indent:find("│  │  └─ M  b%.txt", 1, false),
+    "tree indent: nested padding"
+)
+indent_panel.close()
+
 vim.cmd.cd(git_dir)
 write(git_dir .. "/sub/nested.txt", "nested-changed\n")
 local tree_session_panel = explorer_diff.open()
