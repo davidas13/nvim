@@ -2,8 +2,6 @@ local api = vim.api
 
 local M = {}
 
-local STICKY_NS = api.nvim_create_namespace "diff_sticky"
-
 local GLYPHS = {
     unicode = {
         branch_char = "├",
@@ -208,11 +206,23 @@ function M.create(entries, on_select, on_cycle, opts)
             for i = start, finish do
                 table.insert(panel.view_items, all[i])
             end
-            vim.wo[win].winbar = (" Page %d/%d (%d per page) | root: %s"):format(
+            local first = panel.view_items[1]
+            local breadcrumb = ""
+            if
+                panel.sticky_scroll
+                and panel.style == "tree"
+                and first
+                and first.ancestors
+                and #first.ancestors > 0
+            then
+                breadcrumb = " | " .. table.concat(first.ancestors, " ")
+            end
+            vim.wo[win].winbar = (" Page %d/%d (%d per page) | root: %s%s"):format(
                 panel.page,
                 panel.page_count,
                 panel.page_size,
-                vim.fn.fnamemodify(panel.cwd, ":~:.")
+                vim.fn.fnamemodify(panel.cwd, ":~:."),
+                breadcrumb
             )
         else
             panel.page_count = 1
@@ -233,26 +243,6 @@ function M.create(entries, on_select, on_cycle, opts)
         api.nvim_buf_set_lines(buf, 0, -1, false, lines)
         vim.bo[buf].readonly = true
         vim.bo[buf].modifiable = false
-
-        api.nvim_buf_clear_namespace(buf, STICKY_NS, 0, -1)
-        local first = panel.view_items[1]
-        if
-            panel.sticky_scroll
-            and panel.style == "tree"
-            and panel.page_size > 0
-            and first
-            and first.ancestors
-            and #first.ancestors > 0
-        then
-            local virt_lines = {}
-            for _, label in ipairs(first.ancestors) do
-                table.insert(virt_lines, { { label, "Comment" } })
-            end
-            api.nvim_buf_set_extmark(buf, STICKY_NS, 0, 0, {
-                virt_lines = virt_lines,
-                virt_lines_above = true,
-            })
-        end
     end
 
     local function refresh(new_entries)

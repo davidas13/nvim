@@ -1021,37 +1021,25 @@ explorer_diff.setup {
 }
 vim.cmd.cd(sticky_left)
 local sticky_panel = explorer_diff.diff_dirs(sticky_left .. " " .. sticky_right)
-local sticky_ns = vim.api.nvim_create_namespace "diff_sticky"
-local function sticky_texts()
-    local marks = vim.api.nvim_buf_get_extmarks(
-        sticky_panel.buf,
-        sticky_ns,
-        0,
-        -1,
-        { details = true }
-    )
-    if #marks == 0 then
-        return {}
-    end
-    local texts = {}
-    for _, chunk in ipairs(marks[1][4].virt_lines or {}) do
-        table.insert(texts, chunk[1][1])
-    end
-    return texts
+local function sticky_bar()
+    return vim.wo[sticky_panel.win].winbar
+end
+local function has_breadcrumb()
+    return sticky_bar():find("alpha/", 1, true) ~= nil
 end
 vim.cmd "DiffGotoPage 2"
-eq(#sticky_texts(), 0, "sticky: disabled by default")
+assert(not has_breadcrumb(), "sticky: disabled by default")
 explorer_diff.close()
 
 explorer_diff.setup { sticky_scroll = true }
 sticky_panel = explorer_diff.diff_dirs(sticky_left .. " " .. sticky_right)
-eq(#sticky_texts(), 0, "sticky: no header on first page")
+assert(not has_breadcrumb(), "sticky: no breadcrumb on first page")
 vim.cmd "DiffGotoPage 2"
 eq(sticky_panel.page, 2, "sticky: second page")
-local sticky_lines = sticky_texts()
-eq(#sticky_lines, 2, "sticky: two ancestors")
-eq(sticky_lines[1], "├── alpha/", "sticky: outer folder row")
-eq(sticky_lines[2], "│   └── beta/", "sticky: inner folder row")
+assert(
+    sticky_bar():find("├── alpha/ │   └── beta/", 1, true),
+    "sticky: breadcrumb shows folder chain"
+)
 
 local function tooltip_win()
     for _, candidate in ipairs(vim.api.nvim_list_wins()) do
@@ -1087,7 +1075,7 @@ eq(
 vim.api.nvim_exec_autocmds("CursorMoved", { buffer = sticky_panel.buf })
 
 vim.cmd "DiffGotoPage 3"
-eq(#sticky_texts(), 0, "sticky: header cleared at top-level page")
+assert(not has_breadcrumb(), "sticky: breadcrumb cleared at top-level page")
 explorer_diff.close()
 explorer_diff.setup { sticky_scroll = false, page_size = 100 }
 
