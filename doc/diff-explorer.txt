@@ -71,8 +71,9 @@ In a Diff tab, other commands are blocked. `:e` becomes `:tabedit`, so the
 Diff layout stays intact. Diff windows also set `winfixbuf`, so pickers and
 other plugins cannot replace their buffers. Snacks picker jumps open the
 selected file in a new tab while a Diff tab is focused. `:w`, `diffget`,
-`diffput`, `do`, `dp`, and `diffupdate` still run. All `Diff*` commands are
-allowed.
+`diffput`, `do`, `dp`, and `diffupdate` still run. Opener commands such as
+`:Diff`, `:DiffHistory`, and `:DiffDirs` work from any tab. Commands that
+operate on an open view work only while that Diff tab is focused.
 
 ==============================================================================
 PROFILES
