@@ -101,6 +101,7 @@ that project only.
 	profiles		table of before and after specs
 	listing_style		"list" or "tree"
 	tree_style		"unicode" or "ascii"
+	tree_indent		{ branch = 2, vertical = 3 }
 	page_size		100
 	panel_width		40
 	tab_title		"Diff"
@@ -109,6 +110,9 @@ that project only.
 	diff_files_tab_title	"DiffFiles"
 	diff_dirs_tab_title	"DiffDirs"
 	redirect_commands	table mapping command names to tab-safe commands
+
+`tree_indent.branch` sets the number of dash characters in `├──` and `└──`.
+`tree_indent.vertical` sets the spaces after `│`.
 
 Set `page_size` to 0 to show every entry again. Pagination keeps only one page
 in the panel buffer. Directory scanning still walks every file before the view
