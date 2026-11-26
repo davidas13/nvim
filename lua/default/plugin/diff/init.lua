@@ -66,7 +66,6 @@ local config = {
     listing_style = "tree", -- or list
     tree_style = "unicode", -- or ascii
     tree_indent = { branch = 1, vertical = 2 },
-    sticky_scroll = false,
     page_size = 100,
     panel_width = 50,
     tab_title = "Diff",
@@ -91,9 +90,6 @@ function M.setup(opts)
                 opts.tree_indent
             )
         or config.tree_indent
-    if opts.sticky_scroll ~= nil then
-        config.sticky_scroll = opts.sticky_scroll
-    end
     config.page_size = opts.page_size or config.page_size
     config.panel_width = opts.panel_width or config.panel_width
     config.tab_title = opts.tab_title or config.tab_title
@@ -459,7 +455,6 @@ function M.open(args)
                 listing_style = config.listing_style,
                 tree_style = config.tree_style,
                 tree_indent = config.tree_indent,
-                sticky_scroll = config.sticky_scroll,
                 width = config.panel_width,
                 page_size = config.page_size,
                 cwd = vim.fn.getcwd(),
@@ -538,7 +533,6 @@ function M.file_history(args)
             listing_style = "list",
             tree_style = config.tree_style,
             tree_indent = config.tree_indent,
-            sticky_scroll = config.sticky_scroll,
             width = config.panel_width,
             page_size = config.page_size,
             cwd = vim.fn.getcwd(),
@@ -595,7 +589,6 @@ function M.merge(args)
             listing_style = "list",
             tree_style = config.tree_style,
             tree_indent = config.tree_indent,
-            sticky_scroll = config.sticky_scroll,
             width = config.panel_width,
             page_size = config.page_size,
             cwd = cwd,
@@ -652,7 +645,6 @@ function M.diff_dirs(args)
             listing_style = config.listing_style,
             tree_style = config.tree_style,
             tree_indent = config.tree_indent,
-            sticky_scroll = config.sticky_scroll,
             on_swap = function(new_left, new_right)
                 set_tab_title(
                     session.tab,

@@ -1016,7 +1016,6 @@ write(sticky_right .. "/z.txt", "right\n")
 explorer_diff.setup {
     listing_style = "tree",
     tree_style = "unicode",
-    sticky_scroll = false,
     page_size = 3,
 }
 vim.cmd.cd(sticky_left)
@@ -1029,12 +1028,6 @@ local function header_lines()
     end
     return result
 end
-vim.cmd "DiffGotoPage 2"
-eq(#header_lines(), 0, "sticky: disabled by default")
-explorer_diff.close()
-
-explorer_diff.setup { sticky_scroll = true }
-sticky_panel = explorer_diff.diff_dirs(sticky_left .. " " .. sticky_right)
 eq(#header_lines(), 0, "sticky: no header on first page")
 vim.cmd "DiffGotoPage 2"
 eq(sticky_panel.page, 2, "sticky: second page")
@@ -1084,7 +1077,7 @@ vim.api.nvim_exec_autocmds("CursorMoved", { buffer = sticky_panel.buf })
 vim.cmd "DiffGotoPage 3"
 eq(#header_lines(), 0, "sticky: header cleared at top-level page")
 explorer_diff.close()
-explorer_diff.setup { sticky_scroll = false, page_size = 100 }
+explorer_diff.setup { page_size = 100 }
 
 local jump_file = base .. "/jump_target.py"
 write(jump_file, "jump\n")

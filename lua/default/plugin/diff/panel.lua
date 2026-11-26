@@ -136,7 +136,6 @@ function M.create(entries, on_select, on_cycle, opts)
         tree = nil,
         autocmd = nil,
         tooltip_win = nil,
-        sticky_scroll = opts.sticky_scroll == true,
         style = opts.listing_style or "list",
         tree_style = opts.tree_style or "unicode",
         tree_indent = vim.tbl_deep_extend(
@@ -233,8 +232,7 @@ function M.create(entries, on_select, on_cycle, opts)
         local header_labels = {}
         local first = panel.view_items[1]
         if
-            panel.sticky_scroll
-            and panel.style == "tree"
+            panel.style == "tree"
             and panel.page_size > 0
             and first
             and first.ancestors
