@@ -1119,4 +1119,41 @@ eq(
 )
 explorer_diff.close()
 
+local function group_diff_wins(tab, panel_win)
+    local found = {}
+    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tab)) do
+        if win ~= panel_win and vim.api.nvim_win_get_option(win, "diff") then
+            table.insert(found, win)
+        end
+    end
+    table.sort(found, function(a, b)
+        return vim.api.nvim_win_get_position(a)[2]
+            < vim.api.nvim_win_get_position(b)[2]
+    end)
+    return found
+end
+
+vim.cmd.cd(git_dir)
+local resize_panel = explorer_diff.open()
+local resize_tab = vim.api.nvim_get_current_tabpage()
+local resize_wins = group_diff_wins(resize_tab, resize_panel.win)
+eq(#resize_wins, 2, "resize: two diff windows")
+vim.api.nvim_win_set_width(resize_panel.win, 60)
+explorer_diff.rebalance(resize_tab)
+local after_panel = group_diff_wins(resize_tab, resize_panel.win)
+eq(
+    vim.api.nvim_win_get_width(after_panel[1]),
+    vim.api.nvim_win_get_width(after_panel[2]),
+    "resize: panel change keeps diff widths equal"
+)
+vim.api.nvim_win_set_width(after_panel[2], 30)
+explorer_diff.rebalance(resize_tab, after_panel[2])
+local after_diff = group_diff_wins(resize_tab, resize_panel.win)
+eq(
+    vim.api.nvim_win_get_width(after_diff[1]),
+    vim.api.nvim_win_get_width(after_diff[2]),
+    "resize: diff change keeps diff widths equal"
+)
+explorer_diff.close()
+
 print "DIFF EXPLORER TEST OK"

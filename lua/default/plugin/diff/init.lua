@@ -64,7 +64,7 @@ local config = {
     listing_style = "tree", -- or list
     tree_style = "unicode", -- or ascii
     page_size = 100,
-    panel_width = 40,
+    panel_width = 50,
     tab_title = "Diff",
     history_tab_title = "DiffHistory",
     merge_tab_title = "DiffMerge",
@@ -282,6 +282,133 @@ local function changed_files(paths)
     end
     return filtered
 end
+
+local function window_group(view)
+    if view.merge then
+        return nil
+    end
+    local wins
+    local panel_win
+    if view.pane then
+        wins = { view.pane.base_win, view.pane.work_win }
+        panel_win = view.panel and view.panel.win
+    elseif view.compare then
+        wins = view.compare.wins
+        panel_win = view.compare.panel and view.compare.panel.win
+    else
+        return nil
+    end
+    if #wins ~= 2 then
+        return nil
+    end
+    for _, win in ipairs(wins) do
+        if not api.nvim_win_is_valid(win) then
+            return nil
+        end
+    end
+    if panel_win and not api.nvim_win_is_valid(panel_win) then
+        panel_win = nil
+    end
+    return { wins = wins, panel = panel_win }
+end
+
+local function contains(list, value)
+    for _, item in ipairs(list) do
+        if item == value then
+            return true
+        end
+    end
+    return false
+end
+
+function M.rebalance(tab, source)
+    local view = views[tab]
+    if not view then
+        return
+    end
+    local group = window_group(view)
+    if not group then
+        return
+    end
+    local separators = group.panel and 2 or 1
+    local target
+    local panel_width
+    if
+        not group.panel
+        or source == group.wins[1]
+        or source == group.wins[2]
+    then
+        target = source
+                and api.nvim_win_is_valid(source)
+                and api.nvim_win_get_width(source)
+            or math.max(
+                1,
+                math.floor((vim.o.columns - separators) / #group.wins)
+            )
+        target = math.max(1, target)
+        if group.panel then
+            panel_width =
+                math.max(1, vim.o.columns - separators - target * #group.wins)
+        end
+    else
+        panel_width = group.panel and api.nvim_win_get_width(group.panel) or 0
+        target = math.max(
+            1,
+            math.floor((vim.o.columns - separators - panel_width) / #group.wins)
+        )
+    end
+
+    for _, win in ipairs(group.wins) do
+        local current = api.nvim_win_get_width(win)
+        if current ~= target then
+            api.nvim_win_set_width(win, target)
+        end
+    end
+    if group.panel and panel_width and panel_width > 0 then
+        local current = api.nvim_win_get_width(group.panel)
+        if current ~= panel_width then
+            api.nvim_win_set_width(group.panel, panel_width)
+        end
+    end
+end
+
+local rebalancing = false
+vim.api.nvim_create_autocmd("WinResized", {
+    callback = function()
+        if rebalancing then
+            return
+        end
+        local tab = api.nvim_get_current_tabpage()
+        local view = views[tab]
+        if not view then
+            return
+        end
+        local group = window_group(view)
+        if not group then
+            return
+        end
+        local changed = vim.v.event.windows or {}
+        local source
+        if group.panel and contains(changed, group.panel) then
+            source = group.panel
+        else
+            for _, win in ipairs(changed) do
+                if contains(group.wins, win) then
+                    source = win
+                    break
+                end
+            end
+        end
+        if not source then
+            return
+        end
+        rebalancing = true
+        M.rebalance(tab, source)
+        vim.schedule(function()
+            rebalancing = false
+        end)
+    end,
+})
 
 local function current_view()
     local tab = api.nvim_get_current_tabpage()
