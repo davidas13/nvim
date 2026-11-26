@@ -119,6 +119,12 @@ Set `page_size` to 0 to show every entry again. Pagination keeps only one page
 in the panel buffer. Directory scanning still walks every file before the view
 opens.
 
+In tree mode, pages that start inside a folder pin that folder chain above the
+first entry as virtual lines. The header follows the first entry of the page,
+not the cursor, and uses the `Comment` highlight. It does not change buffer
+lines, so selection and page navigation stay aligned. The header is omitted on
+the first page and for entries at the top level.
+
 Tab titles include the command arguments. For example, `:Diff HEAD~2 -- sub`
 shows `Diff HEAD~2 -- sub` in the tabline.
 
