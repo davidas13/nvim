@@ -63,7 +63,7 @@ local config = {
     profiles = {},
     listing_style = "tree", -- or list
     tree_style = "unicode", -- or ascii
-    tree_indent = { branch = 2, vertical = 3 },
+    tree_indent = { branch = 1, vertical = 2 },
     page_size = 100,
     panel_width = 50,
     tab_title = "Diff",
